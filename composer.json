@@ -1,0 +1,7 @@
+{
+  "name": "application-name",
+  "version": "0.0.1",
+  "require": {
+    "aws/aws-sdk-php": "3.15.4"
+  }
+}

@@ -1,0 +1,11 @@
+bower_components
+example/bower_components
+node_modules
+/.nyc_output/
+/dist/*
+/vendor/
+/aws_credentials.php
+deploy
+/src/Collector/S2sSdkConf.ts
+/website/suiapi.js
+/website/dist/

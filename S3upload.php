@@ -1,0 +1,77 @@
+<?php
+require_once __DIR__.'/vendor/autoload.php';
+
+use Aws\S3\S3Client;
+
+$projectConfig = json_decode(file_get_contents(__DIR__.'/s3config.json'));
+
+$pathS3 = __DIR__.'/website';
+
+$s3Credentials = require_once 'aws_credentials.php';
+
+$executing = microtimeFloat();
+
+$client = new S3Client(
+    [
+        'region' => $projectConfig->aws->s3->target->region,
+        'version' => '2006-03-01',
+        'credentials' => $s3Credentials
+    ]
+);
+
+$directory = new \RecursiveDirectoryIterator($pathS3);
+$filter = new \RecursiveCallbackFilterIterator($directory, function ($current, $key, $iterator) {
+    // Skip hidden files and directories.
+    if ($current->getFilename()[0] === '.') {
+        return false;
+    }
+
+    return true;
+});
+$iterator = new \RecursiveIteratorIterator($filter);
+$files = 0;
+/* @var SplFileObject $fileInfo*/
+foreach ($iterator as $fileInfo) {
+    $file = $fileInfo->getFilename();
+    $path = $fileInfo->getPath();
+    if (strrev($path)[0] === '/') {
+        $key = str_replace($pathS3.'/', '', $path);
+    } else {
+        $key = str_replace($pathS3, '', $path);
+    }
+    $key = $projectConfig->aws->s3->target->path.$key;
+
+    echo "Uploading source file: ".$path."/".$file.PHP_EOL;
+    echo "Uploading target file: ".$key.'/'.$file.PHP_EOL;
+    uploadS3Object($client, $projectConfig->aws->s3->target->bucket, $key.'/'.$file, $path.'/'.$file);
+    $files++;
+}
+
+echo 'Files: '.$files.PHP_EOL;
+echo 'Executing: '.round(microtimeFloat() - $executing, 3)."\n";
+
+/**
+ * @param S3Client $client
+ * @param $bucket
+ * @param $key
+ * @param $source
+ */
+function uploadS3Object(S3Client $client, $bucket, $key, $source)
+{
+    $options = [
+        'Bucket'       => $bucket,
+        'Key'          => $key,
+        'SourceFile'   => $source,
+        'ACL'          => 'public-read'
+    ];
+
+    //print_r($options);
+    $result = $client->putObject($options);
+    echo $result['ObjectURL']."\n";
+}
+
+function microtimeFloat()
+{
+    list($usec, $sec) = explode(" ", microtime());
+    return round((float)$usec + (float)$sec, 3);
+}

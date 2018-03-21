@@ -1,0 +1,187 @@
+{
+  "projectID": "demopreprod",
+  "enabled": true,
+  "version": "1.0",
+  "created": "2016-09-29",
+  "edited": "2016-09-29",
+  "editor": "Dominik Gorczyca",
+  "start": "2019-01-01",
+  "end": "2020-01-01",
+  "name": "Demo Project PreProduction",
+  "decription": "Digital Audience Measurement",
+  "countries": [
+    "DE"
+  ],
+  "timezone": "Europe/Berlin",
+  "weekstart": "Mon",
+  "language": "de",
+  "contacts": [
+    {
+      "name": "Fabian Schulz",
+      "email": "fabian.schulz@gfk.com",
+      "phone": "+49 511 640 997-27",
+      "mobile": "+49 170 227 80 18",
+      "address": "Kurt-Schumacher-Str. 24, 30159 Hannover, Germany",
+      "role": "Operations"
+    }
+  ],
+  "aggregation": {
+    "enabled": true,
+    "basket": {
+      "hour": true,
+      "day": true,
+      "week": true,
+      "month": true,
+      "demography": true,
+      "technology": true,
+      "usage": true,
+      "defaults": {
+        "hour": false,
+        "day": true,
+        "week": false,
+        "month": false,
+        "demography": false,
+        "technology": false,
+        "usage": false
+      }
+    },
+    "midnightOffset": 7200,
+    "priority": 1,
+    "storage": {
+      "host": "nurago123.nurago.com",
+      "port": "3006",
+      "username": "username",
+      "password": "password",
+      "dbname": "dam_pl"
+    }
+  },
+  "tracking": {
+    "enabled": true,
+    "dntCheck": false,
+    "aws": {
+      "dynamodb": {
+        "table": "preproduction-dam-sui-touchpoint-tracking",
+        "accessKeyId": "AKIAJIKDFAZHHTDTLLQQ",
+        "secretAccessKey": "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",
+        "region": "eu-central-1"
+      },
+      "s3": {
+        "bucket": "config-preproduction.sensic.net",
+        "region": "eu-central-1",
+        "path": "demo",
+        "header": {
+          "js": {
+            "CacheControl": "max-age=120",
+            "ContentType": "text/javascript",
+            "ContentEncoding": "gzip"
+          },
+          "json": {
+            "CacheControl": "max-age=60",
+            "ContentType": "application/json; charset=utf-8"
+          },
+          "html": {
+            "CacheControl": "max-age=60",
+            "ContentEncoding": "gzip"
+          }
+        }
+      },
+      "cloudfront": {
+        "distributionId": "E3HAXD5PN1MFDS"
+      },
+      "elasticBeanstalk": {
+        "s3": {
+          "bucket": "elasticbeanstalk-eu-central-1-849270548413",
+          "region": "eu-central-1",
+          "path": ".",
+          "header": {
+            "zip": {
+              "ContentType": "application/x-zip"
+            }
+          }
+        },
+        "applicationName": "My First Elastic Beanstalk Application",
+        "environmentName": "dam-sui-preproduction",
+        "environmentId": "e-kyjpqed2ju"
+      }
+    },
+    "sui": {
+      "suiLogging": {
+        "enabled": 1,
+        "dynamodb": {
+          "table": "preproduction-dam-sui-logging",
+          "accessKeyId": "AKIAJIKDFAZHHTDTLLQQ",
+          "secretAccessKey": "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",
+          "region": "eu-central-1"
+        }
+      },
+      "apiPath": "demo-config-preproduction.sensic.net",
+      "suiApiUrl": "https://demo-config-preproduction.sensic.net",
+      "suiApiWeb": "suiapi.js",
+      "suiApiMobile": "suiapi.html",
+      "generator": "sui-generator-preproduction.sensic.net",
+      "connector": {
+        "pixelUrl": ".trk.sensic.net/tp.gif",
+        "s3": {
+          "bucket": "trk-sensic-net",
+          "region": "eu-central-1",
+          "path": ".",
+          "filename": "tp.gif",
+          "header": {
+            "gif": {
+              "ContentType": "image/gif",
+              "CacheControl": "must-revalidate"
+            }
+          }
+        },
+        "cloudfront": {
+          "distributionId": "E316L002D7BKSO"
+        }
+      }
+    },
+    "suiTp": {
+      "maskedSuiId": true
+    },
+    "s2s": {
+      "trackingUrl": "https://demopreprod-s2s.sensic.net",
+      "platform": {
+        "web": {
+          "enabled": true,
+          "configVersion": 1,
+          "forceImprTime": 3,
+          "fileName": "s2s-web.js",
+          "heartbeat": {
+            "enabled": true,
+            "interval": [2, 3, 4, 5],
+            "maximum": 7
+          }
+        },
+        "ios": {
+          "enabled": true,
+          "configVersion": 1,
+          "fileName": "s2s-ios.json"
+        },
+        "android": {
+          "enabled": true,
+          "configVersion": 1,
+          "fileName": "s2s-android.json"
+        },
+        "windowsdesktop": {
+          "enabled": false,
+          "configVersion": 1,
+          "fileName": "s2s-windowsdesktop.json"
+        }
+      },
+      "videoCustom": ["cp1","cp2","cp3","cp4","cp5"],
+      "contentCustom": ["cp1","cp2"],
+      "segment": {
+        "maxSegmentStateItems": 86400,
+        "maxSegments": 400,
+        "minSegmentViewTime": 2000
+      }
+    }
+  },
+  "taxonomy": {
+    "enabled": false,
+    "criteria": []
+  }
+}
