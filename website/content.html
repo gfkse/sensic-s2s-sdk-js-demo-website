@@ -1,5 +1,4 @@
-</body>
-</html><!DOCTYPE html>
+<!DOCTYPE html>
 <!--[if lt IE 7]>
 <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
 <!--[if IE 7]>
@@ -44,25 +43,25 @@
 
     <script>
         var gfkS2sConf = {
-            "media": "s2sdemomediaid_sst_web",
-            "url": "//demo-config-preproduction.sensic.net/s2s-web.js",
-            "type": "WEB"
+            media: "s2sdemomediaid_sst_web",
+            url: "//demo-config-preproduction.sensic.net/s2s-web.js",
+            type: "WEB"
         };
-        (function (w, d, c, s, id) {
+        (function (w, d, c, s, id, v) {
             if (d.getElementById(id)) {
                 return;
             }
 
             w[id] = {};
             w[id].agents = [];
-            var api = ["play", "stop", "skip", "screen", "volume", "visibility", "impression"];
+            var api = ["play", "stop", "skip", "screen", "volume", "impression"];
             w.s = (function () {
-                function s(c, cb) {
-                    var sA = {queue: [], config: c, cb: cb};
+                function s(c, pId, cb) {
+                    var sA = {queue: [], config: c, cb: cb, pId: pId};
                     api.forEach(function (e) {
                         sA[e] = function () {
                             sA.p = cb();
-                            sA.queue.push({"f": e, "a": arguments})
+                            sA.queue.push({f: e, a: arguments})
                         };
                     });
                     return sA;
@@ -70,10 +69,14 @@
 
                 return s;
             }());
-            w[id].getAgent = function (cb) {
-                var a = {a: new w.s(c, cb || function(){return 0;})};
+            w[id].getAgent = function (cb, pId) {
+                var a = {
+                    a: new w.s(c, pId || "", cb || function () {
+                        return 0;
+                    })
+                };
                 api.forEach(function (e) {
-                    a[e] = function() {
+                    a[e] = function () {
                         return this.a[e].apply(this.a, arguments);
                     }
                 });
@@ -82,14 +85,19 @@
                 return a;
             };
 
-            var tag = d.createElement(s);
-            var el = d.getElementsByTagName(s)[0];
-            tag.id = id;
-            tag.async = true;
-            tag.type = 'text/javascript';
-            tag.src = c.url;
-            el.parentNode.insertBefore(tag, el);
-        })(window, document, gfkS2sConf, 'script', 'gfkS2s');
+            var lJS = function (eId, url) {
+                var tag = d.createElement(s);
+                var el = d.getElementsByTagName(s)[0];
+                tag.id = eId;
+                tag.async = true;
+                tag.type = 'text/javascript';
+                tag.src = url;
+                el.parentNode.insertBefore(tag, el);
+            };
+
+            if (c.hasOwnProperty(v)) {lJS(id + v, c[v]);}
+            lJS(id, c.url);
+        })(window, document, gfkS2sConf, 'script', 'gfkS2s', 'visUrl');
 
         function impressionClicked() {
             var cp1 = document.getElementById("cp1").value;
@@ -104,10 +112,13 @@
             if (cp.hasOwnProperty("cp1") || cp.hasOwnProperty("cp2")) {
                 gfkS2s.getAgent().impression('DemoContent', cp);
             } else {
-                gfkS2s.getAgent().impression('DemoContent');
+                gfkS2s.getAgent().impression('DemoContent', {});
             }
         }
-        gfkS2s.getAgent().impression("DemoContent");
+        gfkS2s.getAgent().impression("DemoContent", {"cp1": [
+                {"i": "54534", "n": "iPhone", "b": "Apple", "c": "Smartphone"},
+                {"i": "345", "n": "Adapter", "b": "Samsung", "c": "Electronic"}
+            ]});
     </script>
 </head>
 <body>
