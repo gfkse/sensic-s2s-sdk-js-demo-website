@@ -40,12 +40,12 @@
     <script src="js/respond.min.js"></script>
     <![endif]-->
 
-    <script type="text/javascript" src="//content.jwplatform.com/libraries/V6obY7EY.js"></script>
+    <script src="//content.jwplatform.com/libraries/V6obY7EY.js"></script>
 
     <script>
         var gfkS2sConf = {
             media: "s2sdemomediaid_ssa_web",
-            url: "//demo-config-preproduction.sensic.net/s2s-web.js",
+            url: "//demo-config.sensic.net/s2s-web.js",
             visUrl: "https://s407.mxcdn.net/bb-mx/serve/mtrcs_943913.js",
             type: "WEB"
         };
@@ -157,7 +157,7 @@
                         <li>record user behavior during video watching</li>
                         <li>count view time of watching segment</li>
                     </ul>
-                    <p><b>For more information read the confluence <a title="documentation" target="_blank" href="https://confluence.gfk.com/pages/viewpage.action?pageId=174493271" >documentation</a> </b></p>
+                    <p><b>For more information read the confluence <a title="documentation" target="_blank" href="https://confluence.gfk.com/pages/viewpage.action?pageId=174493271">documentation</a> </b></p>
                 </div>
             </div>
             <div class="row">
@@ -181,7 +181,8 @@
                     <h2>Video Measurement</h2>
                     <p>
                         MediaId = s2sdemomediaid_ssa_web<br>
-                    </p> <p>
+                    </p>
+                    <p>
                         ContentId = Video1<br>
                         ContentId = Video2<br>
                         ContentId = Video3<br>
@@ -231,8 +232,6 @@
     </div>
 
 
-
-
     <div class="fh5co-cta" style="background-image: url(images/slide_2.jpg);">
         <div class="overlay"></div>
         <div class="container">
@@ -273,176 +272,72 @@
 
 <!-- MAIN JS -->
 <script src="js/main.js"></script>
-<script type="text/javascript">
+<script>
+    var videoPlayerInit = function (playerId, contentId, videoFile) {
+        // setting up player and agent
+        var playerInstance = jwplayer(playerId);
 
-    // setup reference to initial video
+        function getPos() {
+            return Math.round(playerInstance.getPosition() * 1000);
+        }
+
+        var agent = gfkS2s.getAgent(getPos, playerId);
+        playerInstance.setup({
+            file: videoFile,
+            autostart: false
+        });
+
+        function playSdk(contentId) {
+            var item = playerInstance.getPlaylistItem();
+            var volume = playerInstance.getMute() === true ? 0 : playerInstance.getVolume();
+            agent.play(contentId, 0, item.file, 'Fullscreen=' + playerInstance.getFullscreen().toString(), volume.toString(), {cp1: item.file, videoduration: playerInstance.getDuration().toString()})
+
+        }
+
+        playerInstance.on('play', function () {
+            playSdk(contentId);
+        });
+
+        playerInstance.on('pause', function () {
+            agent.stop();
+        });
+
+        playerInstance.on('idle', function () {
+            agent.stop();
+        });
+
+        playerInstance.on('complete', function () {
+            agent.stop();
+        });
+
+        playerInstance.on('seek', function () {
+            agent.stop();
+        });
+
+        playerInstance.on('seeked', function () {
+            playSdk(contentId);
+        });
+
+        playerInstance.on('volume', function () {
+            var volume = playerInstance.getMute() === true ? 0 : playerInstance.getVolume();
+            agent.volume(volume.toString());
+        });
+
+        playerInstance.on('fullscreen', function () {
+            agent.screen("fullscreen=" + playerInstance.getFullscreen());
+        });
+
+        playerInstance.on('mute', function () {
+            var volume = playerInstance.getMute() === true ? 0 : playerInstance.getVolume();
+            agent.volume(volume.toString());
+        });
+    };
+
     $(document).ready(function () {
         $(window).load(function () {
-            // setting up player and agent (content tracker)
-            var playerId = 'player';
-            var playerInstance = jwplayer(playerId);
-
-            function getPos() {
-                return Math.round(playerInstance.getPosition() * 1000);
-            }
-
-            var agent = gfkS2s.getAgent(getPos, playerId);
-            playerInstance.setup({
-                file: "videos/testvideo.mp4",
-                autostart: false
-            });
-
-            playerInstance.on('play', function () {
-                var item = playerInstance.getPlaylistItem();
-                var volume = playerInstance.getMute() === true ? 0 : playerInstance.getVolume();
-                agent.play("video1", 0, item.file, 'Fullscreen='+playerInstance.getFullscreen().toString(), volume.toString(), {cp1: item.file, videoduration: playerInstance.getDuration().toString()})
-            });
-
-            playerInstance.on('pause', function () {
-                agent.stop();
-            });
-
-            playerInstance.on('idle', function () {
-                agent.stop();
-            });
-
-            playerInstance.on('complete', function () {
-                agent.stop();
-            });
-
-            playerInstance.on('seek', function () {
-                agent.stop();
-            });
-
-            playerInstance.on('seeked', function () {
-                var item = playerInstance.getPlaylistItem();
-                var volume = playerInstance.getMute() === true ? 0 : playerInstance.getVolume();
-                agent.play("video1", 0, item.file, 'Fullscreen='+playerInstance.getFullscreen().toString(), volume.toString(), {file: item.file, videoduration: playerInstance.getDuration().toString()})
-            });
-
-            playerInstance.on('volume', function () {
-                var volume = playerInstance.getMute() === true ? 0 : playerInstance.getVolume();
-                agent.volume(volume.toString());
-            });
-
-            playerInstance.on('fullscreen', function () {
-                agent.screen("fullscreen="+playerInstance.getFullscreen());
-            });
-
-            playerInstance.on('mute', function () {
-                var volume = playerInstance.getMute() === true ? 0 : playerInstance.getVolume();
-                agent.volume(volume.toString());
-            });
-
-            // setting up player and agent (content tracker)
-            var playerId2 = 'player2';
-
-            var playerInstance2 = jwplayer(playerId2);
-            function getPos2() {
-                return Math.round(playerInstance2.getPosition() * 1000);
-            }
-            var agent2 = gfkS2s.getAgent(getPos2, playerId2);
-
-            playerInstance2.setup({
-                file: "videos/gfk_brand_video.mp4"
-            });
-
-            playerInstance2.on('play', function () {
-                var item = playerInstance2.getPlaylistItem();
-                var volume = playerInstance2.getMute() === true ? 0 : playerInstance2.getVolume();
-                agent2.play("video2", 0, item.file, 'Fullscreen='+playerInstance2.getFullscreen().toString(), volume.toString(), {file: item.file, videoduration: playerInstance.getDuration().toString()});
-            });
-
-            playerInstance2.on('pause', function () {
-                agent2.stop();
-            });
-
-            playerInstance2.on('idle', function () {
-                agent2.stop();
-            });
-
-            playerInstance2.on('complete', function () {
-                agent2.stop();
-            });
-
-            playerInstance2.on('seek', function () {
-                agent2.stop();
-            });
-
-            playerInstance2.on('seeked', function () {
-                var item = playerInstance2.getPlaylistItem();
-                var volume = playerInstance2.getMute() === true ? 0 : playerInstance2.getVolume();
-                agent2.play("video2", 0, item.file, 'Fullscreen='+playerInstance2.getFullscreen().toString(), volume.toString(), {file: item.file, videoduration: playerInstance.getDuration().toString()});
-            });
-
-            playerInstance2.on('volume', function () {
-                var volume = playerInstance2.getMute() === true ? 0 : playerInstance2.getVolume();
-                agent2.volume(volume.toString());
-            });
-
-            playerInstance2.on('fullscreen', function () {
-                agent2.screen("fullscreen="+playerInstance2.getFullscreen());
-            });
-
-            playerInstance2.on('mute', function () {
-                var volume = playerInstance2.getMute() === true ? 0 : playerInstance2.getVolume();
-                agent2.volume(volume.toString());
-            });
-
-            // setting up player and agent (content tracker)
-            var playerId3 = 'player3';
-            var playerInstance3 = jwplayer(playerId3);
-            function getPos3() {
-                return Math.round(playerInstance3.getPosition() * 1000);
-            }
-            var agent3 = gfkS2s.getAgent(getPos3, playerId3);
-
-            playerInstance3.setup({
-                file: "videos/understanding_mobile_consumer.mp4"
-            });
-
-            playerInstance3.on('play', function () {
-                var volume = playerInstance3.getMute() === true ? 0 : playerInstance3.getVolume();
-                var item = playerInstance3.getPlaylistItem();
-                agent3.play("video3", 0, item.file, 'Fullscreen='+playerInstance3.getFullscreen().toString(), volume.toString(), {file: item.file, videoduration: playerInstance.getDuration().toString()});
-
-            });
-
-            playerInstance3.on('pause', function () {
-                agent3.stop();
-            });
-
-            playerInstance3.on('idle', function () {
-                agent3.stop();
-            });
-
-            playerInstance3.on('complete', function () {
-                agent3.stop();
-            });
-
-            playerInstance3.on('seek', function () {
-                agent3.stop();
-            });
-
-            playerInstance3.on('seeked', function () {
-                var volume = playerInstance3.getMute() === true ? 0 : playerInstance3.getVolume();
-                var item = playerInstance3.getPlaylistItem();
-                agent3.play("video3", 0, item.file, 'Fullscreen='+playerInstance3.getFullscreen().toString(), volume.toString(), {file: item.file, videoduration: playerInstance.getDuration().toString()});
-            });
-
-            playerInstance3.on('volume', function () {
-                var volume = playerInstance3.getMute() === true ? 0 : playerInstance3.getVolume();
-                agent3.volume(volume.toString());
-            });
-
-            playerInstance3.on('fullscreen', function () {
-                agent3.screen("fullscreen="+playerInstance3.getFullscreen());
-            });
-
-            playerInstance3.on('mute', function () {
-                var volume = playerInstance3.getMute() === true ? 0 : playerInstance3.getVolume();
-                agent3.volume(volume.toString());
-            });
+            videoPlayerInit('player', 'video1', 'videos/testvideo.mp4');
+            videoPlayerInit('player2', 'video2', 'videos/gfk_brand_video.mp4');
+            videoPlayerInit('player3', 'video3', 'videos/understanding_mobile_consumer.mp4');
         });
     });
 </script>
