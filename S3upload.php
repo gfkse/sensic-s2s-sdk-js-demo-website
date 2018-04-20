@@ -3,14 +3,21 @@ require_once __DIR__.'/vendor/autoload.php';
 
 use Aws\S3\S3Client;
 
-$projectConfig = json_decode(file_get_contents(__DIR__.'/s3config.json'));
+$allowedEnvs = ['preproduction', 'production'];
+if ($argc != 2 || !in_array($argv[1], $allowedEnvs)) {
+    echo 'Environment needed, either "production" or "preproduction"'.PHP_EOL;
+    echo 'Syntax: php S3upload.php <preproduction|production>'.PHP_EOL;
+    echo 'Example: php S3upload.php preproduction'.PHP_EOL;
+    die(1);
+}
+
+$projectConfig = json_decode(file_get_contents(__DIR__.'/s3config-'.$argv[1].'.json'));
 
 $pathS3 = __DIR__.'/website';
 
 $s3Credentials = require_once 'aws_credentials.php';
 
 $executing = microtimeFloat();
-
 $client = new S3Client(
     [
         'region' => $projectConfig->aws->s3->target->region,
@@ -48,7 +55,7 @@ foreach ($iterator as $fileInfo) {
 }
 
 echo 'Files: '.$files.PHP_EOL;
-echo 'Executing: '.round(microtimeFloat() - $executing, 3)."\n";
+echo 'Executing: '.round(microtimeFloat() - $executing, 3)." seconds\n";
 
 /**
  * @param S3Client $client
