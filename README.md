@@ -2,7 +2,11 @@
 
 ## Usage
 
-**Build and deploy**
+**Deploy to preproduction**
 
-    php build.php [environment] <deploy>
+    php S3upload.php preproduction
+
+**Deploy to production**
+
+    php S3upload.php production
 
