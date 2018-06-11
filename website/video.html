@@ -45,7 +45,7 @@
     <script>
         var gfkS2sConf = {
             media: "s2sdemomediaid_ssa_web",
-            url: "//demo-config.sensic.net/s2s-web.js",
+            url: "//demo-config-preproduction.sensic.net/s2s-web.js",
             visUrl: "https://s407.mxcdn.net/bb-mx/serve/mtrcs_943913.js",
             type: "WEB"
         };
@@ -213,13 +213,13 @@
                     </div>
                 </div>
                 <div class="col-md-4 animate-box">
-                    <div id="video3">
+                    <div id="video3live">
                         <video id="player3" width="100%" height="100%"></video>
                     </div>
                     <div class="image" style="background-image: url(images/image_1.jpg)"></div>
                     <div class="v-align">
                         <div class="v-align-middle">
-                            <h3 class="title">Video 3</h3>
+                            <h3 class="title">Video 3 (Live emulation)</h3>
                         </div>
                     </div>
                 </div>
@@ -273,15 +273,25 @@
 <!-- MAIN JS -->
 <script src="js/main.js"></script>
 <script>
-    var videoPlayerInit = function (playerId, contentId, videoFile) {
+    var videoPlayerInit = function (playerId, contentId, videoFile, live) {
         // setting up player and agent
         var playerInstance = jwplayer(playerId);
 
-        function getPos() {
+        function getVideoPositionLiveVideo() {
+            return new Date().getTime();
+        }
+
+        function getVideoPositionVOD() {
             return Math.round(playerInstance.getPosition() * 1000);
         }
 
-        var agent = gfkS2s.getAgent(getPos, playerId);
+        var agent;
+        if (live) {
+            agent = gfkS2s.getAgent(getVideoPositionLiveVideo, playerId);
+        } else {
+            agent = gfkS2s.getAgent(getVideoPositionVOD, playerId);
+        }
+
         playerInstance.setup({
             file: videoFile,
             autostart: false
@@ -337,7 +347,7 @@
         $(window).load(function () {
             videoPlayerInit('player', 'video1', 'videos/testvideo.mp4');
             videoPlayerInit('player2', 'video2', 'videos/gfk_brand_video.mp4');
-            videoPlayerInit('player3', 'video3', 'videos/understanding_mobile_consumer.mp4');
+            videoPlayerInit('player3', 'video3live', 'videos/understanding_mobile_consumer.mp4', true);
         });
     });
 </script>
