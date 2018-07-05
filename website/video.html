@@ -197,7 +197,7 @@
                     <div class="image" style="background-image: url(images/image_1.jpg)"></div>
                     <div class="v-align">
                         <div class="v-align-middle">
-                            <h3 class="title">Video 1</h3>
+                            <h3 class="title">Video 1 Live with Content-Time)</h3>
                         </div>
                     </div>
                 </div>
@@ -208,18 +208,18 @@
                     <div class="image" style="background-image: url(images/image_1.jpg)"></div>
                     <div class="v-align">
                         <div class="v-align-middle">
-                            <h3 class="title">Video 2</h3>
+                            <h3 class="title">Video 2 Live without Content-Time</h3>
                         </div>
                     </div>
                 </div>
                 <div class="col-md-4 animate-box">
-                    <div id="video3live">
+                    <div id="video3">
                         <video id="player3" width="100%" height="100%"></video>
                     </div>
                     <div class="image" style="background-image: url(images/image_1.jpg)"></div>
                     <div class="v-align">
                         <div class="v-align-middle">
-                            <h3 class="title">Video 3 (Live emulation)</h3>
+                            <h3 class="title">Video 3 VOD</h3>
                         </div>
                     </div>
                 </div>
@@ -273,7 +273,7 @@
 <!-- MAIN JS -->
 <script src="js/main.js"></script>
 <script>
-    var videoPlayerInit = function (playerId, contentId, videoFile, live) {
+    var videoPlayerInit = function (playerId, contentId, videoFile, autoPlay, live, absoluteOffset) {
         // setting up player and agent
         var playerInstance = jwplayer(playerId);
 
@@ -294,50 +294,73 @@
 
         playerInstance.setup({
             file: videoFile,
-            autostart: false
+            autostart: autoPlay,
+            mute: true
         });
 
-        function playSdk(contentId) {
+        function playLiveSdk(contentId) {
             var item = playerInstance.getPlaylistItem();
             var volume = playerInstance.getMute() === true ? 0 : playerInstance.getVolume();
-            agent.play(contentId, 0, item.file, 'Fullscreen=' + playerInstance.getFullscreen().toString(), volume.toString(), {cp1: item.file, videoduration: playerInstance.getDuration().toString()})
+            agent.playLive(contentId, absoluteOffset, 0, item.file, 'Fullscreen=' + playerInstance.getFullscreen().toString(), volume.toString(), {playerid: playerId, cliptype: "live"})
+        }
 
+        function playVODSdk(contentId) {
+            var item = playerInstance.getPlaylistItem();
+            var volume = playerInstance.getMute() === true ? 0 : playerInstance.getVolume();
+            agent.playVOD(contentId, item.file, 'Fullscreen=' + playerInstance.getFullscreen().toString(), volume.toString(), {playerid: playerId, cliptype: "Sendung"})
         }
 
         playerInstance.on('play', function () {
-            playSdk(contentId);
+            console.warn("play !");
+            if (live) {
+                playLiveSdk(contentId);
+            } else {
+                playVODSdk(contentId);
+            }
         });
 
         playerInstance.on('pause', function () {
+            console.warn("pause !");
             agent.stop();
         });
 
         playerInstance.on('idle', function () {
+            console.warn("idle !");
             agent.stop();
         });
 
         playerInstance.on('complete', function () {
+            console.warn("complete !");
             agent.stop();
         });
 
         playerInstance.on('seek', function () {
+            console.warn("Seek !");
             agent.stop();
         });
 
         playerInstance.on('seeked', function () {
-            playSdk(contentId);
+            console.warn("Seeked !");
+            if (live) {
+                playLiveSdk(contentId);
+            } else {
+                playVODSdk(contentId);
+            }
         });
 
         playerInstance.on('volume', function () {
+            console.warn("volume !");
             var volume = playerInstance.getMute() === true ? 0 : playerInstance.getVolume();
             agent.volume(volume.toString());
         });
 
         playerInstance.on('fullscreen', function () {
+            console.warn("fullscreen !");
             agent.screen("fullscreen=" + playerInstance.getFullscreen());
         });
 
         playerInstance.on('mute', function () {
+            console.warn("mute !");
             var volume = playerInstance.getMute() === true ? 0 : playerInstance.getVolume();
             agent.volume(volume.toString());
         });
@@ -345,9 +368,9 @@
 
     $(document).ready(function () {
         $(window).load(function () {
-            videoPlayerInit('player', 'video1', 'videos/testvideo.mp4');
-            videoPlayerInit('player2', 'video2', 'videos/gfk_brand_video.mp4');
-            videoPlayerInit('player3', 'video3live', 'videos/understanding_mobile_consumer.mp4', true);
+            videoPlayerInit('player', 'video1', 'videos/testvideo.mp4', false, true, "Thu, 05 Jul 2018 11:47:11 GMT");
+            videoPlayerInit('player2', 'video2', 'videos/gfk_brand_video.mp4', false, true, "");
+            videoPlayerInit('player3', 'video3', 'videos/understanding_mobile_consumer.mp4', false, false, "");
         });
     });
 </script>
