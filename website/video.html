@@ -57,7 +57,7 @@
 
             w[id] = {};
             w[id].agents = [];
-            var api = ["play", "stop", "skip", "screen", "volume", "impression"];
+            var api = ["playLive", "playVOD", "stop", "skip", "screen", "volume", "impression"];
             w.s = (function () {
                 function s(c, pId, cb) {
                     var sA = {queue: [], config: c, cb: cb, pId: pId};
@@ -75,8 +75,8 @@
             w[id].getAgent = function (cb, pId) {
                 var a = {
                     a: new w.s(c, pId || "", cb || function () {
-                        return 0;
-                    })
+                            return 0;
+                        })
                 };
                 api.forEach(function (e) {
                     a[e] = function () {
