@@ -186,6 +186,7 @@
                         ContentId = Video1<br>
                         ContentId = Video2<br>
                         ContentId = Video3<br>
+                        ContentId = VideoCustom<br>
                     </p>
                 </div>
             </div>
@@ -223,6 +224,38 @@
                         </div>
                     </div>
                 </div>
+                <div class="col-md-4 animate-box">
+                        <div class="v-align-middle">
+                            <h3>Custom Video Settings</h3>
+                            <p>
+                                <label>Video Type :</label>
+                                <select id="videoType">
+                                    <option value="live">Live Video</option>
+                                    <option selected value="vod">VOD Video</option>
+                                </select>
+                            </p>
+                            <p>
+                                <label>ContentStart:</label>
+                                <input type="text" value="2019-01-01T16:00:00+02:00" id="contentStart"/>
+                            </p>
+                            <p>
+                                <label>VideoOffset:</label>
+                                <input type="text" value="0" id="videoOffset"/>
+                            </p>
+                            <button onclick="videoPlayerCustom('videos/life_without_market_research.mp4');">Load Custom Player</button>
+
+                        </div>
+                    <div id="videoCustom">
+                        <video id="playerCustom" width="100%" height="100%"></video>
+                    </div>
+                    <div class="image" style="background-image: url(images/image_1.jpg)"></div>
+                    <div class="v-align">
+                        <div class="v-align-middle">
+                            <h3>Custom Video</h3>
+                        </div>
+                    </div>
+                </div>
+
 
                 <div class="col-md-12 text-center animate-box">
                     <p><a href="#" class="btn btn-primary with-arrow">View More Projects <i class="icon-arrow-right"></i></a></p>
@@ -273,7 +306,7 @@
 <!-- MAIN JS -->
 <script src="js/main.js"></script>
 <script>
-    var videoPlayerInit = function (playerId, contentId, videoFile, autoPlay, live, absoluteOffset) {
+    var videoPlayerInit = function (playerId, contentId, videoFile, autoPlay, live, absoluteOffset, videoOffset) {
         // setting up player and agent
         var playerInstance = jwplayer(playerId);
 
@@ -301,7 +334,7 @@
         function playLiveSdk(contentId) {
             var item = playerInstance.getPlaylistItem();
             var volume = playerInstance.getMute() === true ? 0 : playerInstance.getVolume();
-            agent.playLive(contentId, absoluteOffset, 0, item.file, 'Fullscreen=' + playerInstance.getFullscreen().toString(), volume.toString(), {playerid: playerId, cliptype: "live"})
+            agent.playLive(contentId, absoluteOffset, videoOffset, item.file, 'Fullscreen=' + playerInstance.getFullscreen().toString(), volume.toString(), {playerid: playerId, cliptype: "live"})
         }
 
         function playVODSdk(contentId) {
@@ -366,11 +399,26 @@
         });
     };
 
+    var videoPlayerCustom = function (videoFile) {
+
+        var videoType = document.getElementById("videoType");
+        var live = videoType.options[videoType.selectedIndex].value === "live" ? true : false
+        var videoOffset = parseInt(document.getElementById("videoOffset").value);
+        var contentStart = document.getElementById("contentStart").value;
+        var contentId = "videoCustom";
+
+        var playerId = "playerCustom";
+        // setting up player and agent
+        var playerInstance = jwplayer(playerId);
+
+        videoPlayerInit(playerId, contentId, videoFile, false, live, contentStart, videoOffset);
+    };
+
     $(document).ready(function () {
         $(window).load(function () {
-            videoPlayerInit('player', 'video1', 'videos/testvideo.mp4', false, true, "2018-10-05T14:48:00+06:00");
-            videoPlayerInit('player2', 'video2', 'videos/gfk_brand_video.mp4', false, true, "");
-            videoPlayerInit('player3', 'video3', 'videos/understanding_mobile_consumer.mp4', false, false, "");
+            videoPlayerInit('player', 'video1', 'videos/testvideo.mp4', true, true, "2018-10-05T14:48:00+06:00", 0);
+            videoPlayerInit('player2', 'video2', 'videos/gfk_brand_video.mp4', false, true, "", 0);
+            videoPlayerInit('player3', 'video3', 'videos/understanding_mobile_consumer.mp4', false, false, "", 0);
         });
     });
 </script>

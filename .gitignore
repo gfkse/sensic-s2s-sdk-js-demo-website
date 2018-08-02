@@ -9,3 +9,4 @@ deploy
 /src/Collector/S2sSdkConf.ts
 /website/suiapi.js
 /website/dist/
+.idea
