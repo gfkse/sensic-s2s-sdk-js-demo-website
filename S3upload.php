@@ -85,6 +85,8 @@ foreach ($iterator as $fileInfo) {
 
 echo 'Files: '.$files.PHP_EOL;
 echo 'Executing: '.round(microtimeFloat() - $executing, 3)." seconds\n";
+$Invalidation = invalidateCloudfrontFiles($s3Credentials, $argv[1]);
+echo 'Status for invalidation Id "'.$Invalidation["Id"].'": '.$Invalidation["Status"].PHP_EOL;
 
 /**
  * @param S3Client $client
@@ -104,6 +106,58 @@ function uploadS3Object(S3Client $client, $bucket, $key, $source)
     //print_r($options);
     $result = $client->putObject($options);
     echo $result['ObjectURL']."\n";
+}
+
+/**
+ * Invalidate uploaded files to S3 in Cloudfront
+ * @param array $s3Credentials
+ * @param $env
+ * @return array
+ */
+function invalidateCloudfrontFiles(array $s3Credentials, string $env)
+{
+
+    $ditributionIds = [
+        'preproduction' => 'E3HAXD5PN1MFDS',
+        'production' => 'E2XAX2YAH410FH'
+    ];
+
+    $distribution = $ditributionIds[$env];
+
+
+    $CloudfrontClient = new \Aws\CloudFront\CloudFrontClient(
+        [
+            'region' => 'us-east-1',
+            'version' => '2014-11-06',
+            'credentials' => $s3Credentials
+        ]
+    );
+
+    $items = [];
+    $items[] = '/*';
+
+    $epoch = date('U');
+    try {
+        /**
+         * @var $result \AWS\Result
+         */
+        $result = $CloudfrontClient->createInvalidation(
+            [
+                'DistributionId' => $distribution,
+                'InvalidationBatch' => [
+                    'Paths' => [
+                        'Quantity' => count($items),
+                        'Items' => $items,
+                    ],
+                    'CallerReference' => $distribution.$epoch
+                ]
+            ]
+        );
+    } catch (Exception $e) {
+        die("Invalidation error: ".$e->getMessage().PHP_EOL);
+    }
+
+    return $result->get("Invalidation");
 }
 
 function microtimeFloat()
