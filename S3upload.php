@@ -79,7 +79,7 @@ foreach ($iterator as $fileInfo) {
 
     echo "Uploading source file: ".$path."/".$file.PHP_EOL;
     echo "Uploading target file: ".$key.'/'.$file.PHP_EOL;
-    //uploadS3Object($client, $projectConfig->aws->s3->target->bucket, $key.'/'.$file, $path.'/'.$file);
+    uploadS3Object($client, $projectConfig->aws->s3->target->bucket, $key.'/'.$file, $path.'/'.$file);
     $files++;
 }
 
