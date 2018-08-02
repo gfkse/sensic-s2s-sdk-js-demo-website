@@ -1,4 +1,8 @@
 <?php
+/**
+ * Upload files recursive to S3 bucket configured in s3config-(pre)produciton.json
+ * @author: dominik.gorczyca@gfk.com
+ */
 require_once __DIR__.'/vendor/autoload.php';
 
 use Aws\S3\S3Client;
@@ -15,6 +19,31 @@ $projectConfig = json_decode(file_get_contents(__DIR__.'/s3config-'.$argv[1].'.j
 
 $pathS3 = __DIR__.'/website';
 
+function changeUrl(string $env, string $content) {
+    $map = [
+        'preproduction' => 'demo-config-preproduction.sensic.net',
+        'production' => 'demo-config.sensic.net'
+    ];
+
+    return str_replace('##ENVDOMAIN##', $map[$env], $content);
+}
+
+function copyFile(string $src, string $dest, string $env) {
+    $data = file_get_contents($src);
+    $data = changeUrl($env, $data);
+    file_put_contents($dest, $data);
+}
+
+$files = [
+    __DIR__.'/website/campaign.html',
+    __DIR__.'/website/content.html',
+    __DIR__.'/website/video.html'
+];
+
+foreach ($files as $file) {
+    copyFile($file.'.tmpl', $file, $argv[1]);
+}
+
 $s3Credentials = require_once 'aws_credentials.php';
 
 $executing = microtimeFloat();
@@ -27,9 +56,9 @@ $client = new S3Client(
 );
 
 $directory = new \RecursiveDirectoryIterator($pathS3);
-$filter = new \RecursiveCallbackFilterIterator($directory, function ($current, $key, $iterator) {
-    // Skip hidden files and directories.
-    if ($current->getFilename()[0] === '.') {
+$filter = new \RecursiveCallbackFilterIterator($directory, function (\SplFileInfo $current) {
+    // Skip hidden and *.tmpl files and directories.
+    if ($current->getFilename()[0] === '.' || $current->getExtension() === 'tmpl') {
         return false;
     }
 
@@ -50,7 +79,7 @@ foreach ($iterator as $fileInfo) {
 
     echo "Uploading source file: ".$path."/".$file.PHP_EOL;
     echo "Uploading target file: ".$key.'/'.$file.PHP_EOL;
-    uploadS3Object($client, $projectConfig->aws->s3->target->bucket, $key.'/'.$file, $path.'/'.$file);
+    //uploadS3Object($client, $projectConfig->aws->s3->target->bucket, $key.'/'.$file, $path.'/'.$file);
     $files++;
 }
 
