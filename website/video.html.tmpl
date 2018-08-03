@@ -400,23 +400,19 @@
     };
 
     var videoPlayerCustom = function (videoFile) {
-
         var videoType = document.getElementById("videoType");
         var live = videoType.options[videoType.selectedIndex].value === "live" ? true : false
         var videoOffset = parseInt(document.getElementById("videoOffset").value);
         var contentStart = document.getElementById("contentStart").value;
         var contentId = "videoCustom";
-
         var playerId = "playerCustom";
-        // setting up player and agent
-        var playerInstance = jwplayer(playerId);
 
         videoPlayerInit(playerId, contentId, videoFile, false, live, contentStart, videoOffset);
     };
 
     $(document).ready(function () {
         $(window).load(function () {
-            videoPlayerInit('player', 'video1', 'videos/testvideo.mp4', true, true, "2018-10-05T14:48:00+06:00", 0);
+            videoPlayerInit('player', 'video1', 'videos/testvideo.mp4', false, true, "2018-10-05T14:48:00+06:00", 0);
             videoPlayerInit('player2', 'video2', 'videos/gfk_brand_video.mp4', false, true, "", 0);
             videoPlayerInit('player3', 'video3', 'videos/understanding_mobile_consumer.mp4', false, false, "", 0);
         });
