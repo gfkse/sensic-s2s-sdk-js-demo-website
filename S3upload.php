@@ -17,7 +17,7 @@ if ($argc != 2 || !in_array($argv[1], $allowedEnvs)) {
 
 $projectConfig = json_decode(file_get_contents(__DIR__.'/s3config-'.$argv[1].'.json'));
 
-$pathS3 = __DIR__.'/website';
+$pathS3 = str_replace("\\", '/', __DIR__).'/website';
 
 function changeUrl(string $env, string $content) {
     $map = [
@@ -35,9 +35,9 @@ function copyFile(string $src, string $dest, string $env) {
 }
 
 $files = [
-    __DIR__.'/website/campaign.html',
-    __DIR__.'/website/content.html',
-    __DIR__.'/website/video.html'
+    $pathS3.'/campaign.html',
+    $pathS3.'/content.html',
+    $pathS3.'/video.html'
 ];
 
 foreach ($files as $file) {
@@ -69,8 +69,8 @@ $files = 0;
 /* @var SplFileObject $fileInfo*/
 foreach ($iterator as $fileInfo) {
     $file = $fileInfo->getFilename();
-    $path = $fileInfo->getPath();
-    if (strrev($path)[0] === '/') {
+    $path = str_replace("\\", '/', $fileInfo->getPath());
+    if (substr($path, -1) === '/') {
         $key = str_replace($pathS3.'/', '', $path);
     } else {
         $key = str_replace($pathS3, '', $path);
