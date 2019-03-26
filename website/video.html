@@ -61,12 +61,12 @@
             w.s = (function () {
                 function s(c, pId, cb) {
                     var sA = {queue: [], config: c, cb: cb, pId: pId};
-                    api.forEach(function (e) {
-                        sA[e] = function () {
+                    for (var i = 0; i < api.length; i++) {
+                        sA[api[i]] = function () {
                             sA.p = cb();
-                            sA.queue.push({f: e, a: arguments})
+                            sA.queue.push({f: api[i], a: arguments})
                         };
-                    });
+                    }
                     return sA;
                 }
 
@@ -78,11 +78,11 @@
                             return 0;
                         })
                 };
-                api.forEach(function (e) {
-                    a[e] = function () {
-                        return this.a[e].apply(this.a, arguments);
+                for (var i = 0; i < api.length; i++) {
+                    a[api[i]] = function () {
+                        return this.a[api[i]].apply(this.a, arguments);
                     }
-                });
+                }
                 w[id].agents.push(a);
 
                 return a;
