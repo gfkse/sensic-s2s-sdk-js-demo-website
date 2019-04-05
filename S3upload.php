@@ -37,11 +37,13 @@ function copyFile(string $src, string $dest, string $env) {
 $files = [
     $pathS3.'/campaign.html',
     $pathS3.'/content.html',
-    $pathS3.'/video.html'
+    $pathS3.'/video.html',
+    $pathS3.'/sui-connector-test.html'
 ];
 
 foreach ($files as $file) {
-    copyFile($file.'.tmpl', $file, $argv[1]);
+    $tmplFile = substr_replace($file, ".tmpl", strrpos($file, '.'), 0);
+    copyFile($tmplFile, $file, $argv[1]);
 }
 
 $s3Credentials = require_once 'aws_credentials.php';
