@@ -10,3 +10,7 @@ deploy
 /website/suiapi.js
 /website/dist/
 .idea
+website/video.html
+website/sui-connector-test.html
+website/content.html
+website/campaign.html
