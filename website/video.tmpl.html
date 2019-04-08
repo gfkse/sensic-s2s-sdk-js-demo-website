@@ -59,13 +59,17 @@
             w[id].agents = [];
             var api = ["playStreamLive", "playLive", "playStreamOnDemand", "playVOD", "stop", "skip", "screen", "volume", "impression"];
             w.s = (function () {
+                function f(sA, e, cb) {
+                    return function () {
+                        sA.p = cb();
+                        sA.queue.push({f: e, a: arguments});
+                    };
+                }
                 function s(c, pId, cb) {
                     var sA = {queue: [], config: c, cb: cb, pId: pId};
                     for (var i = 0; i < api.length; i++) {
-                        sA[api[i]] = function () {
-                            sA.p = cb();
-                            sA.queue.push({f: api[i], a: arguments})
-                        };
+                        e = api[i];
+                        sA[e] = f(sA, e, cb);
                     }
                     return sA;
                 }
@@ -75,13 +79,17 @@
             w[id].getAgent = function (cb, pId) {
                 var a = {
                     a: new w.s(c, pId || "", cb || function () {
-                            return 0;
-                        })
+                        return 0;
+                    })
                 };
-                for (var i = 0; i < api.length; i++) {
-                    a[api[i]] = function () {
-                        return this.a[api[i]].apply(this.a, arguments);
+                function g(a, e) {
+                    return function () {
+                        return a.a[e].apply(a.a, arguments);
                     }
+                }
+                for (var i = 0; i < api.length; i++) {
+                    e = api[i];
+                    a[e] = g(a, e);
                 }
                 w[id].agents.push(a);
 
