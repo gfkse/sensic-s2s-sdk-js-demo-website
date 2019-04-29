@@ -35,7 +35,8 @@ function copyFile(string $src, string $dest, string $env) {
 }
 
 $files = [
-    $pathS3.'/campaign.html',
+    $pathS3.'/campaign-img.html',
+    $pathS3.'/campaign-js.html',
     $pathS3.'/content.html',
     $pathS3.'/video.html',
     $pathS3.'/sui-connector-test.html'
