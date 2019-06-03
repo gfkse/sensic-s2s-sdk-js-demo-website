@@ -8,12 +8,14 @@ require_once __DIR__.'/vendor/autoload.php';
 use Aws\S3\S3Client;
 
 $allowedEnvs = ['preproduction', 'production'];
-if ($argc != 2 || !in_array($argv[1], $allowedEnvs)) {
+if ($argc < 2 || !in_array($argv[1], $allowedEnvs)) {
     echo 'Environment needed, either "production" or "preproduction"'.PHP_EOL;
     echo 'Syntax: php S3upload.php <preproduction|production>'.PHP_EOL;
     echo 'Example: php S3upload.php preproduction'.PHP_EOL;
     die(1);
 }
+
+$skipVideos = ($argc > 2 && $argv[2] === "-q");
 
 $projectConfig = json_decode(file_get_contents(__DIR__.'/s3config-'.$argv[1].'.json'));
 
@@ -36,6 +38,7 @@ function copyFile(string $src, string $dest, string $env) {
 
 $files = [
     $pathS3.'/campaign-img.html',
+    $pathS3.'/campaign-img-debug.html',
     $pathS3.'/campaign-js.html',
     $pathS3.'/content.html',
     $pathS3.'/video.html',
@@ -69,9 +72,12 @@ $filter = new \RecursiveCallbackFilterIterator($directory, function (\SplFileInf
 });
 $iterator = new \RecursiveIteratorIterator($filter);
 $files = 0;
-/* @var SplFileObject $fileInfo*/
+/* @var SplFileObject $fileInfo */
 foreach ($iterator as $fileInfo) {
     $file = $fileInfo->getFilename();
+    if ($skipVideos && substr($file, -4) === ".mp4") {
+        continue;
+    }
     $path = str_replace("\\", '/', $fileInfo->getPath());
     if (substr($path, -1) === '/') {
         $key = str_replace($pathS3.'/', '', $path);
@@ -79,9 +85,6 @@ foreach ($iterator as $fileInfo) {
         $key = str_replace($pathS3, '', $path);
     }
     $key = $projectConfig->aws->s3->target->path.$key;
-
-    echo "Uploading source file: ".$path."/".$file.PHP_EOL;
-    echo "Uploading target file: ".$key.'/'.$file.PHP_EOL;
     uploadS3Object($client, $projectConfig->aws->s3->target->bucket, $key.'/'.$file, $path.'/'.$file);
     $files++;
 }
@@ -99,16 +102,15 @@ echo 'Status for invalidation Id "'.$Invalidation["Id"].'": '.$Invalidation["Sta
  */
 function uploadS3Object(S3Client $client, $bucket, $key, $source)
 {
+    echo "Uploading ".$source.PHP_EOL;
     $options = [
         'Bucket'       => $bucket,
         'Key'          => $key,
         'SourceFile'   => $source,
         'ACL'          => 'public-read'
     ];
-
-    //print_r($options);
     $result = $client->putObject($options);
-    echo $result['ObjectURL']."\n";
+    echo "--> ".$result['ObjectURL'].PHP_EOL;
 }
 
 /**
