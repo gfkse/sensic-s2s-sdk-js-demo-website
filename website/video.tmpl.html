@@ -349,7 +349,6 @@
 
         playerInstance.on('play', function () {
             console.warn("play !");
-            console.log('win', window);
             if (live) {
                 playStreamLiveSdk(contentId);
             } else {
@@ -359,7 +358,7 @@
 
         playerInstance.on('cast', function (yo) {
             console.warn("cast !");
-            console.log('CASTTT', yo);
+            console.log('cast !', yo);
         });
 
         playerInstance.on('pause', function () {
