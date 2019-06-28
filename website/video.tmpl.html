@@ -91,6 +91,7 @@
                     e = api[i];
                     a[e] = g(a, e);
                 }
+                console.log("### push it!");
                 w[id].agents.push(a);
 
                 return a;
@@ -124,7 +125,7 @@
                     <div class="container">
                         <div class="col-md-10 col-md-offset-1 text-center js-fullheight slider-text">
                             <div class="slider-text-inner">
-                                <h2>Second by Second - Video 1</h2>
+                                <h2>Second by Second &ndash; Video 1</h2>
                                 <p><a href="#video1" class="btn btn-primary btn-lg">Jump to Video</a></p>
                             </div>
                         </div>
@@ -134,7 +135,7 @@
                     <div class="container">
                         <div class="col-md-10 col-md-offset-1 text-center js-fullheight slider-text">
                             <div class="slider-text-inner">
-                                <h2>Second by Second - Video 2</h2>
+                                <h2>Second by Second &ndash; Video 2</h2>
                                 <p><a href="#video2" class="btn btn-primary btn-lg">Jump to Video</a></p>
                             </div>
                         </div>
@@ -144,7 +145,7 @@
                     <div class="container">
                         <div class="col-md-10 col-md-offset-1 text-center js-fullheight slider-text">
                             <div class="slider-text-inner">
-                                <h2>Second by Second - Video 3</h2>
+                                <h2>Second by Second &ndash; Video 3</h2>
                                 <p><a href="#video3" class="btn btn-primary btn-lg">Jump to Video</a></p>
                             </div>
                         </div>
@@ -286,6 +287,10 @@
                 <p><a href="#" class="btn btn-primary btn-outline with-arrow btn-sm">Enjoy S2S Video Measurement<i class="icon-arrow-right"></i></a></p>
             </div>
             <div class="col-md-6 col-md-push-1 col-sm-12 col-sm-push-0 col-xs-12 col-xs-push-0">
+                <!--
+                <h3>And here a little more advertising:</h3>
+                <iframe src="https://de.wikipedia.org" width="100%" height="400"></iframe>
+                -->
             </div>
         </div>
     </footer>
@@ -421,9 +426,15 @@
 
     $(document).ready(function () {
         $(window).load(function () {
-            videoPlayerInit('player', 'video1', 'videos/testvideo.mp4', false, true, "2018-10-05T14:48:00+06:00", 0);
-            videoPlayerInit('player2', 'video2', 'videos/gfk_brand_video.mp4', false, true, "", 0);
-            videoPlayerInit('player3', 'video3', 'videos/understanding_mobile_consumer.mp4', false, false, "", 0);
+            var autoplay = 0;
+            var m = location.search.match(/(\?|&)autoplay=([^&]*)(&|$)/);
+            if (m) {
+                autoplay = parseInt(m[2]);
+                console.log("Autoplay: " + autoplay);
+            }
+            videoPlayerInit("player", "video1", "videos/testvideo.mp4", autoplay == 1, true, "2018-10-05T14:48:00+06:00", 0);
+            videoPlayerInit("player2", "video2", "videos/gfk_brand_video.mp4", autoplay == 2, true, "", 0);
+            videoPlayerInit("player3", "video3", "videos/understanding_mobile_consumer.mp4", autoplay == 3, false, "", 0);
         });
     });
 </script>

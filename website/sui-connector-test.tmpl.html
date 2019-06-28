@@ -25,13 +25,17 @@
             keys.sort();
             for (var k = 0; k < keys.length; k++) {
                 var key = keys[k];
+                var value = cookies[key];
+                if (key === "sui") {
+                    value = JSON.stringify(JSON.parse(value), null, 4);
+                }
                 var tr = document.createElement("tr");
                 var td1 = document.createElement("td");
                 td1.className = "key";
                 td1.appendChild(document.createTextNode(key));
                 var td2 = document.createElement("td");
                 td2.className = "value";
-                td2.appendChild(document.createTextNode(cookies[key]));
+                td2.appendChild(document.createTextNode(value));
                 var tr = document.createElement("tr");
                 tr.appendChild(td1);
                 tr.appendChild(td2);
