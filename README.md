@@ -1,52 +1,47 @@
-#Second by Second, Typescript 2 Version
+# Second by Second, Typescript 2 Version
 
-## Usage
+## Configuring
 
-**Build config first:**
+The different *.html files reference all elements of the frontend stack.
+The URL these are referenced with can be configured using:
+```shell
+> ENV=<environment> gulp setenv
+(or on windows)
+> set ENV=<environment>
+> gulp setenv
+```
+where \<environment> is one of `local|development|preproduction|prodution`.
+This will replace the URL prefix of all references with:
 
-php build.php [environment] <deploy>
+| Environment   | URL-Prefix                             |
+|---------------|----------------------------------------|
+| local         | 'localhost:9080/dist'                  |
+| development   | 's2s.dev/website/dist'                 |
+| preproduction | 'demo-config-preproduction.sensic.net' |
+| production    | 'demo-config.sensic.net'               |
 
-``environment "dev" creates config for local development using python http server``
+For example for the production environment, this projects pages will then reference:
 
-[environment] is a branch name in DAM/dam-config git repository on GfK stash and will be cloned after executing build.php
+- https://demo-config.sensic.net/tp
+- https://demo-config.sensic.net/tag-im.js
+- demo-config.sensic.net/s2s-web.js
+- demo-config.sensic.net/sui-connector.js
+- demo-config.sensic.net/s2s-web.js
 
-##Development
+## Running locally
 
-Install all NPM & Composer dependencies first
-	
-	php composer.phar install
-	npm install
-	 
-Before starting development you need to create a config file (S2sSdkConf.ts) in path Collector with:
+Simply host the website/ directory with a webserver, for example:
 
-	php build.php dev
+```shell
+> npm i -g http-server
+> http-server -p 8081 website/
+```
 
-Now you can use gulp Task "develop", which creates a s2s-web-dev.js file in "dist" path. The DemoWebsite loads and uxecutes this file. Note that the "develop" gulp-task creates a SDK with console.log/warn/info and is not minimized for better debugging. Execution of buil.php with different input parameter than "dev" is using "project" gulp-task, which removes console.log and comments entries and is also minimized and GZIP compressed.
+and visit http://localhost:8081/index.html
 
-Start a Python-WebServer for development in your favorite terminal.
-Each incomming request will be printed out to the terminal.
+## Deployment
 
-	TestServer/server_intact.py 
-	
-It creates a small HTTP-Server on Port 8881, the WebDir is "website" path that includes a DemoWebsite with three VideoPlayers and loads the SDK. All requests are sending to this HTTP-Server unless you are build the SDK with other config. Before the HTTP-Server is started some files will be copied to the target path, note that this files will be overwritten in target path by every Server start.
-
-***If POST requests are pending restart the HTTP-Server!***
-
-##Project build process
-
-Optional parameter ``deploy`` is deploying the SDK to AWS infrastructure
-
-Example:
-
-	php build.php s2s-demo-preproduction deploy
-
-###Note!
-
-Run UnitTests before deploying
-
-**Execute UnitTests**
-
-	mpn test
+Have a look at `S3upload.php` .
 
 ###Requirements
 - php7+
