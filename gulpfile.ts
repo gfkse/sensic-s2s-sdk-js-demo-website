@@ -1,4 +1,4 @@
-import { dest, src } from "gulp";
+import { dest, watch as gulpwatch, src } from "gulp";
 import replace from "gulp-replace";
 import rename from "gulp-rename";
 import clean from "gulp-clean";
@@ -7,7 +7,7 @@ const ENVIRONMENTS = {
     production: 'demo-config.sensic.net',
     preproduction: 'demo-config-preproduction.sensic.net',
     development: 's2s.dev/website/dist',
-    local: 'localhost:9080/dist',
+    local: 'localhost:8080',
 }
 
 export function clean() {
@@ -21,4 +21,8 @@ export function setenv() {
         .pipe(replace('##ENVDOMAIN##', envUrl))
         .pipe(rename(path => path.basename = path.basename.replace(".tmpl", "")))
         .pipe(dest("website/"));
+}
+
+export function watch() {
+    gulpwatch("./website/*.tmpl.html", setenv);
 }
