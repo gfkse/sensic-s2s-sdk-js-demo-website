@@ -70,15 +70,18 @@
         }
 
         window.onload = function () {
-            document.getElementById("date").innerHTML = new Date().toLocaleString();
+            document.getElementById("date").innerText = new Date().toLocaleString();
             var ts0 = new Date().getTime();
-            gfkConnector.init(function(userId) {
+            gfkConnector.init(function(suiId) {
                 var ts1 = new Date().getTime();
-                document.getElementById("userid").innerHTML = userId;
-                document.getElementById("duration").innerHTML = (ts1 - ts0) + "ms";
-                showCookies();
-                showLS();
-                document.getElementById("additional").style.opacity = "1";
+                document.getElementById("userid").innerText = suiId;
+                document.getElementById("duration").innerText = (ts1 - ts0) + "ms";
+                gfkConnector.init(function(suiObj) {
+                    document.getElementById("suiobj").innerText = JSON.stringify(suiObj, null, 4);
+                    showCookies();
+                    showLS();
+                    document.getElementById("additional").style.opacity = "1";
+                }, true);
             });
         }
     </script>
@@ -114,7 +117,8 @@
     <table>
         <tr><td class="key">Date</td><td class="value"><span id="date">...</span></td></tr>
         <tr><td class="key">Domain</td><td class="value">##ENVDOMAIN##</td></tr>
-        <tr><td class="key">User ID</td><td class="value"><span id="userid">Loading...</span></td></tr>
+        <tr><td class="key">Callback 1 &#x2192; SUI ID</td><td class="value"><span id="userid">Loading...</span></td></tr>
+        <tr><td class="key">Callback 2 &#x2192; SUI object</td><td class="value"><span id="suiobj">Loading...</span></td></tr>
         <tr><td class="key">Loading time</td><td class="value"><span id="duration">...</span></td></tr>
     </table>
 
