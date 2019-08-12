@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Calling TP with fixed SUI</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+        table {
+            border-collapse: collapse;
+            width: calc(100% - 16px);
+            table-layout: fixed;
+            margin: 8px;
+        }
+
+        td {
+            border: 1px solid gray;
+            padding: 2px 5px;
+            white-space: pre;
+            vertical-align: top;
+        }
+
+        td.key {
+            width: 200px;
+        }
+    </style>
+    <script>
+        function onload() {
+            var suiid = "AAAABBBBCCCC123456789012345678901234567890DDDDEEEEFFFFFF";
+            var suiObj = {id: suiid};
+            var tpUrl = "https://##ENVDOMAIN##/tp?ty=IM&m=campaign_demosite&c=demosite&cp_cp1=1553256932919&tp-type=html";
+            tpUrl += "&sui=" + encodeURIComponent(JSON.stringify(suiObj));
+            document.getElementById("suiid").innerText = suiid;
+            document.getElementById("suiobj").innerText = JSON.stringify(suiObj);
+            document.getElementById("tpurl").innerText = tpUrl;
+            var mainHeight = document.getElementById("main").offsetHeight;
+            mainHeight += 16;
+
+            var ifrm = document.createElement("iframe");
+            ifrm.setAttribute("src", tpUrl);
+            ifrm.style.width = "100%";
+            ifrm.style.height = "calc(100vh - " + mainHeight + "px)";
+            ifrm.style.border = "none";
+            document.body.appendChild(ifrm);
+        }
+    </script>
+</head>
+<body onload="onload()">
+    <div id="main">
+        <table>
+            <tr><td class="key">SUI ID (fixed)</td><td id="suiid"></td></tr>
+            <tr><td class="key">SUI object</td><td id="suiobj"></td></tr>
+            <tr><td class="key">URL</td><td id="tpurl"></td></tr>
+        </table>
+    </div>
+    <!--
+    <iframe id="" src="https://##ENVDOMAIN##/tp?ty=IM&m=campaign_demosite&c=demosite&cp_cp1=1553256932919&tp-type=html" width="100%" height="100%">
+    </iframe>
+    -->
+</body>
+</html>
