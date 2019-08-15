@@ -43,6 +43,7 @@ $files = [
     $pathS3.'/campaign-js.html',
     $pathS3.'/content.html',
     $pathS3.'/video.html',
+    $pathS3.'/html5video.html',
     $pathS3.'/sui-connector-test.html'
 ];
 
