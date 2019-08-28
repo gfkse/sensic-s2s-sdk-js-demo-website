@@ -123,17 +123,19 @@
 </video>
 
 <script>
+    var video = document.getElementById("v1");
     var agent = gfkS2s.getAgent(getVideoPosition, "v1");
 
-    var video = document.getElementById("v1");
     video.addEventListener('play', (event) => {
         console.log("### play!");
-        agent.playStreamOnDemand("ei1", "ei2", {screen: "1", volume: "1"}, {playerid: "v1", cliptype: "Sendung"});
+        agent.playStreamOnDemand(video.id, video.currentSrc, {screen: "1", volume: "1"}, {playerid: video.id, cliptype: "Video"});
     });
+
     video.addEventListener('pause', (event) => {
         console.log("### pause!");
         agent.stop();
     });
+
     video.addEventListener('ended', (event) => {
         console.log("### ended!");
         agent.stop();
