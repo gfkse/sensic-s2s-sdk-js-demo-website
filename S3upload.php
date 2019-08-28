@@ -40,6 +40,7 @@ $files = [
     $pathS3.'/campaign-img.html',
     $pathS3.'/campaign-img-debug.html',
     $pathS3.'/campaign-img-fixed-sui.html',
+    $pathS3.'/campaign-img-ai-param.html',
     $pathS3.'/campaign-js.html',
     $pathS3.'/content.html',
     $pathS3.'/video.html',
