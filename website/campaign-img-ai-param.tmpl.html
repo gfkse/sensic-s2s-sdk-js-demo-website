@@ -30,6 +30,12 @@
     <script>
         function onload() {
             var ai = "MyAdvertisingId-4711";
+            try {
+                var aiParam = new URL(location.href).searchParams.get('ai');
+                if (aiParam) {
+                    ai = aiParam;
+                }
+            } catch (ex) {}
             var tpUrl = "https://##ENVDOMAIN##/tp?ty=IM&m=campaign_demosite&c=demosite&cp_cp1=1553256932919&tp-type=html";
             tpUrl += "&ai=" + encodeURIComponent(ai);
             document.getElementById("ai").innerText = ai;
