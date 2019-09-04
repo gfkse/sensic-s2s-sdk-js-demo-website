@@ -77,6 +77,7 @@
                 return s;
             }());
             w[id].getAgent = function (cb, pId) {
+                console.log("### gfkS2s.getAgent()");
                 var a = {
                     a: new w.s(c, pId || "", cb || function () {
                         return 0;
@@ -97,6 +98,7 @@
             };
 
             var lJS = function (eId, url) {
+                console.log("### Loading S2S Web...");
                 var tag = d.createElement(s);
                 var el = d.getElementsByTagName(s)[0];
                 tag.id = eId;
@@ -106,8 +108,21 @@
                 el.parentNode.insertBefore(tag, el);
             };
 
-            if (c.hasOwnProperty(v)) {lJS(id + v, c[v]);}
-            lJS(id, c.url);
+            var delayParam = new URL(location.href).searchParams.get('delay');
+            var delay = delayParam ? parseInt(delayParam) : 0;
+            if (delay) {
+                w.setTimeout(function () {
+                    if (c.hasOwnProperty(v)) {
+                        lJS(id + v, c[v]);
+                    }
+                    lJS(id, c.url);
+                }, delay);
+            } else {
+                if (c.hasOwnProperty(v)) {
+                    lJS(id + v, c[v]);
+                }
+                lJS(id, c.url);
+            }
         })(window, document, gfkS2sConf, 'script', 'gfkS2s', 'visUrl');
     </script>
 </head>

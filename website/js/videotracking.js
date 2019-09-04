@@ -105,10 +105,9 @@ var videoPlayerCustom = function (videoFile) {
 
 $(document).ready(function () {
     $(window).load(function () {
-        var autoplay = 0;
-        var m = location.search.match(/(\?|&)autoplay=([^&]*)(&|$)/);
-        if (m) {
-            autoplay = parseInt(m[2]);
+        var autoplayParam = new URL(location.href).searchParams.get('autoplay');
+        var autoplay = autoplayParam ? parseInt(autoplayParam) : 0;
+        if (autoplay) {
             console.log("Autoplay: " + autoplay);
         }
         videoPlayerInit("player", "video1", "videos/testvideo.mp4", autoplay == 1, true, "2018-10-05T14:48:00+06:00", 0);
