@@ -39,7 +39,7 @@ var videoPlayerInit = function (playerId, contentId, videoFile, autoPlay, live, 
     }
 
     playerInstance.on('play', function () {
-        console.warn("play !");
+        console.log("%c play ", "background: #a50; color: #fff");
         if (live) {
             playStreamLiveSdk(contentId);
         } else {
@@ -48,45 +48,44 @@ var videoPlayerInit = function (playerId, contentId, videoFile, autoPlay, live, 
     });
 
     playerInstance.on('cast', function (yo) {
-        console.warn("cast !");
-        console.log('cast !', yo);
+        console.log("%c cast ", "background: #a50; color: #fff", "", yo);
     });
 
     playerInstance.on('pause', function () {
-        console.warn("pause !");
+        console.log("%c pause ", "background: #a50; color: #fff");
         agent.stop();
     });
 
     playerInstance.on('idle', function () {
-        console.warn("idle !");
+        console.log("%c idle ", "background: #a50; color: #fff");
         agent.stop();
     });
 
     playerInstance.on('complete', function () {
-        console.warn("complete !");
+        console.log("%c complete ", "background: #a50; color: #fff");
         agent.stop();
     });
 
     playerInstance.on('seek', function () {
-        console.warn("Seek !");
+        console.log("%c seek ", "background: #a50; color: #fff");
         if (playerInstance.getState() === "playing") {
             agent.stop();
         }
     });
 
     playerInstance.on('volume', function () {
-        console.warn("volume !");
+        console.log("%c volume ", "background: #a50; color: #fff");
         var volume = playerInstance.getMute() === true ? 0 : playerInstance.getVolume();
         agent.volume(volume.toString());
     });
 
     playerInstance.on('fullscreen', function () {
-        console.warn("fullscreen !");
+        console.log("%c fullscreen ", "background: #a50; color: #fff");
         agent.screen("fullscreen=" + playerInstance.getFullscreen());
     });
 
     playerInstance.on('mute', function () {
-        console.warn("mute !");
+        console.log("%c mute ", "background: #a50; color: #fff");
         var volume = playerInstance.getMute() === true ? 0 : playerInstance.getVolume();
         agent.volume(volume.toString());
     });
