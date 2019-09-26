@@ -24,5 +24,5 @@ export function setenv() {
 }
 
 export function watch() {
-    gulpwatch("./website/*.tmpl.html", setenv);
+    gulpwatch(["./website/*.tmpl.html", "./website/js/**"], setenv);
 }
