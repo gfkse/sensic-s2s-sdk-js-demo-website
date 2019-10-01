@@ -78,8 +78,8 @@
             gfkConnector.init(function(suiId) {
                 var ts2 = new Date().getTime();
                 document.getElementById("userid").innerText = suiId;
-                document.getElementById("duration1").innerText = (ts1 - ts0) + "ms";
-                document.getElementById("duration2").innerText = (ts2 - ts1) + "ms";
+                document.getElementById("duration1").innerHTML = (ts1 - ts0) + "&thinsp;ms";
+                document.getElementById("duration2").innerHTML = (ts2 - ts1) + "&thinsp;ms";
                 gfkConnector.init(function(suiObj) {
                     document.getElementById("suiobj").innerText = JSON.stringify(suiObj, null, 4);
                     showCookies();
@@ -113,6 +113,9 @@
             opacity: 0;
             transition: opacity 2s;
         }
+        .footnote {
+            white-space: nowrap;
+        }
     </style>
 </head>
 <body>
@@ -126,7 +129,8 @@
         <tr><td class="key">Loading time&sup1;</td><td class="value"><span id="duration1">...</span></td></tr>
         <tr><td class="key">Execution time&sup2;</td><td class="value"><span id="duration2">...</span></td></tr>
     </table>
-    <div>&sup1;: Time from starting of loading sui-connector.js up to calling gfkConnector.init(). &nbsp; &sup2;: Time from calling gfkConnector.init() until callback is called.</div>
+    <div>&sup1;: Time from starting of loading sui-connector.js up to calling gfkConnector.init().</div>
+    <div>&sup2;: Time from calling gfkConnector.init() until callback is called.</div>
 
     <div id="additional">
         <h4>Cookies</h4>

@@ -22,6 +22,11 @@
             width: 100%;
             max-height: calc(100vh - 20px);
         }
+
+        #position {
+            margin-left: 32px;
+            color: white;
+        }
     </style>
 
     <script src="js/jquery.min.js"></script>
@@ -116,7 +121,7 @@
 </head>
 <body>
 
-<div class="header">S2S HTML5 Video Demo</div>
+<div class="header">S2S HTML5 Video Demo <span id="position"></span></div>
 
 <video id="v1" controls preload="metadata">
     <source src="videos/big_buck_bunny.mp4" type="video/mp4">
@@ -125,25 +130,46 @@
 <script>
     var video = document.getElementById("v1");
     var agent = gfkS2s.getAgent(getVideoPosition, "v1");
+    var positionElement = document.getElementById("position");
+    var currentPosition = 0;
 
     video.addEventListener('play', (event) => {
-        console.log("### play!");
-        agent.playStreamOnDemand(video.id, video.currentSrc, {screen: "1", volume: "1"}, {playerid: video.id, cliptype: "Video"});
+        currentPosition = getVideoPosition();
+        positionElement.innerText = currentPosition;
+        console.log("### play! " + currentPosition);
+        agent.playStreamOnDemand(video.id, video.currentSrc, {screen: "1", volume: "1", position: currentPosition}, {playerid: video.id, cliptype: "Video"});
     });
 
     video.addEventListener('pause', (event) => {
-        console.log("### pause!");
-        agent.stop();
+        var vp = getVideoPosition();
+        if (vp > currentPosition && vp < currentPosition + 100) {
+            currentPosition = vp;
+            positionElement.innerText = currentPosition;
+        }
+        console.log("### pause!" + currentPosition);
+        agent.stop(currentPosition);
     });
 
     video.addEventListener('ended', (event) => {
-        console.log("### ended!");
-        agent.stop();
+        var vp = getVideoPosition();
+        if (vp > currentPosition && vp < currentPosition + 100) {
+            currentPosition = vp;
+            positionElement.innerText = currentPosition;
+        }
+        console.log("### ended!" + currentPosition);
+        agent.stop(currentPosition);
     });
 
     function getVideoPosition() {
         return Math.floor(video.currentTime * 1000);
     }
+
+    function interval() {
+        currentPosition = getVideoPosition();
+        positionElement.innerText = currentPosition;
+    }
+
+    setInterval(interval, 100);
 </script>
 
 </body>
