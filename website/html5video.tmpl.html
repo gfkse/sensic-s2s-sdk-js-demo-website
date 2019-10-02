@@ -137,7 +137,7 @@
         currentPosition = getVideoPosition();
         positionElement.innerText = currentPosition;
         console.log("### play! " + currentPosition);
-        agent.playStreamOnDemand(video.id, video.currentSrc, {screen: "1", volume: "1", position: currentPosition}, {playerid: video.id, cliptype: "Video"});
+        agent.playStreamOnDemand(video.id, video.currentSrc, currentPosition, {screen: "1", volume: "1"}, {playerid: video.id, cliptype: "Video"});
     });
 
     video.addEventListener('pause', (event) => {
