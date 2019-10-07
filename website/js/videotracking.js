@@ -102,6 +102,35 @@ var videoPlayerCustom = function (videoFile) {
     videoPlayerInit(playerId, contentId, videoFile, false, live, contentStart, videoOffset);
 };
 
+function customPositionPlayerInit(playerId, contentId, videoFile, toggleButton, customPositionInput) {
+    var playerInstance = jwplayer(playerId);
+    var agent = gfkS2s.getAgent(() => 0, playerId);
+    playerInstance.setup({
+        file: videoFile,
+        autostart: false,
+        mute: true,
+        cast: {}
+    });
+
+    function getPositionFromInput() {
+        return parseInt(document.querySelector(customPositionInput).value);
+    }
+
+    playerInstance.on('play', function () {
+        var item = playerInstance.getPlaylistItem();
+        var volume = playerInstance.getMute() === true ? 0 : playerInstance.getVolume();
+        var options = {
+            screen: 'Fullscreen=' + playerInstance.getFullscreen().toString(),
+            volume: volume.toString(),
+            position: getPositionFromInput(),
+        };
+        agent.playStreamOnDemand(contentId, item.file, options, {playerid: playerId, cliptype: "Sendung"});
+    });
+    playerInstance.on('pause', function () {
+        agent.stop(getPositionFromInput());
+    });
+}
+
 $(document).ready(function () {
     $(window).load(function () {
         var autoplayParam = new URL(location.href).searchParams.get('autoplay');
@@ -112,5 +141,6 @@ $(document).ready(function () {
         videoPlayerInit("player", "video1", "videos/testvideo.mp4", autoplay == 1, true, "2018-10-05T14:48:00+06:00", 0);
         videoPlayerInit("player2", "video2", "videos/gfk_brand_video.mp4", autoplay == 2, true, "", 0);
         videoPlayerInit("player3", "video3", "videos/understanding_mobile_consumer.mp4", autoplay == 3, false, "", 0);
+        customPositionPlayerInit("player5", "video5", "videos/testvideo.mp4", "#video5-togglestart", "#video5position");
     });
 });
