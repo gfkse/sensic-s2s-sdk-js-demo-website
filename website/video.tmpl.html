@@ -49,9 +49,12 @@
     <script src="https://cdn.jwplayer.com/libraries/7R9ukT8j.js"></script>
 
     <script>
+        // Allow overwriting the used sdk with url param sdkUrl
+        const urlParams = new URLSearchParams(window.location.search);
+        const url = urlParams.get("sdkUrl") || "//##ENVDOMAIN##/s2s-web.js";
         var gfkS2sConf = {
             media: "s2sdemomediaid_ssa_web",
-            url: "//##ENVDOMAIN##/s2s-web.js",
+            url,
             visUrl: "https://s407.mxcdn.net/bb-mx/serve/mtrcs_943913.js",
             type: "WEB",
             logLevel: "debug"
