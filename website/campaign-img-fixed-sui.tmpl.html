@@ -31,7 +31,9 @@
         function onload() {
             var suiid = "AAAABBBBCCCC123456789012345678901234567890DDDDEEEEFFFFFF";
             var suiObj = {id: suiid};
-            var tpUrl = "https://##ENVDOMAIN##/tp?ty=IM&m=campaign_demosite&c=demosite&cp_cp1=1553256932919&tp-type=html";
+            // Allow overwriting the used tp with url param pixelUrl
+            const urlParams = new URLSearchParams(window.location.search);
+            let tpUrl = (urlParams.get("pixelUrl") || "https://##ENVDOMAIN##/tp") + "?ty=IM&m=campaign_demosite&c=demosite&cp_cp1=1553256932919&tp-type=html";
             tpUrl += "&sui=" + encodeURIComponent(JSON.stringify(suiObj));
             document.getElementById("suiid").innerText = suiid;
             document.getElementById("suiobj").innerText = JSON.stringify(suiObj);

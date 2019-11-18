@@ -97,7 +97,14 @@
 </div>
 
 <!-- GET pixel -->
-<img src="https://##ENVDOMAIN##/tp?ty=IM&m=campaign_demosite&c=demosite&cp_cp1=1553256932919" />
+<script>
+    // Allow overwriting the used tp with url param pixelUrl
+    const urlParams = new URLSearchParams(window.location.search);
+    const pixelUrl = (urlParams.get("pixelUrl") || "https://##ENVDOMAIN##/tp") + "?ty=IM&m=campaign_demosite&c=demosite&cp_cp1=1553256932919";
+    const pixelTag = document.createElement("img");
+    pixelTag.src = pixelUrl;
+    document.body.appendChild(pixelTag);
+</script>
 
 </body>
 </html>

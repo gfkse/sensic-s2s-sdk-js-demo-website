@@ -29,14 +29,11 @@
     </style>
     <script>
         function onload() {
-            var ai = "MyAdvertisingId-4711";
-            try {
-                var aiParam = new URL(location.href).searchParams.get('ai');
-                if (aiParam) {
-                    ai = aiParam;
-                }
-            } catch (ex) {}
-            var tpUrl = "https://##ENVDOMAIN##/tp?ty=IM&m=campaign_demosite&c=demosite&cp_cp1=1553256932919&tp-type=html";
+            // Allow overwriting the used tp with url param pixelUrl
+            const urlParams = new URLSearchParams(window.location.search);
+            const pixelUrl = (urlParams.get("pixelUrl") || "https://##ENVDOMAIN##/tp") + "?ty=IM&m=campaign_demosite&c=demosite&cp_cp1=1553256932919&tp-type=html";
+            var tpUrl = pixelUrl + "?ty=IM&m=campaign_demosite&c=demosite&cp_cp1=1553256932919&tp-type=html";
+            const ai = urlParams.get("ai") || "MyAdvertisingId-4711";
             tpUrl += "&ai=" + encodeURIComponent(ai);
             document.getElementById("ai").innerText = ai;
             var tpUrlElem = document.createElement("a");

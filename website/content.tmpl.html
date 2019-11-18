@@ -40,9 +40,13 @@
     <script src="js/respond.min.js"></script>
     <![endif]-->
     <script>
+        // Allow overwriting the used sdk with url param sdkUrl
+        const urlParams = new URLSearchParams(window.location.search);
+        const url = urlParams.get("sdkUrl") || "//##ENVDOMAIN##/s2s-web.js";
+
         var gfkS2sConf = {
             media: "s2sdemomediaid_sst_web",
-            url: "//##ENVDOMAIN##/s2s-web.js",
+            url,
             type: "WEB"
         };
         (function (w, d, c, s, id, v) {
