@@ -39,6 +39,24 @@ Simply host the website/ directory with a webserver, for example:
 
 and visit http://localhost:8081/index.html
 
+### Testing alternate deployments of sensic components
+
+The website allows using different files for s2s-web.js, sui-connector.js etc.  
+For this each page takes an optional query parameter that can point to a different file:
+
+| page | parameter | example |
+|-----------------------------|--------------|-----------------------------------------------------------------------------------|
+| campaign-img-ai-param.html | pixelUrl | campaign-img-ai-param.html?pixelUrl=http://sg-config.sensic.net/tp |
+| campaign-img-debug.html | pixelUrl | campaign-img-debug.html?pixelUrl=http://sg-config.sensic.net/tp |
+| campaign-img-fixed-sui.html | pixelUrl | campaign-img-fixed-sui.html?pixelUrl=http://sg-config.sensic.net/tp |
+| campaign-img.html | pixelUrl | campaign-img.html?pixelUrl=http://sg-config.sensic.net/tp |
+| campaign-js.html | tagUrl | campaign-js.html?tagUrl=http://sg-config.sensic.net/tag-im.js |
+| content.html | sdkUrl | content.html?sdkUrl=http://sg-config.sensic.net/s2s-web.js |
+| html5video.html | sdkUrl | html5video.html?sdkUrl=http://sg-config.sensic.net/s2s-web.js |
+| video.html | sdkUrl | video.html?sdkUrl=http://sg-config.sensic.net/s2s-web.js |
+| sui-connector-test.html | connectorUrl | sui-connector-test.html?connectorUrl=http://sg-config.sensic.net/sui-connector.js |
+
+
 ## Deployment
 
 Have a look at `S3upload.php` .
