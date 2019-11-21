@@ -32,9 +32,26 @@
             var suiid = "AAAABBBBCCCC123456789012345678901234567890DDDDEEEEFFFFFF";
             var suiObj = {id: suiid};
             // Allow overwriting the used tp with url param pixelUrl
-            const urlParams = new URLSearchParams(window.location.search);
-            let tpUrl = (urlParams.get("pixelUrl") || "https://##ENVDOMAIN##/tp") + "?ty=IM&m=campaign_demosite&c=demosite&cp_cp1=1553256932919&tp-type=html";
-            tpUrl += "&sui=" + encodeURIComponent(JSON.stringify(suiObj));
+            var urlParams = new URLSearchParams(window.location.search);
+            var tpUrl = urlParams.get("pixelUrl") || "https://##ENVDOMAIN##/tp";
+            if (!/[?&]ty=/.test(tpUrl)) {
+                tpUrl += (tpUrl.indexOf("?") === -1 ? "?" : "&") + "ty=IM";
+            }
+            if (!/[?&]m=/.test(tpUrl)) {
+                tpUrl += "&m=campaign_demosite";
+            }
+            if (!/[?&]c=/.test(tpUrl)) {
+                tpUrl += "&c=demosite";
+            }
+            if (!/[?&]cp_cp1=/.test(tpUrl)) {
+                tpUrl += "&cp_cp1=1553256932919";
+            }
+            if (!/[?&]tp-type=/.test(tpUrl)) {
+                tpUrl += "&tp-type=html";
+            }
+            if (!/[?&]sui=/.test(tpUrl)) {
+                tpUrl += "&sui=" + encodeURIComponent(JSON.stringify(suiObj));
+            }
             document.getElementById("suiid").innerText = suiid;
             document.getElementById("suiobj").innerText = JSON.stringify(suiObj);
             document.getElementById("tpurl").innerText = tpUrl;

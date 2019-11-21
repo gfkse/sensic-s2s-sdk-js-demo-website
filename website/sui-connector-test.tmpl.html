@@ -8,9 +8,9 @@
     </script>
     <script>
         // Allow overwriting the used connector with url param connectorUrl
-        const urlParams = new URLSearchParams(window.location.search);
-        const connectorUrl = urlParams.get("connectorUrl") || "//##ENVDOMAIN##/sui-connector.js";
-        const suiConnectorTag = document.createElement("script");
+        var urlParams = new URLSearchParams(window.location.search);
+        var connectorUrl = urlParams.get("connectorUrl") || "//##ENVDOMAIN##/sui-connector.js";
+        var suiConnectorTag = document.createElement("script");
         suiConnectorTag.src = connectorUrl;
         document.head.insertBefore(suiConnectorTag, document.getElementsByTagName("script")[0]);
 

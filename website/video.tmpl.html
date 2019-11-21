@@ -50,8 +50,8 @@
 
     <script>
         // Allow overwriting the used sdk with url param sdkUrl
-        const urlParams = new URLSearchParams(window.location.search);
-        const url = urlParams.get("sdkUrl") || "//##ENVDOMAIN##/s2s-web.js";
+        var urlParams = new URLSearchParams(window.location.search);
+        var url = urlParams.get("sdkUrl") || "//##ENVDOMAIN##/s2s-web.js";
         var gfkS2sConf = {
             media: "s2sdemomediaid_ssa_web",
             url,
