@@ -30,18 +30,20 @@
     </style>
 
     <script src="js/jquery.min.js"></script>
+
+    <script src="js/URLSearchParameters-polyfill.js"></script>
     <script>
         // Allow overwriting the used sdk with url param sdkUrl
-        const urlParams = new URLSearchParams(window.location.search);
-        const url = urlParams.get("sdkUrl") || "//##ENVDOMAIN##/s2s-web.js";
-        const optin = urlParams.get("optin");
+        var urlParams = new URLSearchParams(window.location.search);
+        var optin = urlParams.get("optin");
+        var url = urlParams.get("sdkUrl") || "//##ENVDOMAIN##/s2s-web.js";
 
         var gfkS2sConf = {
             media: "s2s-html5-demo",
             url,
             type: "WEB",
             logLevel: "debug",
-            optin
+            optin: optin
         };
         (function (w, d, c, s, id, v) {
             if (d.getElementById(id)) {

@@ -46,14 +46,30 @@
             overflow: hidden;
         }
     </style>
+    <script src="js/URLSearchParameters-polyfill.js"></script>
 </head>
 <body>
     <script>
         // Allow overwriting the used tp with url param pixelUrl
-        const urlParams = new URLSearchParams(window.location.search);
-        const pixelUrl = (urlParams.get("pixelUrl") || "https://##ENVDOMAIN##/tp") + "?ty=IM&m=campaign_demosite&c=demosite&cp_cp1=1553256932919&tp-type=html";
-        const pixelFrame = document.createElement("iframe");
-        pixelFrame.src = pixelUrl;
+        var urlParams = new URLSearchParams(window.location.search);
+        var tpUrl = urlParams.get("pixelUrl") || "https://##ENVDOMAIN##/tp";
+        if (!/[?&]ty=/.test(tpUrl)) {
+            tpUrl += (tpUrl.indexOf("?") === -1 ? "?" : "&") + "ty=IM";
+        }
+        if (!/[?&]m=/.test(tpUrl)) {
+            tpUrl += "&m=campaign_demosite";
+        }
+        if (!/[?&]c=/.test(tpUrl)) {
+            tpUrl += "&c=demosite";
+        }
+        if (!/[?&]cp_cp1=/.test(tpUrl)) {
+            tpUrl += "&cp_cp1=1553256932919";
+        }
+        if (!/[?&]tp-type=/.test(tpUrl)) {
+            tpUrl += "&tp-type=html";
+        }
+        var pixelFrame = document.createElement("iframe");
+        pixelFrame.src = tpUrl;
         pixelFrame.width = "100%";
         pixelFrame.height = "100%";
         document.body.appendChild(pixelFrame);
