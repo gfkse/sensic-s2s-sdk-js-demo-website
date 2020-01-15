@@ -11,6 +11,13 @@
         // Allow overwriting the used connector with url param connectorUrl
         var urlParams = new URLSearchParams(window.location.search);
         var connectorUrl = urlParams.get("connectorUrl") || "//##ENVDOMAIN##/sui-connector.js";
+
+        // Optin via GET param
+        var optinGetValue = urlParams.get("optin");
+        var gfkConnectorConf = {
+            optin: (typeof optinGetValue === "string") ? (optinGetValue === "true") : undefined
+        }
+
         var suiConnectorTag = document.createElement("script");
         suiConnectorTag.src = connectorUrl;
         document.head.insertBefore(suiConnectorTag, document.getElementsByTagName("script")[0]);
@@ -79,8 +86,30 @@
             }
         }
 
+        function getIndexOfOptinValue() {
+            return (gfkConnectorConf.optin === true) ? 2 : (gfkConnectorConf.optin === false) ? 1 : 0;
+        }
+
+        function optinClickHdl(value) {
+            var url = location.href;
+            var re = /([?&])optin=[^&]*([&]?)/;
+            var m = url.match(re);
+            if (m) {
+                url = url.replace(m[0], (m[1] === "?" && m[2] === "&") ? "?" : (m[1] === "&" && m[2] === "&") ? "&" : "");
+            }
+            if (value !== "undefined") {
+                url += (url.indexOf("?") < 0 ? "?" : "&") + "optin=" + value;
+            }
+            location.href = url;
+        }
+
         window.onload = function () {
             document.getElementById("date").innerText = new Date().toLocaleString();
+            var r = document.getElementsByClassName("radio");
+            r[getIndexOfOptinValue()].checked = true;
+            r[0].onclick = r[1].onclick = r[2].onclick = function() { optinClickHdl(this.value); }
+            document.getElementById("suiconnver").innerText = gfkConnector.VERSION;
+            document.getElementById("suiapiver").innerText = gfkConnector.suiApi.VERSION;
             var ts1 = new Date().getTime();
             gfkConnector.init(function(suiId) {
                 var ts2 = new Date().getTime();
@@ -93,7 +122,7 @@
                     showLS();
                     document.getElementById("additional").style.opacity = "1";
                 }, true);
-            });
+            }, false);
         }
     </script>
     <style>
@@ -123,6 +152,29 @@
         .footnote {
             white-space: nowrap;
         }
+
+        fieldset {
+            overflow: hidden;
+        }
+
+        .radiobox {
+            float: left;
+            clear: none;
+        }
+
+        input[type=radio],
+        input.radio {
+            float: left;
+            clear: none;
+            margin: 5px 5px 0 0;
+        }
+
+        label {
+            float: left;
+            clear: none;
+            display: block;
+            padding: 2px 1em 0 0;
+        }
     </style>
 </head>
 <body>
@@ -131,8 +183,11 @@
     <table>
         <tr><td class="key">Date</td><td class="value"><span id="date">...</span></td></tr>
         <tr><td class="key">Domain</td><td class="value">##ENVDOMAIN##</td></tr>
+        <tr><td class="key">Opt-in</td><td class="value"><div class="radiobox"><input type="radio" name="optin" class="radio" value="undefined" /><label for="undefined">undefined</label><input type="radio" name="optin" class="radio" value="false" /><label for="false">false</label><input type="radio" name="optin" class="radio" value="true" /><label for="true">true</label></div></td></tr>
         <tr><td class="key">Callback 1 &#x2192; SUI ID</td><td class="value"><span id="userid">Loading...</span></td></tr>
         <tr><td class="key">Callback 2 &#x2192; SUI object</td><td class="value"><span id="suiobj">Loading...</span></td></tr>
+        <tr><td class="key">SUI Connector version</td><td class="value"><span id="suiconnver">...</span></td></tr>
+        <tr><td class="key">SUI API version</td><td class="value"><span id="suiapiver">...</span></td></tr>
         <tr><td class="key">Loading time&sup1;</td><td class="value"><span id="duration1">...</span></td></tr>
         <tr><td class="key">Execution time&sup2;</td><td class="value"><span id="duration2">...</span></td></tr>
     </table>
