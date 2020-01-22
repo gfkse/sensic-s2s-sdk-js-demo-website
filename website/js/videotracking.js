@@ -1,4 +1,4 @@
-window.players = window.players || [];
+window.players = window.players || {};
 
 /**
  * 
