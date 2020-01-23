@@ -136,23 +136,23 @@ function customPositionPlayerInit(contentId, playerId, containerElement, videoSo
 var videoSources = {
     video1: {
         title: "Test video",
-        progressive: "videos/testvideo.mp4",
+        progressive: "https://demo-config.sensic.net/s2s/videos/testvideo.mp4",
     },
     video2: {
         title: "Gfk brand video",
-        progressive: "videos/gfk_brand_video.mp4",
+        progressive: "https://demo-config.sensic.net/s2s/videos/gfk_brand_video.mp4",
     },
     video3: {
         title: "Understanding mobile consumer",
-        progressive: "videos/understanding_mobile_consumer.mp4",
+        progressive: "https://demo-config.sensic.net/s2s/videos/understanding_mobile_consumer.mp4",
     },
     video4: {
         title: "Life without market research",
-        progressive: 'videos/life_without_market_research.mp4',
+        progressive: 'https://demo-config.sensic.net/s2s/videos/life_without_market_research.mp4',
     },
     video5: {
         title: "Test video",
-        progressive: "videos/testvideo.mp4",
+        progressive: "https://demo-config.sensic.net/s2s/videos/testvideo.mp4",
     }
 };
 
