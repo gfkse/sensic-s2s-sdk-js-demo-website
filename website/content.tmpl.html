@@ -44,8 +44,10 @@
         // Allow overwriting the used sdk with url param sdkUrl
         var urlParams = new URLSearchParams(window.location.search);
         var url = urlParams.get("sdkUrl") || "//##ENVDOMAIN##/s2s-web.js";
+        var optin = urlParams.get("optin");
 
         var gfkS2sConf = {
+            optin: (typeof optin === "string") ? (optin === "true") : undefined,
             media: "s2sdemomediaid_sst_web",
             url,
             type: "WEB"

@@ -102,6 +102,7 @@
     // Allow overwriting the used tp with url param pixelUrl
     var urlParams = new URLSearchParams(window.location.search);
     var tpUrl = urlParams.get("pixelUrl") || "https://##ENVDOMAIN##/tp";
+    var optin = urlParams.get("optin");
     if (!/[?&]ty=/.test(tpUrl)) {
         tpUrl += (tpUrl.indexOf("?") === -1 ? "?" : "&") + "ty=IM";
     }
@@ -113,6 +114,9 @@
     }
     if (!/[?&]cp_cp1=/.test(tpUrl)) {
         tpUrl += "&cp_cp1=1553256932919";
+    }
+    if (optin && !/[?&]optin=/.test(tpUrl)) {
+        tpUrl += "&optin=" + optin;
     }
     var pixelTag = document.createElement("img");
     pixelTag.src = tpUrl;
