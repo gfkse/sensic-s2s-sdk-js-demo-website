@@ -1,21 +1,21 @@
 window.players = window.players || {};
 
 /**
- * 
+ *
  * @param {*} contentId The id of the video passed to agent.playStream
  * @param {*} contentId An ID (name) for the player
- * @param {*} containerElement HTML element where the video will be rendered 
+ * @param {*} containerElement HTML element where the video will be rendered
  * @param {*} videoSource Source configuration of the video file
- * @param {*} autoPlay 
- * @param {*} live 
- * @param {*} absoluteOffset 
- * @param {*} videoOffset 
+ * @param {*} autoPlay
+ * @param {*} live
+ * @param {*} absoluteOffset
+ * @param {*} videoOffset
  */
 var videoPlayerInit = function (contentId, playerId, containerElement, videoSource, autoPlay, live, absoluteOffset, videoOffset) {
     // setting up player and agent
     var playerConfig = {
         key: "7c60f446-6054-446d-b829-816af360d7f3",
-        cast: { enable: true },
+        cast: { enable: contentId === "video1" },
         playback: {
             autoplay: autoPlay,
             muted: true
@@ -45,42 +45,54 @@ var videoPlayerInit = function (contentId, playerId, containerElement, videoSour
     }
 
     playerInstance.on(bitmovin.player.PlayerEvent.Play, function() {
-        console.log("%c play ", "background: #a50; color: #fff");
+        console.log("%c play %c (%s) ", "background: #a50; color: #fff", "", contentId);
         if (live) {
             playStreamLiveSdk(contentId);
         } else {
             playStreamOnDemandSdk(contentId);
         }
     });
-
-    playerInstance.on(bitmovin.player.PlayerEvent.CastStarted, function (castStartedEvent) {
-        console.log("%c cast ", "background: #a50; color: #fff", "", castStartedEvent);
-    });
     playerInstance.on(bitmovin.player.PlayerEvent.Paused, function () {
-        console.log("%c pause ", "background: #a50; color: #fff");
+        console.log("%c paused %c #%s", "background: #a50; color: #fff", "", contentId);
         agent.stop();
     });
     playerInstance.on(bitmovin.player.PlayerEvent.PlaybackFinished, function () {
-        console.log("%c complete ", "background: #a50; color: #fff");
+        console.log("%c playback finished %c #%s", "background: #a50; color: #fff", "", contentId);
         agent.stop();
     });
+
     playerInstance.on(bitmovin.player.PlayerEvent.ViewModeChanged, function (viewModeChangedEvent) {
-        console.log("%c fullscreen ", "background: #a50; color: #fff");
+        console.log("%c view mode changed %c #%s", "background: #a50; color: #fff", "", contentId);
         if (viewModeChangedEvent.from === bitmovin.player.ViewMode.Fullscreen || viewModeChangedEvent.to === bitmovin.player.ViewMode.Fullscreen) {
             agent.screen(getScreen());
         }
     });
+
     playerInstance.on(bitmovin.player.PlayerEvent.VolumeChanged, function () {
-        console.log("%c volume ", "background: #a50; color: #fff");
+        console.log("%c volume changed %c #%s", "background: #a50; color: #fff", "", contentId);
         agent.volume(getVolume());
     });
     playerInstance.on(bitmovin.player.PlayerEvent.Muted, function () {
-        console.log("%c mute ", "background: #a50; color: #fff");
+        console.log("%c muted %c #%s", "background: #a50; color: #fff", "", contentId);
         agent.volume(getVolume());
     });
     playerInstance.on(bitmovin.player.PlayerEvent.Unmuted, function () {
-        console.log("%c unmute ", "background: #a50; color: #fff");
+        console.log("%c unmuted %c #%s", "background: #a50; color: #fff", "", contentId);
         agent.volume(getVolume());
+    });
+
+    playerInstance.on(bitmovin.player.PlayerEvent.CastAvailable, function (castAvailableEvent) {
+        console.log("%c cast available %c #%s", "background: #a50; color: #fff", "", contentId, "", castAvailableEvent);
+    });
+    playerInstance.on(bitmovin.player.PlayerEvent.CastStart, function (castStartEvent) {
+        console.log("%c cast start %c #%s", "background: #a50; color: #fff", "", contentId, "", castStartEvent);
+    });
+    playerInstance.on(bitmovin.player.PlayerEvent.CastStarted, function (castStartedEvent) {
+        console.log("%c cast started %c #%s", "background: #a50; color: #fff", "", contentId, "", castStartedEvent);
+    });
+    playerInstance.on(bitmovin.player.PlayerEvent.CastStopped, function (castStoppedEvent) {
+        console.log("%c cast stopped %c #%s", "background: #a50; color: #fff", "", contentId, "", castStoppedEvent);
+        agent.stop();
     });
 
     // Start loading and playing the video
@@ -97,7 +109,7 @@ var videoPlayerInit = function (contentId, playerId, containerElement, videoSour
 function customPositionPlayerInit(contentId, playerId, containerElement, videoSource, customPositionInput) {
     var playerConfig = {
         key: "7c60f446-6054-446d-b829-816af360d7f3",
-        cast: { enable: true },
+        cast: { enable: false },
         playback: {
             muted: true
         }
