@@ -1,0 +1,75 @@
+#videoCustom {
+    background-color: lightgray;
+    border: 1px solid black;
+}
+
+.optionsbox {
+    overflow: hidden;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 14px;
+}
+
+.optionsbox.fixed {
+    position: fixed;
+    z-index: 100;
+    margin: 10px;
+    border: 1px solid #00000080;
+    background-color: #ffffff80;
+    color: black;
+}
+
+.optionsbox.inline {
+    margin: 0 20px 0 20px;
+}
+
+.optionsbox table {
+    border-collapse: collapse;
+    width: 100%;
+}
+.optionsbox td {
+    border: none;
+    padding: 2px 5px;
+    white-space: pre;
+    vertical-align: middle;
+}
+.optionsbox td.key {
+    width: 50px;
+}
+
+.optionsbox table {
+    border-collapse: collapse;
+    width: 100%;
+}
+.optionsbox td {
+    border: none;
+    padding: 2px 5px;
+    white-space: pre;
+    vertical-align: middle;
+}
+.optionsbox td.key {
+    width: 50px;
+}
+
+.radiobox {
+    float: left;
+    clear: none;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 14px;
+}
+
+.radiobox input[type=radio],
+.radiobox input.radio {
+    float: left;
+    clear: none;
+    margin: 4px 5px 0 0;
+}
+
+.radiobox label {
+    float: left;
+    clear: none;
+    display: block;
+    padding: 2px 12px 2px 0;
+    line-height: normal;
+    font-weight: normal;
+    margin: 0;
+}
