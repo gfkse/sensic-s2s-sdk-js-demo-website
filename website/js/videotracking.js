@@ -45,7 +45,7 @@ var videoPlayerInit = function (contentId, playerId, containerElement, videoSour
     }
 
     playerInstance.on(bitmovin.player.PlayerEvent.Play, function() {
-        console.log("%c play %c (%s) ", "background: #a50; color: #fff", "", contentId);
+        console.log("%c play %c #%s", "background: #a50; color: #fff", "", contentId);
         if (live) {
             playStreamLiveSdk(contentId);
         } else {
@@ -116,7 +116,7 @@ function customPositionPlayerInit(contentId, playerId, containerElement, videoSo
     };
     var playerInstance = new bitmovin.player.Player(containerElement, playerConfig);
     window.players[playerId] = playerInstance;
-    var agent = gfkS2s.getAgent(function() { return 0 }, playerId);
+    var agent = gfkS2s.getAgent(function() { return 0; }, playerId);
 
     playerInstance.load(videoSource).then(
         function() {
@@ -170,13 +170,13 @@ var videoSources = {
 
 window.videoPlayerCustom = function () {
     var videoType = document.getElementById("videoType");
-    var live = videoType.options[videoType.selectedIndex].value === "live" ? true : false
+    var live = (videoType.options[videoType.selectedIndex].value === "live");
     var videoOffset = parseInt(document.getElementById("videoOffset").value);
     var contentStart = document.getElementById("contentStart").value;
     var contentId = "videoCustom";
     var playerId = "playerCustom";
     var containerElement = document.getElementById("videoCustom");
-    videoPlayerInit(contentId, playerId, containerElement, videoSources["video4"], false, live, contentStart, videoOffset);
+    videoPlayerInit(contentId, playerId, containerElement, videoSources.video4, false, live, contentStart, videoOffset);
 };
 
 $(document).ready(function () {
@@ -186,9 +186,9 @@ $(document).ready(function () {
         if (autoplay) {
             console.log("Autoplay: " + autoplay);
         }
-        videoPlayerInit("video1", "player1", document.getElementById("video1"), videoSources["video1"], autoplay == 1, true, "2018-10-05T14:48:00+06:00", 0);
-        videoPlayerInit("video2", "player2", document.getElementById("video2"), videoSources["video2"], autoplay == 2, true, "", 0);
-        videoPlayerInit("video3", "player3", document.getElementById("video3"), videoSources["video3"], autoplay == 3, false, "", 0);
-        customPositionPlayerInit("video5", "player5", document.getElementById("video5"), videoSources["video5"],  "#video5position");
+        videoPlayerInit("video1", "player1", document.getElementById("video1"), videoSources.video1, autoplay == 1, true, "2018-10-05T14:48:00+06:00", 0);
+        videoPlayerInit("video2", "player2", document.getElementById("video2"), videoSources.video2, autoplay == 2, true, "", 0);
+        videoPlayerInit("video3", "player3", document.getElementById("video3"), videoSources.video3, autoplay == 3, false, "", 0);
+        customPositionPlayerInit("video5", "player5", document.getElementById("video5"), videoSources.video5,  "#video5position");
     });
 });
