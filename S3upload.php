@@ -7,7 +7,7 @@ require_once __DIR__.'/vendor/autoload.php';
 
 use Aws\S3\S3Client;
 
-$allowedEnvs = ['preproduction', 'production'];
+$allowedEnvs = ['preproduction', 'production', 'sensic-test'];
 if ($argc < 2 || !in_array($argv[1], $allowedEnvs)) {
     echo 'Environment needed, either "production" or "preproduction"'.PHP_EOL;
     echo 'Syntax: php S3upload.php <preproduction|production>'.PHP_EOL;
@@ -24,7 +24,8 @@ $pathS3 = str_replace("\\", '/', __DIR__).'/website';
 function changeUrl(string $env, string $content) {
     $map = [
         'preproduction' => 'demo-config-preproduction.sensic.net',
-        'production' => 'demo-config.sensic.net'
+        'production' => 'demo-config.sensic.net',
+        'sensic-test' => 'demo-config-preproduction.sensic.net'
     ];
 
     return str_replace('##ENVDOMAIN##', $map[$env], $content);
@@ -45,7 +46,9 @@ $files = [
     $pathS3.'/content.html',
     $pathS3.'/video.html',
     $pathS3.'/html5video.html',
-    $pathS3.'/sui-connector-test.html'
+    $pathS3.'/youtube-video.html',
+    $pathS3.'/sui-connector-test.html',
+    $pathS3.'/touchpoint-test.html',
 ];
 
 foreach ($files as $file) {
@@ -88,14 +91,17 @@ foreach ($iterator as $fileInfo) {
         $key = str_replace($pathS3, '', $path);
     }
     $key = $projectConfig->aws->s3->target->path.$key;
-    uploadS3Object($client, $projectConfig->aws->s3->target->bucket, $key.'/'.$file, $path.'/'.$file);
+    $bucket = $projectConfig->aws->s3->target->bucket;
+    uploadS3Object($client, $bucket, $key.'/'.$file, $path.'/'.$file);
     $files++;
 }
 
 echo 'Files: '.$files.PHP_EOL;
 echo 'Executing: '.round(microtimeFloat() - $executing, 3)." seconds\n";
-$Invalidation = invalidateCloudfrontFiles($s3Credentials, $argv[1]);
-echo 'Status for invalidation Id "'.$Invalidation["Id"].'": '.$Invalidation["Status"].PHP_EOL;
+if ($argv[1] !== 'sensic-test') {
+    $Invalidation = invalidateCloudfrontFiles($s3Credentials, $argv[1]);
+    echo 'Status for invalidation Id "'.$Invalidation["Id"].'": '.$Invalidation["Status"].PHP_EOL;
+}
 
 /**
  * @param S3Client $client

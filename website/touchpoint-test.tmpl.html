@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Touchpoint Test</title>
+        <link rel="shortcut icon" href="images/favicon.png">
+        <script src="js/URLSearchParameters-polyfill.js"></script>
+        <script>
+            var publisherDomain = location.hostname;
+            var sensicDomain = "##ENVDOMAIN##";
+
+            var urlParams = new URLSearchParams(location.search);
+            var connectorUrl = "https://" + sensicDomain + "/sui-connector.js";
+            var gfkConnectorConf = {
+                suigen: false
+            }
+            var suiConnectorTag = document.createElement("script");
+            suiConnectorTag.src = connectorUrl;
+            document.head.insertBefore(suiConnectorTag, document.getElementsByTagName("script")[0]);
+
+            function removeSui(e) {
+                gfkConnector.suiApi.removeSui();
+                document.getElementById("row-sui-from-tp").style.display = "none";
+                document.getElementById("row-result").style.display = "none";
+            }
+
+            function checkAccess() {
+                var xhr = new XMLHttpRequest();
+                xhr.open("GET", tpsrc);
+                xhr.onreadystatechange = function () {
+                    if (this.readyState === this.DONE && this.status === 200) {
+                        tp.srcdoc = this.responseText;
+                        tp.src = "data:text/html;charset=utf-8," + escape(this.responseText);
+                    }
+                };
+                xhr.send();
+            }
+
+            function callTouchpoint(e) {
+                var connectorUrl = "https://" + sensicDomain + "/sui-connector.js";
+                var goUrl = "https://" + publisherDomain + "/demo/s2s/touchpoint-test.html";
+                goUrl += "?connectorUrl=" + encodeURIComponent(connectorUrl);
+                var tpsrc = "https://" + sensicDomain + "/suitp.html";
+                tpsrc += "?origin=demo";
+                var pid = document.getElementById("pid").value;
+                if (pid) {
+                    tpsrc += "&pid=" + encodeURIComponent(pid);
+                }
+                var hhid = document.getElementById("hhid").value;
+                if (hhid) {
+                    tpsrc += "&hhid=" + encodeURIComponent(hhid);
+                }
+                var uid = document.getElementById("uid").value;
+                if (uid) {
+                    tpsrc += "&uid=" + encodeURIComponent(uid);
+                }
+                var paneluserid = document.getElementById("paneluserid").value;
+                if (paneluserid) {
+                    tpsrc += "&paneluserid=" + encodeURIComponent(paneluserid);
+                }
+                var adid = document.getElementById("adid").value;
+                if (adid) {
+                    tpsrc += "&adid=" + encodeURIComponent(adid);
+                }
+                tpsrc += "&redirectparams=1";
+                tpsrc += "&redirectsui=suiid";
+                tpsrc += "&go=" + encodeURIComponent(goUrl);
+                location.href = tpsrc;
+            }
+
+            function getCookie(name) {
+                var v = document.cookie.match("(^|;) ?" + name + "=([^;]*)(;|$)");
+                return v ? decodeURIComponent(v[2]) : null;
+            }
+
+            function updateSuiElement(suiObj) {
+                document.getElementById("sui-from-connector").innerText = JSON.stringify(suiObj, null, 4);
+                document.getElementById("del-sui").disabled = (suiObj == null);
+                if (suiObj) {
+                    if (suiObj.pid) {
+                        document.getElementById("pid").value = suiObj.pid;
+                    }
+                    if (suiObj.hhid) {
+                        document.getElementById("hhid").value = suiObj.hhid;
+                    }
+                    if (suiObj.uid) {
+                        document.getElementById("uid").value = suiObj.uid;
+                    }
+                    if (suiObj.paneluserid) {
+                        document.getElementById("paneluserid").value = suiObj.paneluserid;
+                    }
+                    if (suiObj.ai) {
+                        document.getElementById("adid").value = suiObj.ai;
+                    }
+                }
+                var suiIdFromTouchpoint = urlParams.get("suiid");
+                if (suiIdFromTouchpoint) {
+                    document.getElementById("sui-id-from-touchpoint").innerHTML = suiIdFromTouchpoint;
+                    if (suiObj && (suiObj.id === suiIdFromTouchpoint)) {
+                        document.getElementById("result").innerHTML = "<span style='color: green;'>&#x2714;</span> OK";
+                    } else {
+                        document.getElementById("result").innerHTML = "<span style='color: red;'>&#x274C;</span> SUIs are different!";
+                    }
+                }
+                document.getElementById("row-sui-from-tp").style.display = suiIdFromTouchpoint ? "table-row" : "none";
+                document.getElementById("row-result").style.display = suiIdFromTouchpoint ? "table-row" : "none";
+            }
+
+            window.onload = function () {
+                document.getElementById("pdomain").innerText = publisherDomain;
+                document.getElementById("sdomain").innerText = sensicDomain;
+
+                gfkConnector.init(updateSuiElement, true);
+                document.getElementById("del-sui").addEventListener("click", removeSui, false);
+                document.getElementById("call-tp").addEventListener("click", callTouchpoint, false);
+                window.addEventListener("message", function (e) {
+                    if (e.data.sensic && e.data.sensic.hasOwnProperty("sui")) {
+                        this.suiObj = e.data.sensic.sui && JSON.parse(e.data.sensic.sui);
+                        updateSuiElement(this.suiObj);
+                    }
+                });
+            }
+        </script>
+        <style>
+            body {
+                background-color: #303030;
+                color: white;
+                font-family: Arial, Helvetica, sans-serif;
+                font-size: 15px;
+                line-height: 17px;
+            }
+            h1 {
+                margin: 0px 0px 10px 0px;
+                font-size: 24px;
+            }
+            .code {
+                padding: 2px 4px;
+                white-space: pre;
+                border: 1px solid #505050;
+                background-color: #202020;
+            }
+            .buttons {
+                padding: 10px 0 20px 0;
+            }
+            button {
+                box-shadow: inset 0px 1px 0px 0px #54a3f7;
+                background: linear-gradient(to bottom, #007dc1 5%, #0061a7 100%);
+                background-color: #007dc1;
+                border-radius: 3px;
+                border: 1px solid #124d77;
+                display: inline-block;
+                cursor: pointer;
+                color: #ffffff;
+                font-family: Arial, Helvetica, sans-serif;
+                font-size: 15px;
+                padding: 6px 24px 6px 24px;
+                text-decoration: none;
+                text-shadow: 0px 1px 0px #154682;
+            }
+            button:hover {
+                background: linear-gradient(to bottom, #0061a7 5%, #007dc1 100%);
+                background-color: #0061a7;
+            }
+            button:active {
+                position: relative;
+                top: 1px;
+            }
+            button:disabled {
+                opacity: 33%;
+            }
+            table {
+                width: 100%;
+            }
+            td {
+                vertical-align: top;
+            }
+            td.name {
+                width: 150px;
+                padding: 6px 10px 2px 0;
+                text-align: right;
+                color: #a0a0a0;
+            }
+            td.value {
+                color: white;
+                padding: 2px 0 2px 0;
+            }
+            div.input {
+                padding: 0 10px 0 0;
+            }
+            input {
+                color: white;
+                background: #202020;
+                border: 1px solid #505050;
+                width: 100%;
+                padding: 5px 4px 2px 4px;
+                font-family: monospace;
+                font-size: 15px;
+                line-height: 17px;
+            }
+            div.result {
+                padding: 4px;
+            }
+            #row-sui-from-tp,
+            #row-result {
+                display: none;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Touchpoint Test</h1>
+        <table>
+            <tr><td class="name">Publisher domain:</td><td class="value"><div class="code"><code id="pdomain">...</code></div></td></tr>
+            <tr><td class="name">SENSIC domain:</td><td class="value"><div class="code"><code id="sdomain">...</code></div></td></tr>
+            <tr><td class="name">Panel ID:</td><td class="value"><div class="input"><input type="text" id="pid"></div></td></tr>
+            <tr><td class="name">Household ID:</td><td class="value"><div class="input"><input type="text" id="hhid"></div></td></tr>
+            <tr><td class="name">User ID:</td><td class="value"><div class="input"><input type="text" id="uid"></div></td></tr>
+            <tr><td class="name">Panel User ID:</td><td class="value"><div class="input"><input type="text" id="paneluserid"></div></td></tr>
+            <tr><td class="name">Advertising ID:</td><td class="value"><div class="input"><input type="text" id="adid"></div></td></tr>
+            <tr><td class="name">SUI from Connector:</td><td class="value"><div class="code"><code id="sui-from-connector">...</code></div></td></tr>
+            <tr id="row-sui-from-tp"><td class="name">SUI ID from Touchpint:</td><td class="value"><div class="code"><code id="sui-id-from-touchpoint">...</code></div></td></tr>
+            <tr id="row-result"><td class="name">Result:</td><td class="value"><div class="result"><span id="result">...</span></div></td></tr>
+        </table>
+        <div class="buttons">
+            <button type="button" id="del-sui">Delete SUI</button>
+            <button type="button" id="call-tp">Call Touchpoint</button>
+        </div>
+    </body>
+</html>

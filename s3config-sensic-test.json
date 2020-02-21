@@ -1,0 +1,11 @@
+{
+    "aws": {
+        "s3": {
+            "target": {
+                "bucket": "sensic-test",
+                "region": "eu-central-1",
+                "path": "demo/s2s"
+            }
+        }
+    }
+}
