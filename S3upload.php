@@ -7,7 +7,7 @@ require_once __DIR__.'/vendor/autoload.php';
 
 use Aws\S3\S3Client;
 
-$allowedEnvs = ['preproduction', 'production', 'sensic-test'];
+$allowedEnvs = ['preproduction', 'production'];
 if ($argc < 2 || !in_array($argv[1], $allowedEnvs)) {
     echo 'Environment needed, either "production" or "preproduction"'.PHP_EOL;
     echo 'Syntax: php S3upload.php <preproduction|production>'.PHP_EOL;
@@ -22,13 +22,17 @@ $projectConfig = json_decode(file_get_contents(__DIR__.'/s3config-'.$argv[1].'.j
 $pathS3 = str_replace("\\", '/', __DIR__).'/website';
 
 function changeUrl(string $env, string $content) {
-    $map = [
+    $envDomainMap = [
         'preproduction' => 'demo-config-preproduction.sensic.net',
-        'production' => 'demo-config.sensic.net',
-        'sensic-test' => 'demo-config-preproduction.sensic.net'
+        'production'    => 'demo-config.sensic.net'
     ];
-
-    return str_replace('##ENVDOMAIN##', $map[$env], $content);
+    $envS3UrlMap = [
+        'preproduction' => 'https://s3.eu-central-1.amazonaws.com/config-preproduction.sensic.net/demo/s2s',
+        'production'    => 'https://s3.eu-central-1.amazonaws.com/config.sensic.net/demo/s2s'
+    ];
+    $result = str_replace('##ENVDOMAIN##', $envDomainMap[$env], $content);
+    $result = str_replace('##ENVS3URL##', $envS3UrlMap[$env], $result);
+    return $result;
 }
 
 function copyFile(string $src, string $dest, string $env) {
@@ -38,6 +42,7 @@ function copyFile(string $src, string $dest, string $env) {
 }
 
 $files = [
+    $pathS3.'/index.html',
     $pathS3.'/campaign-img.html',
     $pathS3.'/campaign-img-debug.html',
     $pathS3.'/campaign-img-fixed-sui.html',
@@ -98,10 +103,8 @@ foreach ($iterator as $fileInfo) {
 
 echo 'Files: '.$files.PHP_EOL;
 echo 'Executing: '.round(microtimeFloat() - $executing, 3)." seconds\n";
-if ($argv[1] !== 'sensic-test') {
-    $Invalidation = invalidateCloudfrontFiles($s3Credentials, $argv[1]);
-    echo 'Status for invalidation Id "'.$Invalidation["Id"].'": '.$Invalidation["Status"].PHP_EOL;
-}
+$Invalidation = invalidateCloudfrontFiles($s3Credentials, $argv[1]);
+echo 'Status for invalidation Id "'.$Invalidation["Id"].'": '.$Invalidation["Status"].PHP_EOL;
 
 /**
  * @param S3Client $client

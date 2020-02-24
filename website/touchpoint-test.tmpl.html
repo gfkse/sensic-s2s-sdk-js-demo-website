@@ -6,7 +6,8 @@
         <link rel="shortcut icon" href="images/favicon.png">
         <script src="js/URLSearchParameters-polyfill.js"></script>
         <script>
-            var publisherDomain = location.hostname;
+            var publisherUrl = "##ENVS3URL##";
+            var publisherDomain = publisherUrl.match(/https:\/\/([^\/]*)\/.*/)
             var sensicDomain = "##ENVDOMAIN##";
 
             var urlParams = new URLSearchParams(location.search);
@@ -38,7 +39,7 @@
 
             function callTouchpoint(e) {
                 var connectorUrl = "https://" + sensicDomain + "/sui-connector.js";
-                var goUrl = "https://" + publisherDomain + "/demo/s2s/touchpoint-test.html";
+                var goUrl = publisherUrl + "/touchpoint-test.html";
                 goUrl += "?connectorUrl=" + encodeURIComponent(connectorUrl);
                 var tpsrc = "https://" + sensicDomain + "/suitp.html";
                 tpsrc += "?origin=demo";
