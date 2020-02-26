@@ -1,5 +1,10 @@
 # Second by Second, Typescript 2 Version
 
+1. [Configuring](#configuring)
+2. [Running](#running-locally)
+3. [Deployment](#deployment)
+4. [Requirements](#requirements)
+
 ## Configuring
 
 The different *.html files reference all elements of the frontend stack.
@@ -59,11 +64,20 @@ For this each page takes an optional query parameter that can point to a differe
 
 ## Deployment
 
-Have a look at `S3upload.php` .
+You need to create a file *aws_credentials.php* at the top level of the repository with the following content:
+```
+<?php
+return [
+    'key' => 'AWS_KEY_ID',
+    'secret' => 'AWS_SECRET_KEY',
+];
+```
 
-###Requirements
+Then run `php S3upload.php <preproduction|production>`.
+
+## Requirements
 - php7+
 - npm5+
 - php composer
 - typescript 2+
-- python 3 (WebServer Only)
+- Some webserver (python http.server or node http-server)
