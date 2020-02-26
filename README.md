@@ -2,7 +2,7 @@
 
 1. [Configuring](#configuring)
 2. [Running](#running-locally)
-3. [Deployment](#deploymen)
+3. [Deployment](#deployment)
 4. [Requirements](#requirements)
 
 ## Configuring
