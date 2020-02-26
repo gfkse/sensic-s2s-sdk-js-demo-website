@@ -141,23 +141,6 @@
             lJS(id, c.url);
         })(window, document, gfkS2sConf, 'script', 'gfkS2s', 'visUrl');
 
-        function impressionClicked() {
-            var cp1 = document.getElementById("cp1").value;
-            var cp2 = document.getElementById("cp2").value;
-            var cp = {};
-            if (cp1 !== '') {
-                cp.cp1 = cp1;
-            }
-            if (cp2 !== '') {
-                cp.cp2 = cp2;
-            }
-            if (cp.hasOwnProperty("cp1") || cp.hasOwnProperty("cp2")) {
-                gfkS2s.getAgent().impression('DemoContent', cp);
-            } else {
-                gfkS2s.getAgent().impression('DemoContent', {});
-            }
-        }
-
         gfkS2s.getAgent().impression("DemoContent", {"cp1": [
             {"i": "54534", "n": "iPhone", "b": "Apple", "c": "Smartphone"},
             {"i": "345", "n": "Adapter", "b": "Samsung", "c": "Electronic"}
