@@ -22,12 +22,17 @@ $projectConfig = json_decode(file_get_contents(__DIR__.'/s3config-'.$argv[1].'.j
 $pathS3 = str_replace("\\", '/', __DIR__).'/website';
 
 function changeUrl(string $env, string $content) {
-    $map = [
+    $envDomainMap = [
         'preproduction' => 'demo-config-preproduction.sensic.net',
-        'production' => 'demo-config.sensic.net'
+        'production'    => 'demo-config.sensic.net'
     ];
-
-    return str_replace('##ENVDOMAIN##', $map[$env], $content);
+    $envS3UrlMap = [
+        'preproduction' => 'https://s3.eu-central-1.amazonaws.com/config-preproduction.sensic.net/demo/s2s',
+        'production'    => 'https://s3.eu-central-1.amazonaws.com/config.sensic.net/demo/s2s'
+    ];
+    $result = str_replace('##ENVDOMAIN##', $envDomainMap[$env], $content);
+    $result = str_replace('##ENVS3URL##', $envS3UrlMap[$env], $result);
+    return $result;
 }
 
 function copyFile(string $src, string $dest, string $env) {
@@ -37,6 +42,7 @@ function copyFile(string $src, string $dest, string $env) {
 }
 
 $files = [
+    $pathS3.'/index.html',
     $pathS3.'/campaign-img.html',
     $pathS3.'/campaign-img-debug.html',
     $pathS3.'/campaign-img-fixed-sui.html',
@@ -45,7 +51,9 @@ $files = [
     $pathS3.'/content.html',
     $pathS3.'/video.html',
     $pathS3.'/html5video.html',
-    $pathS3.'/sui-connector-test.html'
+    $pathS3.'/youtube-video.html',
+    $pathS3.'/sui-connector-test.html',
+    $pathS3.'/touchpoint-test.html',
 ];
 
 foreach ($files as $file) {
@@ -88,7 +96,8 @@ foreach ($iterator as $fileInfo) {
         $key = str_replace($pathS3, '', $path);
     }
     $key = $projectConfig->aws->s3->target->path.$key;
-    uploadS3Object($client, $projectConfig->aws->s3->target->bucket, $key.'/'.$file, $path.'/'.$file);
+    $bucket = $projectConfig->aws->s3->target->bucket;
+    uploadS3Object($client, $bucket, $key.'/'.$file, $path.'/'.$file);
     $files++;
 }
 

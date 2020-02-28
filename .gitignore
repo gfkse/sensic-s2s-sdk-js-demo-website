@@ -11,6 +11,7 @@ deploy
 /website/dist/
 .idea
 .vscode/
+website/index.html
 website/video.html
 website/sui-connector-test.html
 website/content.html
@@ -20,3 +21,5 @@ website/campaign-img-debug.html
 website/campaign-img-fixed-sui.html
 website/campaign-img-ai-param.html
 website/html5video.html
+website/youtube-video.html
+website/touchpoint-test.html
