@@ -4,10 +4,11 @@
         <meta charset="utf-8">
         <title>Touchpoint Test</title>
         <link rel="shortcut icon" href="images/favicon.png">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css">
         <script src="js/URLSearchParameters-polyfill.js"></script>
         <script>
             var publisherUrl = "##ENVS3URL##";
-            var publisherDomain = publisherUrl.match(/https:\/\/([^\/]*)\/.*/)
+            var publisherDomain = publisherUrl.match(/https:\/\/([^\/]*)\/.*/)[1];
             var sensicDomain = "##ENVDOMAIN##";
 
             var urlParams = new URLSearchParams(location.search);
@@ -20,9 +21,13 @@
             document.head.insertBefore(suiConnectorTag, document.getElementsByTagName("script")[0]);
 
             function removeSui(e) {
+                document.getElementById("page").style.display = "none";
+                window.addEventListener("message", function (e) {
+                    if (e.data.sensic && e.data.sensic.hasOwnProperty("sui")) {
+                        location.href = publisherUrl + "/touchpoint-test.html";
+                    }
+                });
                 gfkConnector.suiApi.removeSui();
-                document.getElementById("row-sui-from-tp").style.display = "none";
-                document.getElementById("row-result").style.display = "none";
             }
 
             function checkAccess() {
@@ -106,6 +111,13 @@
                 document.getElementById("row-result").style.display = suiIdFromTouchpoint ? "table-row" : "none";
             }
 
+            function showInfo() {
+                var infoElem = document.getElementById("info");
+                var becomesVisible = (infoElem.style.display !== "block");
+                infoElem.style.display = (becomesVisible ? "block" : "none");
+                document.getElementById("show-info").innerHTML = "<i class='fas fa-angle-double-" + (becomesVisible ? "up" : "down") + "'></i>&nbsp;&nbsp;Info";
+            }
+
             window.onload = function () {
                 document.getElementById("pdomain").innerText = publisherDomain;
                 document.getElementById("sdomain").innerText = sensicDomain;
@@ -113,6 +125,7 @@
                 gfkConnector.init(updateSuiElement, true);
                 document.getElementById("del-sui").addEventListener("click", removeSui, false);
                 document.getElementById("call-tp").addEventListener("click", callTouchpoint, false);
+                document.getElementById("show-info").addEventListener("click", showInfo, false);
                 window.addEventListener("message", function (e) {
                     if (e.data.sensic && e.data.sensic.hasOwnProperty("sui")) {
                         this.suiObj = e.data.sensic.sui && JSON.parse(e.data.sensic.sui);
@@ -129,8 +142,12 @@
                 font-size: 15px;
                 line-height: 17px;
             }
+            .container {
+                max-width: 1024px;
+                margin: 0 auto;
+            }
             h1 {
-                margin: 0px 0px 10px 0px;
+                margin: 25px 0px 20px 0px;
                 font-size: 24px;
             }
             .code {
@@ -140,6 +157,7 @@
                 background-color: #202020;
             }
             .buttons {
+                display: flex;
                 padding: 10px 0 20px 0;
             }
             button {
@@ -153,9 +171,12 @@
                 color: #ffffff;
                 font-family: Arial, Helvetica, sans-serif;
                 font-size: 15px;
+                line-height: 17px;
                 padding: 6px 24px 6px 24px;
                 text-decoration: none;
                 text-shadow: 0px 1px 0px #154682;
+                flex-grow: 0;
+                margin: 2px 4px 2px 4px;
             }
             button:hover {
                 background: linear-gradient(to bottom, #0061a7 5%, #007dc1 100%);
@@ -192,7 +213,7 @@
                 background: #202020;
                 border: 1px solid #505050;
                 width: 100%;
-                padding: 5px 4px 2px 4px;
+                padding: 3px 4px 3px 4px;
                 font-family: monospace;
                 font-size: 15px;
                 line-height: 17px;
@@ -204,25 +225,70 @@
             #row-result {
                 display: none;
             }
+            /*
+            #show-info {
+                box-shadow: inset 0px 1px 0px 0px #959595;
+                background: linear-gradient(to bottom, #5F5F5F 5%, #4C4C4C 100%);
+                background-color: #5F5F5F;
+                border: 1px solid #404040;
+            }
+            */
+            #info {
+                display: none;
+                margin: 5px;
+                border: 1px solid #505050;
+                background: #2c2c2c;
+                padding: 0 15px;
+                color: #d0d0d0;
+            }
+            .flexspace {
+                flex-grow: 1;
+            }
+            .space-below {
+                margin-bottom: 10px;
+            }
         </style>
     </head>
     <body>
-        <h1>Touchpoint Test</h1>
-        <table>
-            <tr><td class="name">Publisher domain:</td><td class="value"><div class="code"><code id="pdomain">...</code></div></td></tr>
-            <tr><td class="name">SENSIC domain:</td><td class="value"><div class="code"><code id="sdomain">...</code></div></td></tr>
-            <tr><td class="name">Panel ID:</td><td class="value"><div class="input"><input type="text" id="pid"></div></td></tr>
-            <tr><td class="name">Household ID:</td><td class="value"><div class="input"><input type="text" id="hhid"></div></td></tr>
-            <tr><td class="name">User ID:</td><td class="value"><div class="input"><input type="text" id="uid"></div></td></tr>
-            <tr><td class="name">Panel User ID:</td><td class="value"><div class="input"><input type="text" id="paneluserid"></div></td></tr>
-            <tr><td class="name">Advertising ID:</td><td class="value"><div class="input"><input type="text" id="adid"></div></td></tr>
-            <tr><td class="name">SUI from Connector:</td><td class="value"><div class="code"><code id="sui-from-connector">...</code></div></td></tr>
-            <tr id="row-sui-from-tp"><td class="name">SUI ID from Touchpint:</td><td class="value"><div class="code"><code id="sui-id-from-touchpoint">...</code></div></td></tr>
-            <tr id="row-result"><td class="name">Result:</td><td class="value"><div class="result"><span id="result">...</span></div></td></tr>
-        </table>
-        <div class="buttons">
-            <button type="button" id="del-sui">Delete SUI</button>
-            <button type="button" id="call-tp">Call Touchpoint</button>
+        <div class="container">
+            <h1>Touchpoint Test</h1>
+            <div id="page">
+                <table>
+                    <tr><td class="name">Publisher domain:</td><td class="value"><div class="code"><code id="pdomain">...</code></div></td></tr>
+                    <tr><td class="name">SENSIC domain:</td><td class="value"><div class="code space-below"><code id="sdomain">...</code></div></td></tr>
+                    <tr id="row-pid"><td class="name">Panel ID:</td><td class="value"><div class="input"><input type="text" id="pid"></div></td></tr>
+                    <tr><td class="name">Household ID:</td><td class="value"><div class="input"><input type="text" id="hhid"></div></td></tr>
+                    <tr><td class="name">User ID:</td><td class="value"><div class="input"><input type="text" id="uid"></div></td></tr>
+                    <tr><td class="name">Panel User ID:</td><td class="value"><div class="input"><input type="text" id="paneluserid"></div></td></tr>
+                    <tr id="row-adid"><td class="name">Advertising ID:</td><td class="value"><div class="input space-below"><input type="text" id="adid"></div></td></tr>
+                    <tr id="row-sui-from-tp"><td class="name">SUI ID from Touchpint:</td><td class="value"><div class="code"><code id="sui-id-from-touchpoint">...</code></div></td></tr>
+                    <tr><td class="name">SUI from Connector:</td><td class="value"><div class="code"><code id="sui-from-connector">...</code></div></td></tr>
+                    <tr id="row-result"><td class="name">Result:</td><td class="value"><div class="result"><span id="result">...</span></div></td></tr>
+                </table>
+                <div class="buttons">
+                    <button type="button" id="del-sui">Delete SUI</button>
+                    <button type="button" id="call-tp">Call Touchpoint</button>
+                    <div class="flexspace"></div>
+                    <button type="button" id="show-info"><i class="fas fa-angle-double-down"></i>&nbsp;&nbsp;Info</button>
+                </div>
+                <div id="info">
+                    <p>This page allows to call the SUI Touchpoint (suitp.html) with parameters as specified in the fields above
+                        (pid, hhid, uid, paneluserid, adid).</p>
+                    <p>To have a publisher-like context, and make it possible to check cross-domain behavior,
+                        this page should not be called with its sensic.net URL, but with amazonaws.com URL.</p>
+                    <p>The field "SUI from Connector" displays the current SUI, which is fetched using the SUI Connector.
+                        This, in any case, happens without calling SUI Generator (what the SUI Connector normally could do),
+                        so the current SUI could be null.</p>
+                    <p>When you click on <b>Call Touchpoint</b>, the touchpoint page is called with parameters as specified above.
+                        Additionally a "go" parameter is passed, which instructs the touchpoint to redirect to this page again.</p>
+                    <p>After the touchpoint was called, we have a touchpoint-generated SUI ID, which is displayed here.</p>
+                    <p>With the redirection, this page calls the SUI Connector again.
+                        Therefore it can be tested whether the touchpoint-generated SUI, set in the sensic.net domain,
+                        is really active in the current domain.</p>
+                    <p>For example, if sensic.net third-party cookies are blocked (which in Firefox is the case by default),
+                        the SUI from the SUI Connector will always be null, although the touchpoint sets a SUI as expected.</p>
+                </div>
+            </div>
         </div>
     </body>
 </html>
