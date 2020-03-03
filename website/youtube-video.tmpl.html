@@ -8,10 +8,16 @@
 
     <style>
         body {
-            margin: 0;
             background-color: #202020;
+            color: white;
             font-family: Arial, Helvetica, sans-serif;
             font-size: 14px;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            position: absolute;
+            margin: 0;
+            padding: 0;
         }
 
         .header {
@@ -23,8 +29,10 @@
         }
 
         #player {
-            width: 100%;
+            width: calc(100% - 2px);
             height: calc(100vw * 9 / 16);
+            max-height: calc(100vh - 32px);
+            border: 1px solid #606060;
         }
 
         #icon {
@@ -163,7 +171,7 @@
         <div id="position"></div>
     </div>
 
-    <!-- The <iframe> (and video player) will replace this <div> tag. -->
+    <!-- The following <div> tag will be replaced by an <iframe> tag with same id and youtube.com URL. -->
     <div id="player"></div>
 
     <script>
@@ -181,6 +189,13 @@
         function onYouTubeIframeAPIReady() {
             player = new YT.Player('player', {
                 videoId: youtubeVideoId,
+                playerVars: {
+                    autoplay: 1,
+                    enablejsapi: 1,
+                    enablecastapi: 1,
+                    fs: 1,
+                    origin: "demo-config-preproduction.sensic.net/"
+                },
                 events: {
                     'onReady': onPlayerReady,
                     'onStateChange': onPlayerStateChange
