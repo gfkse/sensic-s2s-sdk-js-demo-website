@@ -2,23 +2,108 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Second by Second &ndash; Video and Content Measurement &ndash; DemoSite </title>
+    <title>Second by Second &ndash; Demos</title>
     <link rel="shortcut icon" href="images/favicon.png">
+    <script>
+        function hey(url, re, id) {
+            var xhr = new XMLHttpRequest();
+            xhr.open("GET", url);
+            xhr.onreadystatechange = function () {
+                if (this.readyState === this.DONE && this.status === 200) {
+                    var m = re.exec(this.responseText);
+                    if (m) {
+                        document.getElementById(id).innerHTML = m[1];
+                    }
+                }
+            };
+            xhr.send();
+        }
+        window.onload = function () {
+            hey("/suiapi.js", /this\.VERSION\s*=\s*"([^"]*)"/, "vmsver");
+            hey("/s2s-web.js", /this\.sdkVersion\s*=\s*"([^"]*)"/, "s2sver");
+        };
+    </script>
+    <style>
+        body {
+            background-color: #202020;
+            color: #b0b0b0;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 15px;
+            line-height: 17px;
+        }
+
+        .container {
+            max-width: 1024px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            margin: 25px 0px 20px 0px;
+            font-size: 24px;
+            color: #808080;
+        }
+
+        a {
+            color: #e0a000;
+            text-decoration: none;
+        }
+
+        a:hover {
+            color: #ffb000;
+            text-decoration: underline;
+        }
+
+        .block {
+            margin-top: 36px;
+        }
+
+        .link {
+            font-size: 18px;
+            line-height: 22px;
+            margin: 15px 0px;
+        }
+
+        .info {
+            color: #a0a0a0;
+        }
+
+        #infos {
+            margin-top: 60px;
+        }
+    </style>
 </head>
 <body>
-    <div style="text-align: center;">
-        <h2><a href="video.html">Video Measurement</a> (with autoplay: <a href="video.html?autoplay=1">#1</a> <a href="video.html?autoplay=2">#2</a> <a href="video.html?autoplay=3">#3</a>)</h2>
-        <h2><a href="video.html?delay=5000">Video Measurement with delayed SDK</a> (with autoplay: <a href="video.html?autoplay=1&delay=5000">#1</a> <a href="video.html?autoplay=2&delay=5000">#2</a> <a href="video.html?autoplay=3&delay=5000">#3</a>)</h2>
-        <h2><a href="youtube-video.html">Video Measurement &ndash; YouTube</a></h2>
-        <h2><a href="html5video.html">Video Measurement &ndash; HTML5</a></h2>
-        <h2><a href="content.html">Content Measurement</a></h2>
-        <h2><a href="campaign-js.html">Campaign &ndash; Javascript</a></h2>
-        <h2><a href="campaign-img.html">Campaign &ndash; Tracking Pixel (with forwarding / relay ID)</a></h2>
-        <h2><a href="campaign-img-debug.html">Campaign &ndash; Tracking Pixel (debug mode)</a></h2>
-        <h2><a href="campaign-img-fixed-sui.html">Campaign &ndash; Tracking Pixel with SUI as GET parameter</a></h2>
-        <h2><a href="campaign-img-ai-param.html">Campaign &ndash; Tracking Pixel with AI as GET parameter</a></h2>
-        <h2><a href="sui-connector-test.html">SUI Connector</a></h2>
-        <h2><a href="##ENVS3URL##/touchpoint-test.html">Touchpoint</a></h2>
+    <div class="container">
+        <h1>Second by Second &ndash; Demos</h1>
+
+        <div class="block">
+            <p class="link"><a href="video.html">Video Measurement</a><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&ndash; with autoplay: &nbsp;&nbsp;<a href="video.html?autoplay=1">#1</a>&nbsp;&nbsp;<a href="video.html?autoplay=2">#2</a>&nbsp;&nbsp;<a href="video.html?autoplay=3">#3</a></p>
+            <p class="link"><a href="video.html?delay=5000">Video Measurement with delayed SDK</a><br>
+                &nbsp;&nbsp;&nbsp;&ndash;&nbsp; with autoplay: &nbsp;&nbsp;<a href="video.html?autoplay=1&delay=5000">#1</a>&nbsp;&nbsp;<a href="video.html?autoplay=2&delay=5000">#2</a>&nbsp;&nbsp;<a href="video.html?autoplay=3&delay=5000">#3</a></p>
+            <p class="link"><a href="youtube-video.html">Video Measurement &ndash; YouTube</a></p>
+            <p class="link"><a href="html5video.html">Video Measurement &ndash; HTML5</a></p>
+        </div>
+
+        <div class="block">
+            <p class="link"><a href="content.html">Content Measurement</a></p>
+            <p class="link"><a href="campaign-js.html">Campaign &ndash; Javascript</a></p>
+            <p class="link"><a href="campaign-img.html">Campaign &ndash; Tracking Pixel (with forwarding / relay ID)</a></p>
+            <p class="link"><a href="campaign-img-debug.html">Campaign &ndash; Tracking Pixel (debug mode)</a></p>
+            <p class="link"><a href="campaign-img-fixed-sui.html">Campaign &ndash; Tracking Pixel with SUI as GET parameter</a></p>
+            <p class="link"><a href="campaign-img-ai-param.html">Campaign &ndash; Tracking Pixel with AI as GET parameter</a></p>
+        </div>
+
+        <div class="block">
+            <p class="link"><a href="sui-connector-test.html">SUI Connector</a></p>
+            <p class="link"><a href="##ENVS3URL##/touchpoint-test.html">Touchpoint</a></p>
+        </div>
+
+        <div class="block" id="infos">
+            <p><span class="info">Domain: ##ENVDOMAIN##</span></p>
+            <p><span class="info">VMS Version: <span id="vmsver"></span></span></p>
+            <p><span class="info">S2S Web Version: <span id="s2sver"></span></span></p>
+        </div>
     </div>
 </body>
 </html>
