@@ -20,7 +20,7 @@ This will replace the URL prefix of all references with:
 
 | Environment   | URL-Prefix                             |
 |---------------|----------------------------------------|
-| local         | 'localhost:9080/dist'                  |
+| local         | 'localhost:8080/dist'                  |
 | development   | 's2s.dev/website/dist'                 |
 | preproduction | 'demo-config-preproduction.sensic.net' |
 | production    | 'demo-config.sensic.net'               |
@@ -44,7 +44,11 @@ Simply host the website/ directory with a webserver, for example:
 
 and visit http://localhost:8081/index.html
 
-### Testing alternate deployments of sensic components
+## Running the entire frontend stack
+
+Read the guide on how to develop locally in confluence.
+
+## Testing alternate deployments of sensic components
 
 The website allows using different files for s2s-web.js, sui-connector.js etc.  
 For this each page takes an optional query parameter that can point to a different file:
