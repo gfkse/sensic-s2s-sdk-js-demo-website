@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fingerprints</title>
+    <script src="//cdn.jsdelivr.net/npm/fingerprintjs2@2.1.0/dist/fingerprint2.min.js"></script>
+    <style>
+        table, th, td {
+            border: 1px solid black;
+            border-collapse: collapse;
+        }
+        th {
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <h1>Results</h1>
+    <table id="results">
+        <tr>
+            <th>Data point</th>
+            <th>Fingerprintjs2 value</th>
+        </tr>
+    </table>
+    <script>
+        const table = document.getElementById("results");
+        setTimeout(() => {
+            Fingerprint2.get(components => {
+                components.forEach(c => {
+                    const row = table.insertRow();
+                    const datapoint = row.insertCell(0);
+                    datapoint.innerHTML = c.key;
+                    const value = row.insertCell(1);
+                    value.innerHTML = c.value;
+                });
+            });
+        }, 500);
+    </script>
+</body>
+</html>
