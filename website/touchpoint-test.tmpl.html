@@ -4,6 +4,7 @@
         <meta charset="utf-8">
         <title>Touchpoint Test</title>
         <link rel="shortcut icon" href="images/favicon.png">
+        <link rel="stylesheet" href="css/s2s-demo.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css">
         <script src="js/URLSearchParameters-polyfill.js"></script>
         <script>
@@ -42,9 +43,27 @@
                 xhr.send();
             }
 
-            function callTouchpoint(e) {
+            function callTouchpointByWindow(e) {
                 var goUrl = publisherUrl + "/touchpoint-test.html";
                 goUrl += "?connectorUrl=" + encodeURIComponent(connectorUrl);
+                var tpsrc = makeTpSrc(goUrl);
+                location.href = tpsrc;
+            }
+
+            function callTouchpointByIframe(e) {
+                var goUrl = publisherUrl + "/touchpoint-test.html";
+                goUrl += "?connectorUrl=" + encodeURIComponent(connectorUrl);
+                goUrl += "&iframe=true";
+                var tpsrc = makeTpSrc(goUrl);
+                var iframe = document.createElement("iframe");
+                iframe.setAttribute("id", "suitp-iframe");
+                iframe.style.width = "100%";
+                iframe.style.height = "600px";
+                document.body.appendChild(iframe);
+                iframe.setAttribute("src", tpsrc);
+            }
+
+            function makeTpSrc(goUrl) {
                 var tpsrc = "https://" + sensicDomain + "/suitp.html";
                 tpsrc += "?origin=demo";
                 var pid = document.getElementById("pid").value;
@@ -70,7 +89,7 @@
                 tpsrc += "&redirectparams=1";
                 tpsrc += "&redirectsui=suiid";
                 tpsrc += "&go=" + encodeURIComponent(goUrl);
-                location.href = tpsrc;
+                return tpsrc;
             }
 
             function getCookie(name) {
@@ -78,7 +97,7 @@
                 return v ? decodeURIComponent(v[2]) : null;
             }
 
-            function updateSuiElement(suiObj) {
+            function updateSuiElement(suiObj, suiIdFromTouchpoint) {
                 document.getElementById("sui-from-connector").innerText = JSON.stringify(suiObj, null, 4);
                 document.getElementById("del-sui").disabled = (suiObj == null);
                 if (suiObj) {
@@ -98,7 +117,9 @@
                         document.getElementById("adid").value = suiObj.ai;
                     }
                 }
-                var suiIdFromTouchpoint = urlParams.get("suiid");
+                if (suiIdFromTouchpoint === undefined) {
+                    suiIdFromTouchpoint = urlParams.get("suiid");
+                }
                 if (suiIdFromTouchpoint) {
                     document.getElementById("sui-id-from-touchpoint").innerHTML = suiIdFromTouchpoint;
                     if (suiObj && (suiObj.id === suiIdFromTouchpoint)) {
@@ -106,9 +127,23 @@
                     } else {
                         document.getElementById("result").innerHTML = "<span style='color: red;'>&#x274C;</span> SUIs are different!";
                     }
+                    if (urlParams.get("iframe") === "true") {
+                        window.parent.postMessage({sensic: {sui: JSON.stringify(suiObj), suiidFromTp: suiIdFromTouchpoint}}, "*");
+                    } else {
+                        var iframe = document.getElementById("suitp-iframe");
+                        if (iframe) {
+                            document.body.removeChild(iframe);
+                            delete iframe;
+                        }
+                    }
                 }
                 document.getElementById("row-sui-from-tp").style.display = suiIdFromTouchpoint ? "table-row" : "none";
                 document.getElementById("row-result").style.display = suiIdFromTouchpoint ? "table-row" : "none";
+            }
+
+            function updateSuiFromTpElement(suiIdFromTouchpoint) {
+                document.getElementById("sui-id-from-touchpoint").innerHTML = suiIdFromTouchpoint;
+                document.getElementById("row-sui-from-tp").style.display = suiIdFromTouchpoint ? "table-row" : "none";
             }
 
             function showInfo() {
@@ -124,70 +159,27 @@
 
                 gfkConnector.init(updateSuiElement, true);
                 document.getElementById("del-sui").addEventListener("click", removeSui, false);
-                document.getElementById("call-tp").addEventListener("click", callTouchpoint, false);
+                document.getElementById("call-tp").addEventListener("click", callTouchpointByWindow, false);
+                document.getElementById("call-tp-iframe").addEventListener("click", callTouchpointByIframe, false);
                 document.getElementById("show-info").addEventListener("click", showInfo, false);
                 window.addEventListener("message", function (e) {
-                    if (e.data.sensic && e.data.sensic.hasOwnProperty("sui")) {
-                        this.suiObj = e.data.sensic.sui && JSON.parse(e.data.sensic.sui);
-                        updateSuiElement(this.suiObj);
+                    if (e.data.sensic) {
+                        if (e.data.sensic.hasOwnProperty("sui")) {
+                            this.suiObj = e.data.sensic.sui && JSON.parse(e.data.sensic.sui);
+                        }
+                        updateSuiElement(this.suiObj, e.data.sensic.suiidFromTp);
                     }
                 });
             }
         </script>
         <style>
-            body {
-                background-color: #303030;
-                color: white;
-                font-family: Arial, Helvetica, sans-serif;
-                font-size: 15px;
-                line-height: 17px;
-            }
             .container {
                 max-width: 1024px;
                 margin: 0 auto;
             }
-            h1 {
-                margin: 25px 0px 20px 0px;
-                font-size: 24px;
-            }
-            .code {
-                padding: 2px 4px;
-                white-space: pre;
-                border: 1px solid #505050;
-                background-color: #202020;
-            }
             .buttons {
                 display: flex;
                 padding: 10px 0 20px 0;
-            }
-            button {
-                box-shadow: inset 0px 1px 0px 0px #54a3f7;
-                background: linear-gradient(to bottom, #007dc1 5%, #0061a7 100%);
-                background-color: #007dc1;
-                border-radius: 3px;
-                border: 1px solid #124d77;
-                display: inline-block;
-                cursor: pointer;
-                color: #ffffff;
-                font-family: Arial, Helvetica, sans-serif;
-                font-size: 15px;
-                line-height: 17px;
-                padding: 6px 24px 6px 24px;
-                text-decoration: none;
-                text-shadow: 0px 1px 0px #154682;
-                flex-grow: 0;
-                margin: 2px 4px 2px 4px;
-            }
-            button:hover {
-                background: linear-gradient(to bottom, #0061a7 5%, #007dc1 100%);
-                background-color: #0061a7;
-            }
-            button:active {
-                position: relative;
-                top: 1px;
-            }
-            button:disabled {
-                opacity: 33%;
             }
             table {
                 width: 100%;
@@ -208,16 +200,6 @@
             div.input {
                 padding: 0 10px 0 0;
             }
-            input {
-                color: white;
-                background: #202020;
-                border: 1px solid #505050;
-                width: 100%;
-                padding: 3px 4px 3px 4px;
-                font-family: monospace;
-                font-size: 15px;
-                line-height: 17px;
-            }
             div.result {
                 padding: 4px;
             }
@@ -225,14 +207,6 @@
             #row-result {
                 display: none;
             }
-            /*
-            #show-info {
-                box-shadow: inset 0px 1px 0px 0px #959595;
-                background: linear-gradient(to bottom, #5F5F5F 5%, #4C4C4C 100%);
-                background-color: #5F5F5F;
-                border: 1px solid #404040;
-            }
-            */
             #info {
                 display: none;
                 margin: 5px;
@@ -267,7 +241,8 @@
                 </table>
                 <div class="buttons">
                     <button type="button" id="del-sui">Delete SUI</button>
-                    <button type="button" id="call-tp">Call Touchpoint</button>
+                    <button type="button" id="call-tp">Call Touchpoint by <b>window</b></button>
+                    <button type="button" id="call-tp-iframe">Call Touchpoint by <b>iframe</b></button>
                     <div class="flexspace"></div>
                     <button type="button" id="show-info"><i class="fas fa-angle-double-down"></i>&nbsp;&nbsp;Info</button>
                 </div>
@@ -279,7 +254,7 @@
                     <p>The field "SUI from Connector" displays the current SUI, which is fetched using the SUI Connector.
                         This, in any case, happens without calling SUI Generator (what the SUI Connector normally could do),
                         so the current SUI could be null.</p>
-                    <p>When you click on <b>Call Touchpoint</b>, the touchpoint page is called with parameters as specified above.
+                    <p>When you click on <b>Call Touchpoint by window</b>, the touchpoint page is called with parameters as specified above.
                         Additionally a "go" parameter is passed, which instructs the touchpoint to redirect to this page again.</p>
                     <p>After the touchpoint was called, we have a touchpoint-generated SUI ID, which is displayed here.</p>
                     <p>With the redirection, this page calls the SUI Connector again.
@@ -287,6 +262,10 @@
                         is really active in the current domain.</p>
                     <p>For example, if sensic.net third-party cookies are blocked (which in Firefox is the case by default),
                         the SUI from the SUI Connector will always be null, although the touchpoint sets a SUI as expected.</p>
+                    <p>When you click on <b>Call Touchpoint by iframe</b>, the touchpoint page is called in similar way, but in an iframe,
+                        not in the top-level window. The result of that call is propagated to the top-level window by message.
+                        Usually, such an iframe would not be visible. However, here it is shown while in action, so you can see that
+                        something is happening.</p>
                 </div>
             </div>
         </div>
