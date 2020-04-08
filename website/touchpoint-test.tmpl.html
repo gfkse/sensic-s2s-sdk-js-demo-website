@@ -4,7 +4,6 @@
         <meta charset="utf-8">
         <title>Touchpoint Test</title>
         <link rel="shortcut icon" href="images/favicon.png">
-        <link rel="stylesheet" href="css/s2s-demo.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css">
         <script src="js/URLSearchParameters-polyfill.js"></script>
         <script>
@@ -173,13 +172,59 @@
             }
         </script>
         <style>
+            body {
+                background-color: #303030;
+                color: white;
+                font-family: Arial, Helvetica, sans-serif;
+                font-size: 15px;
+                line-height: 17px;
+            }
             .container {
                 max-width: 1024px;
                 margin: 0 auto;
             }
+            h1 {
+                margin: 25px 0px 20px 0px;
+                font-size: 24px;
+            }
+            .code {
+                padding: 2px 4px;
+                white-space: pre;
+                border: 1px solid #505050;
+                background-color: #202020;
+            }
             .buttons {
                 display: flex;
                 padding: 10px 0 20px 0;
+            }
+            button {
+                box-shadow: inset 0px 1px 0px 0px #54a3f7;
+                background: linear-gradient(to bottom, #007dc1 5%, #0061a7 100%);
+                background-color: #007dc1;
+                border-radius: 3px;
+                border: 1px solid #124d77;
+                display: inline-block;
+                cursor: pointer;
+                color: #ffffff;
+                font-family: Arial, Helvetica, sans-serif;
+                font-size: 15px;
+                line-height: 17px;
+                padding: 6px 24px 6px 24px;
+                text-decoration: none;
+                text-shadow: 0px 1px 0px #154682;
+                flex-grow: 0;
+                margin: 2px 4px 2px 4px;
+            }
+            button:hover {
+                background: linear-gradient(to bottom, #0061a7 5%, #007dc1 100%);
+                background-color: #0061a7;
+            }
+            button:active {
+                position: relative;
+                top: 1px;
+            }
+            button:disabled {
+                opacity: 33%;
             }
             table {
                 width: 100%;
@@ -200,6 +245,16 @@
             div.input {
                 padding: 0 10px 0 0;
             }
+            input {
+                color: white;
+                background: #202020;
+                border: 1px solid #505050;
+                width: 100%;
+                padding: 3px 4px 3px 4px;
+                font-family: monospace;
+                font-size: 15px;
+                line-height: 17px;
+            }
             div.result {
                 padding: 4px;
             }
@@ -207,6 +262,14 @@
             #row-result {
                 display: none;
             }
+            /*
+            #show-info {
+                box-shadow: inset 0px 1px 0px 0px #959595;
+                background: linear-gradient(to bottom, #5F5F5F 5%, #4C4C4C 100%);
+                background-color: #5F5F5F;
+                border: 1px solid #404040;
+            }
+            */
             #info {
                 display: none;
                 margin: 5px;
