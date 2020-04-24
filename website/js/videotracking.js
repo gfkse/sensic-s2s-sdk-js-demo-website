@@ -181,7 +181,7 @@ window.videoPlayerCustom = function () {
 
 $(document).ready(function () {
     $(window).load(function () {
-        var autoplayParam = new URL(location.href).searchParams.get('autoplay');
+        var autoplayParam = new URLSearchParams(window.location.search).get('autoplay');
         var autoplay = autoplayParam ? parseInt(autoplayParam) : 0;
         if (autoplay) {
             console.log("Autoplay: " + autoplay);
