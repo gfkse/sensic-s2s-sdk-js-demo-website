@@ -13,6 +13,10 @@
         th {
             text-align: left;
         }
+        #SystemStyles {
+            visibility: "hidden";
+            display: "none";
+        }
     </style>
 </head>
 <body>
@@ -23,10 +27,37 @@
             <th>Fingerprintjs2 value</th>
         </tr>
     </table>
+    <iframe id="SystemStyles" width="0" height="0" srcdoc='
+        <div id="ActiveBorder" style="background-color: ActiveBorder"></div>
+        <div id="ActiveCaption" style="background-color: ActiveCaption"></div>
+        <div id="Background" style="background-color: Background"></div>
+        <div id="ButtonText" style="background-color: ButtonText"></div>
+        <div id="ThreeDHighlight" style="background-color: ThreeDHighlight"></div>
+    '>
+    </iframe>
     <script>
+        function createSystemColorComponent(systemColorKey) {
+            return (done) => {
+                const { contentDocument, contentWindow } = document.getElementById("SystemStyles");
+                const div = contentDocument.getElementById(systemColorKey);
+                const color = contentWindow.getComputedStyle(div).getPropertyValue("background-color");
+                done(color);
+            }
+        }
+        
         const table = document.getElementById("results");
+        const fp2Options = {
+            excludes: {},
+            extraComponents: [
+                { key: "ActiveBorderColor", getData: createSystemColorComponent("ActiveBorder") },
+                { key: "ActiveCaptionColor", getData: createSystemColorComponent("ActiveCaption") },
+                { key: "BackgroundColor", getData: createSystemColorComponent("Background") },
+                { key: "ButtonTextColor", getData: createSystemColorComponent("ButtonText") },
+                { key: "ThreeDHighlightColor", getData: createSystemColorComponent("ThreeDHighlight") },
+            ],
+        };
         setTimeout(() => {
-            Fingerprint2.get({excludes: {}}, components => {
+            Fingerprint2.get(fp2Options, components => {
                 components.forEach(c => {
                     const row = table.insertRow();
                     const datapoint = row.insertCell(0);
