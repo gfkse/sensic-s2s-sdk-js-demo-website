@@ -46,7 +46,7 @@ and visit http://localhost:8081/index.html
 
 ## Running the entire frontend stack
 
-Read the guide on [how to develop locally|https://confluence.gfk.com/pages/viewpage.action?pageId=292572332&moved=true] in confluence.
+Read the guide on how to develop locally in confluence (https://confluence.gfk.com/pages/viewpage.action?pageId=292572332&moved=true)
 
 ## Testing alternate deployments of sensic components
 
