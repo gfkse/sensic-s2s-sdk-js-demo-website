@@ -51,6 +51,7 @@ $files = [
     $pathS3.'/content.html',
     $pathS3.'/video.html',
     $pathS3.'/html5video.html',
+    $pathS3.'/html5videoctv.html',
     $pathS3.'/youtube-video.html',
     $pathS3.'/sui-connector-test.html',
     $pathS3.'/touchpoint-test.html',
