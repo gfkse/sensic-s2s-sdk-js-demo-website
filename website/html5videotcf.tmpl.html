@@ -39,65 +39,19 @@
 		}
     </style>
     <script src="js/jquery.min.js"></script>
-
+    <script src="js/tcf/cmpapi.js"></script>
     <script src="js/url-polyfill.js"></script>
     <script>
         // Allow overwriting the used sdk with url param sdkUrl
         var urlParams = new URLSearchParams(window.location.search);
         var url       = urlParams.get("sdkUrl") || "//##ENVDOMAIN##/s2s-web.js";
 
-        // Optin via GET param
-        var optinGetValue = urlParams.get("optin");
-
         var gfkS2sConf = {
-            optin: (
-                       typeof optinGetValue === "string"
-                   ) ? (
-                       optinGetValue === "true"
-                   ) : undefined,
             media: "s2s-html5-demo",
             url: url,
             type: "WEB",
             logLevel: "debug"
         };
-
-        function getIndexOfOptinValue() {
-            return (
-                       gfkS2sConf.optin === true
-                   ) ? 2 : (
-                               gfkS2sConf.optin === false
-                           ) ? 1 : 0;
-        }
-
-        function optinClickHdl(value) {
-            var url = location.href;
-            var re  = /([?&])optin=[^&]*([&]?)/;
-            var m   = url.match(re);
-            if (m) {
-                url = url.replace(
-                    m[0],
-                    (
-                        m[1] === "?" && m[2] === "&"
-                    ) ? "?" : (
-                                  m[1] === "&" && m[2] === "&"
-                              ) ? "&" : ""
-                );
-            }
-            if (value !== "undefined") {
-                url += (
-                           url.indexOf("?") < 0 ? "?" : "&"
-                       ) + "optin=" + value;
-            }
-            location.href = url;
-        }
-
-        window.addEventListener("load", function (event) {
-            var r                             = document.getElementsByClassName("radio");
-            r[getIndexOfOptinValue()].checked = true;
-            r[0].onclick                      = r[1].onclick = r[2].onclick = function () {
-                optinClickHdl(this.value);
-            }
-        });
 
         (
             function (w, d, c, s, id, v) {
@@ -178,36 +132,27 @@
             }
         )(window, document, gfkS2sConf, 'script', 'gfkS2s', 'visUrl');
 
-        gfkS2s.getAgent().impression("DemoContent", {
-            "cp1": [
-                {"i": "54534", "n": "iPhone", "b": "Apple", "c": "Smartphone"},
-                {"i": "345", "n": "Adapter", "b": "Samsung", "c": "Electronic"}
-            ]
-        });
     </script>
 </head>
 <body>
 
 <div class="header">
     <div id="title">S2S HTML5 Video Demo</div>
-    <div class="optionsbox inline">
-        <table>
-            <tr>
-                <td class="key">Opt-in:</td>
-                <td class="value">
-                    <div class="radiobox">
-                        <input type="radio" name="optin" class="radio" value="undefined" /><label for="undefined">undefined</label><input type="radio" name="optin" class="radio" value="false" /><label for="false">false</label><input type="radio" name="optin" class="radio" value="true" /><label for="true">true</label>
-                    </div>
-                </td>
-            </tr>
-        </table>
-    </div>
+    <h1>TCF</h1>
     <div id="position"></div>
 </div>
 
 <video id="v1" controls preload="metadata">
     <source src="videos/big_buck_bunny.mp4" type="video/mp4">
 </video>
+
+<ul>
+    <li><a href="html5videotcf.html?tcf=noapplies">No GDPR applies</a></li>
+    <li><a href="html5videotcf.html?">No Gfk consent, no Gfk legitimate interest</a></li>
+    <li><a href="html5videotcf.html?tcf=consent">Gfk consent</a></li>
+    <li><a href="html5videotcf.html?tcf=legitimateInterest">Gfk legitimateInterest</a></li>
+    <li><a href="html5videotcf.html?tcf=consent&tcf=legitimateInterest">Gfk consent, Gfk legitimate interest</a></li>
+</ul>
 
 <script>
     var video           = document.getElementById("v1");
@@ -258,24 +203,6 @@
     }
 
     setInterval(interval, 100);
-
-    //TCF
-
-    const callback = (tcData, success) => {
-        if (success && tcData.eventStatus === 'tcloaded') {
-            __tcfapi('removeEventListener', 2, (success) => {
-                if (success) {
-                    console.log(tcData);
-                }
-
-            }, callback);
-        } else {
-            console.log(tcData);
-
-        }
-    }
-
-    __tcfapi('addEventListener', 2, callback);
 
 </script>
 </body>
