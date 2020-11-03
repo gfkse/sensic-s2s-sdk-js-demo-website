@@ -1,0 +1,50 @@
+{
+  "cmpId": 6,
+  "cmpVersion": 1,
+  "gdprApplies": true,
+  "tcfPolicyVersion": 2,
+  "eventStatus": "tcloaded",
+  "cmpStatus": "loaded",
+  "listenerId": 7,
+  "tcString": "CO8F3AJO8F3AJAGABBDEA-CgAAAAAGvAAAYgF7QAQF7AZDASAByAE8ALoAXwAyAEFgIOAhABFgCUgF1AMCAYoA14B1ADyAJWAYMAyEAA.YAAAAAAAAAAA",
+  "isServiceSpecific": true,
+  "useNonStandardStacks": false,
+  "purposeOneTreatment": false,
+  "publisherCC": "DE",
+  "outOfBand": {
+    "allowedVendors": {},
+    "disclosedVendors": {}
+  },
+  "purpose": {
+    "consents": {},
+    "legitimateInterests": {
+      "1": false,
+      "2": true,
+      "3": true,
+      "4": false,
+      "5": true,
+      "6": false,
+      "7": true,
+      "8": true,
+      "9": true,
+      "10": true
+    }
+  },
+  "vendor": {
+    "consents": {
+    },
+    "legitimateInterests": {
+    }
+  },
+  "specialFeatureOptins": {},
+  "publisher": {
+    "consents": {},
+    "legitimateInterests": {},
+    "customPurpose": {
+      "consents": {},
+      "legitimateInterests": {}
+    },
+    "restrictions": {}
+  },
+  "addtlConsent": "1~"
+}
