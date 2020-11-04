@@ -11,6 +11,7 @@
 			background-color: #202020;
 			font-family: Arial, Helvetica, sans-serif;
 			font-size: 14px;
+            color: #e0a000;
 		}
 
 		.header {
@@ -39,7 +40,6 @@
 		}
     </style>
     <script src="js/jquery.min.js"></script>
-    <script src="js/tcf/cmpapi.js"></script>
     <script src="js/url-polyfill.js"></script>
     <script>
         // Allow overwriting the used sdk with url param sdkUrl
@@ -147,11 +147,27 @@
 </video>
 
 <ul>
-    <li><a href="html5videotcf.html?tcf=noapplies">No GDPR applies</a></li>
-    <li><a href="html5videotcf.html?">No Gfk consent, no Gfk legitimate interest</a></li>
-    <li><a href="html5videotcf.html?tcf=consent">Gfk consent</a></li>
-    <li><a href="html5videotcf.html?tcf=legitimateInterest">Gfk legitimateInterest</a></li>
-    <li><a href="html5videotcf.html?tcf=consent&tcf=legitimateInterest">Gfk consent, Gfk legitimate interest</a></li>
+    <form action="html5videotcf.html">
+        <fieldset>
+            <label for="optin_true">optin true</label>
+            <input type="radio" value="true" name="optin" id="optin_true">
+            <label for="optin_false">optin false</label>
+            <input type="radio" value="false" name="optin" id="optin_false">
+            <label for="optin_undefined">optin undefined</label>
+            <input type="radio" value="" name="optin" id="optin_undefined">
+        </fieldset>
+        <fieldset>
+            <label for="noapplies">No GDPR applies</label>
+            <input type="checkbox" name="tcf" value="noapplies" id="noapplies">
+            <label for="consent">Gfk consent</label>
+            <input type="checkbox" name="tcf" value="consent" id="consent">
+            <label for="legitimateInterest">Gfk legitimateInterest</label>
+            <input type="checkbox" name="tcf" value="legitimateInterest" id="legitimateInterest">
+        </fieldset>
+        <fieldset>
+            <button type="submit">Reload</button>
+        </fieldset>
+    </form>
 </ul>
 
 <script>
@@ -205,5 +221,6 @@
     setInterval(interval, 100);
 
 </script>
+<script src="js/tcf/cmpapi.js"></script>
 </body>
 </html>
