@@ -52,6 +52,10 @@
             type: "WEB",
             logLevel: "debug"
         };
+        var optinGetValue = urlParams.get("optin");
+        if (optinGetValue) {
+            gfkS2sConf.optin = optinGetValue;
+        }
 
         (
             function (w, d, c, s, id, v) {

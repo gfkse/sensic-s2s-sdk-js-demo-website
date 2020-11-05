@@ -16,19 +16,17 @@ window.__tcfapi = async (command, version, callback) => {
     callback(baseTcObject, true);
 }
 
-
-for(let x = 0; x < tcfParams.length; x++) {
-    const element = window.document.getElementById(tcfParams[x]);
-    element.setAttribute("checked","checked")
-}
-
-for(let x = 0; x < optin.length; x++) {
-    let element = window.document.getElementById("optin_" + optin[x]);
-    if (!element) {
-        element = window.document.getElementById("optin_undefined");
+window.addEventListener("DOMContentLoaded", () => {
+    for(let x = 0; x < tcfParams.length; x++) {
+        const element = window.document.getElementById(tcfParams[x]);
+        element.setAttribute("checked","checked")
     }
-    element.checked = true;
-}
 
-
-
+    for(let x = 0; x < optin.length; x++) {
+        let element = window.document.getElementById("optin_" + optin[x]);
+        if (!element) {
+            element = window.document.getElementById("optin_undefined");
+        }
+        element.checked = true;
+    }
+});
