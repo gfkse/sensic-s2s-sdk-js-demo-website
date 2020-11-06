@@ -57,6 +57,7 @@ $files = [
     $pathS3.'/youtube-video.html',
     $pathS3.'/sui-connector-test.html',
     $pathS3.'/touchpoint-test.html',
+    $pathS3.'/long-url-test.html',
 ];
 
 foreach ($files as $file) {
