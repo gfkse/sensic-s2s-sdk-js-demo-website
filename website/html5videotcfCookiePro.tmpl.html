@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>S2S HTML5 Video Demo</title>
+    <link rel="shortcut icon" href="images/favicon.png">
+    <link rel="stylesheet" href="css/s2s-demo.css">
+    <style>
+		body {
+			margin: 0;
+			background-color: #202020;
+			font-family: Arial, Helvetica, sans-serif;
+			font-size: 14px;
+            color: #e0a000;
+		}
+
+		.header {
+			background-color: #202020;
+			color: #a0a0a0;
+			display: flex;
+			align-items: center;
+			height: 30px;
+		}
+
+		#v1 {
+			width: 100%;
+			max-height: calc(100vh - 30px);
+		}
+
+		#title {
+			margin: 0 20px 0 10px;
+			font-weight: bold;
+		}
+
+		#position {
+			margin: 0 10px 0 40px;
+			color: white;
+			flex-grow: 1;
+			text-align: right;
+		}
+    </style>
+    <script type="text/javascript" src="https://cookie-cdn.cookiepro.com/consent/e37f6b07-3ec0-4c2a-a8f6-94d57eafe8f0-test/OtAutoBlock.js" ></script>
+    <script src="https://cookie-cdn.cookiepro.com/scripttemplates/otSDKStub.js"  type="text/javascript" charset="UTF-8" data-domain-script="e37f6b07-3ec0-4c2a-a8f6-94d57eafe8f0-test" ></script>
+    <script type="text/javascript">
+        function OptanonWrapper() { }
+    </script>
+    <!-- CookiePro Cookies Consent Notice end for demo-config-preproduction.sensic.net -->
+    <script src="js/jquery.min.js"></script>
+    <script src="js/url-polyfill.js"></script>
+    <script>
+        // Allow overwriting the used sdk with url param sdkUrl
+        var urlParams = new URLSearchParams(window.location.search);
+        var url       = urlParams.get("sdkUrl") || "//##ENVDOMAIN##/s2s-web.js";
+
+        var gfkS2sConf = {
+            media: "s2s-html5-demo",
+            url: url,
+            type: "WEB",
+            logLevel: "debug"
+        };
+
+        (
+            function (w, d, c, s, id, v) {
+                if (d.getElementById(id)) {
+                    return;
+                }
+
+                w.gfkS2sConf   = c;
+                w[id]          = {};
+                w[id].agents   = [];
+                var api        = [
+                    "playStreamLive",
+                    "playLive",
+                    "playStreamOnDemand",
+                    "playVOD",
+                    "stop",
+                    "skip",
+                    "screen",
+                    "volume",
+                    "impression"
+                ];
+                w.s            = (
+                    function () {
+                        function f(sA, e, cb) {
+                            return function () {
+                                sA.p = cb();
+                                sA.queue.push({f: e, a: arguments});
+                            };
+                        }
+
+                        function s(c, pId, cb) {
+                            var sA = {queue: [], config: c, cb: cb, pId: pId};
+                            for (var i = 0; i < api.length; i++) {
+                                e     = api[i];
+                                sA[e] = f(sA, e, cb);
+                            }
+                            return sA;
+                        }
+
+                        return s;
+                    }()
+                );
+                w[id].getAgent = function (cb, pId) {
+                    var a = {
+                        a: new w.s(c, pId || "", cb || function () {
+                            return 0;
+                        })
+                    };
+
+                    function g(a, e) {
+                        return function () {
+                            return a.a[e].apply(a.a, arguments);
+                        }
+                    }
+
+                    for (var i = 0; i < api.length; i++) {
+                        e    = api[i];
+                        a[e] = g(a, e);
+                    }
+                    w[id].agents.push(a);
+                    return a;
+                };
+
+                var lJS = function (eId, url) {
+                    var tag   = d.createElement(s);
+                    var el    = d.getElementsByTagName(s)[0];
+                    tag.id    = eId;
+                    tag.async = true;
+                    tag.type  = 'text/javascript';
+                    tag.src   = url;
+                    el.parentNode.insertBefore(tag, el);
+                };
+
+                if (c.hasOwnProperty(v)) {
+                    lJS(id + v, c[v]);
+                }
+                lJS(id, c.url);
+            }
+        )(window, document, gfkS2sConf, 'script', 'gfkS2s', 'visUrl');
+
+    </script>
+</head>
+<body>
+
+<div class="header">
+    <div id="title">S2S HTML5 Video Demo</div>
+    <h1>TCF</h1>
+    <div id="position"></div>
+</div>
+
+<video id="v1" controls preload="metadata">
+    <source src="videos/big_buck_bunny.mp4" type="video/mp4">
+</video>
+
+
+<script>
+    var video           = document.getElementById("v1");
+    var agent           = gfkS2s.getAgent(getVideoPosition, "v1");
+    var positionElement = document.getElementById("position");
+    var currentPosition = 0;
+
+    video.addEventListener('play', (event) => {
+        currentPosition           = getVideoPosition();
+        positionElement.innerText = currentPosition;
+        console.log("### play! " + currentPosition);
+        agent.playStreamOnDemand(
+            video.id,
+            video.currentSrc,
+            currentPosition,
+            {screen: "1", volume: "1"},
+            {playerid: video.id, cliptype: "Video"}
+        );
+    });
+
+    video.addEventListener('pause', (event) => {
+        var vp = getVideoPosition();
+        if (vp > currentPosition && vp < currentPosition + 100) {
+            currentPosition           = vp;
+            positionElement.innerText = currentPosition;
+        }
+        console.log("### pause!" + currentPosition);
+        agent.stop(currentPosition);
+    });
+
+    video.addEventListener('ended', (event) => {
+        var vp = getVideoPosition();
+        if (vp > currentPosition && vp < currentPosition + 100) {
+            currentPosition           = vp;
+            positionElement.innerText = currentPosition;
+        }
+        console.log("### ended!" + currentPosition);
+        agent.stop(currentPosition);
+    });
+
+    function getVideoPosition() {
+        return Math.floor(video.currentTime * 1000);
+    }
+
+    function interval() {
+        currentPosition           = getVideoPosition();
+        positionElement.innerText = currentPosition;
+    }
+
+    setInterval(interval, 100);
+
+</script>
+
+<!-- CookiePro Cookies Settings button start -->
+<button id="ot-sdk-btn" class="ot-sdk-show-settings">Cookie Settings</button>
+<!-- CookiePro Cookies Settings button end -->
+
+<!-- CookiePro Cookies List start -->
+<div id="ot-sdk-cookie-policy"></div>
+<!-- CookiePro Cookies List end -->
+
+
+</body>
+</html>
