@@ -48,6 +48,7 @@
 </head>
 <body>
 
+
 <div id="fh5co-page">
     <div id="fh5co-work-section" class="fh5co-light-grey-section">
         <div class="container">
@@ -67,11 +68,33 @@
                     </p>
                 </div>
             </div>
+            <div class="row">
+                <form action="campaign-img.html">
+                    <fieldset>
+                        <label for="optin_true">optin true</label>
+                        <input type="radio" value="true" name="optin" id="optin_true">
+                        <label for="optin_false">optin false</label>
+                        <input type="radio" value="false" name="optin" id="optin_false">
+                        <label for="optin_undefined">optin undefined</label>
+                        <input type="radio" value="" name="optin" id="optin_undefined">
+                    </fieldset>
+                    <fieldset>
+                        <label for="noapplies">No GDPR applies</label>
+                        <input type="radio" name="tcf" value="noapplies" id="noapplies">
+                        <label for="consent">Gfk <b>no</b> consent</label>
+                        <input type="radio" name="tcf" value="noconsent" id="consent">
+                        <label for="legitimateInterest">Gfk consent</label>
+                        <input type="radio" name="tcf" value="consent" id="legitimateInterest">
+                        <label for="invalid">Invalid TC String</label>
+                        <input type="radio" name="tcf" value="invalid" id="invalid">
+                    </fieldset>
+                    <fieldset>
+                        <button type="submit">Reload</button>
+                    </fieldset>
+                </form>
+            </div>
         </div>
     </div>
-
-
-
 
     <div class="fh5co-cta" style="background-image: url(images/slide_2.jpg);">
         <div class="overlay"></div>
@@ -99,10 +122,17 @@
 
 <!-- GET pixel -->
 <script>
+    const tcStrings = {
+        "consent":  "CO8nJq2O8nJq2AGABBDEA_CgAAAAAGvAAAYgF7QAQF7AZDASAByAE8ALoAXwAyAEFgIOAhABFgCUgF1AMCAYoA14B1ADyAJWAYMAyEAA.YAAAAAAAAAAA",
+        "noconsent": "CO8oSTVO8oSTVAGABBDEA_CgAAAAAGvAAAYgAAAMhgJAA5ACeAF0AL4AZACCwEHAQgAiwBKQC6gGBAMUAa8A6gB5AErAMGAZCAAA.YAAAAAAAAAAA",
+        "invalid": "iamnotavalidtcstring",
+    }
+
     // Allow overwriting the used tp with url param pixelUrl
     var urlParams = new URLSearchParams(window.location.search);
     var tpUrl = urlParams.get("pixelUrl") || "https://##ENVDOMAIN##/tp";
     var optin = urlParams.get("optin");
+    const tcf = urlParams.get("tcf");
     if (!/[?&]ty=/.test(tpUrl)) {
         tpUrl += (tpUrl.indexOf("?") === -1 ? "?" : "&") + "ty=IM";
     }
@@ -117,6 +147,14 @@
     }
     if (optin && !/[?&]optin=/.test(tpUrl)) {
         tpUrl += "&optin=" + optin;
+    }
+    if (tcf) {
+        if (tcf === "noapplies") {
+            tpUrl += "&gdpr=0";
+        } else {
+            tpUrl += "&gdpr=1";
+            tpUrl += "&gdpr_consent=" + tcStrings[tcf];
+        }
     }
     var pixelTag = document.createElement("img");
     pixelTag.src = tpUrl;
