@@ -48,7 +48,6 @@
 </head>
 <body>
 
-
 <div id="fh5co-page">
     <div id="fh5co-work-section" class="fh5co-light-grey-section">
         <div class="container">
@@ -82,9 +81,9 @@
                         <label for="noapplies">No GDPR applies</label>
                         <input type="radio" name="tcf" value="noapplies" id="noapplies">
                         <label for="consent">Gfk <b>no</b> consent</label>
-                        <input type="radio" name="tcf" value="noconsent" id="consent">
+                        <input type="radio" name="tcf" value="noconsent" id="noconsent">
                         <label for="legitimateInterest">Gfk consent</label>
-                        <input type="radio" name="tcf" value="consent" id="legitimateInterest">
+                        <input type="radio" name="tcf" value="consent" id="consent">
                         <label for="invalid">Invalid TC String</label>
                         <input type="radio" name="tcf" value="invalid" id="invalid">
                     </fieldset>
@@ -153,12 +152,19 @@
             tpUrl += "&gdpr=0";
         } else {
             tpUrl += "&gdpr=1";
-            tpUrl += "&gdpr_consent=" + tcStrings[tcf];
+            tpUrl += `&gdpr_consent=${tcStrings[tcf]}`;
         }
     }
     var pixelTag = document.createElement("img");
     pixelTag.src = tpUrl;
     document.body.appendChild(pixelTag);
+
+    window.addEventListener("DOMContentLoaded", () => {
+        (window.document.getElementById("optin_" + optin) || window.document.getElementById("optin_undefined")).checked = true;
+        if (tcf) {
+            window.document.getElementById(tcf).checked = true;
+        }
+    });
 </script>
 
 </body>
