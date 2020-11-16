@@ -7,7 +7,7 @@ require_once __DIR__.'/vendor/autoload.php';
 
 use Aws\S3\S3Client;
 
-$allowedEnvs = ['preproduction', 'production'];
+$allowedEnvs = ['preproduction', 'production', 'staging', 'development'];
 if ($argc < 2 || !in_array($argv[1], $allowedEnvs)) {
     echo 'Environment needed, either "production" or "preproduction"'.PHP_EOL;
     echo 'Syntax: php S3upload.php <preproduction|production>'.PHP_EOL;
@@ -24,11 +24,15 @@ $pathS3 = str_replace("\\", '/', __DIR__).'/website';
 function changeUrl(string $env, string $content) {
     $envDomainMap = [
         'preproduction' => 'demo-config-preproduction.sensic.net',
-        'production'    => 'demo-config.sensic.net'
+        'production'    => 'demo-config.sensic.net',
+        'staging'       => 'staging.sensic-demo.gfk.com',
+        'development'   => 'dev.sensic-demo.gfk.com'
     ];
     $envS3UrlMap = [
         'preproduction' => 'https://s3.eu-central-1.amazonaws.com/config-preproduction.sensic.net/demo/s2s',
-        'production'    => 'https://s3.eu-central-1.amazonaws.com/config.sensic.net/demo/s2s'
+        'production'    => 'https://s3.eu-central-1.amazonaws.com/config.sensic.net/demo/s2s',
+        'staging'       => 'https://s3.eu-central-1.amazonaws.com/sensic-demo/staging/s2s',
+        'development'   => 'https://s3.eu-central-1.amazonaws.com/sensic-demo/development/s2s'
     ];
     $result = str_replace('##ENVDOMAIN##', $envDomainMap[$env], $content);
     $result = str_replace('##ENVS3URL##', $envS3UrlMap[$env], $result);
@@ -140,7 +144,9 @@ function invalidateCloudfrontFiles(array $s3Credentials, string $env)
 
     $ditributionIds = [
         'preproduction' => 'E3HAXD5PN1MFDS',
-        'production' => 'E2XAX2YAH410FH'
+        'production' => 'E2XAX2YAH410FH',
+        'development' => 'E1LF47RTCAJ1D5',
+        'staging' => 'E37XCAO1RH7H1B'
     ];
 
     $distribution = $ditributionIds[$env];
