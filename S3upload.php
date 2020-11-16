@@ -24,11 +24,15 @@ $pathS3 = str_replace("\\", '/', __DIR__).'/website';
 function changeUrl(string $env, string $content) {
     $envDomainMap = [
         'preproduction' => 'demo-config-preproduction.sensic.net',
-        'production'    => 'demo-config.sensic.net'
+        'production'    => 'demo-config.sensic.net',
+        'staging'       => 'staging.sensic-demo.gfk.com',
+        'development'   => 'dev.sensic-demo.gfk.com'
     ];
     $envS3UrlMap = [
         'preproduction' => 'https://s3.eu-central-1.amazonaws.com/config-preproduction.sensic.net/demo/s2s',
-        'production'    => 'https://s3.eu-central-1.amazonaws.com/config.sensic.net/demo/s2s'
+        'production'    => 'https://s3.eu-central-1.amazonaws.com/config.sensic.net/demo/s2s',
+        'staging'       => 'https://s3.eu-central-1.amazonaws.com/sensic-demo/staging/s2s',
+        'development'   => 'https://s3.eu-central-1.amazonaws.com/sensic-demo/development/s2s'
     ];
     $result = str_replace('##ENVDOMAIN##', $envDomainMap[$env], $content);
     $result = str_replace('##ENVS3URL##', $envS3UrlMap[$env], $result);
