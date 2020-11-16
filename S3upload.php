@@ -144,7 +144,9 @@ function invalidateCloudfrontFiles(array $s3Credentials, string $env)
 
     $ditributionIds = [
         'preproduction' => 'E3HAXD5PN1MFDS',
-        'production' => 'E2XAX2YAH410FH'
+        'production' => 'E2XAX2YAH410FH',
+        'development' => 'E1LF47RTCAJ1D5',
+        'staging' => 'E37XCAO1RH7H1B'
     ];
 
     $distribution = $ditributionIds[$env];
