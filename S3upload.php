@@ -7,7 +7,7 @@ require_once __DIR__.'/vendor/autoload.php';
 
 use Aws\S3\S3Client;
 
-$allowedEnvs = ['preproduction', 'production'];
+$allowedEnvs = ['preproduction', 'production', 'staging', 'development'];
 if ($argc < 2 || !in_array($argv[1], $allowedEnvs)) {
     echo 'Environment needed, either "production" or "preproduction"'.PHP_EOL;
     echo 'Syntax: php S3upload.php <preproduction|production>'.PHP_EOL;
