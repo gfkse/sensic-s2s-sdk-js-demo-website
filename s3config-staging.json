@@ -4,7 +4,7 @@
         "target" : {
           "bucket": "sensic-demo",
           "region": "eu-central-1",
-          "path": "development/s2s"
+          "path": "staging/s2s"
         }
       }
     }
