@@ -26,7 +26,7 @@ function changeUrl(string $env, string $content) {
         'preproduction' => 'demo-config-preproduction.sensic.net',
         'production'    => 'demo-config.sensic.net',
         'staging'       => 'staging.sensic-demo.gfk.com',
-        'development'   => 'dev.sensic-demo.gfk.com'
+        'development'   => 'development.sensic-demo.gfk.com'
     ];
     $envS3UrlMap = [
         'preproduction' => 'https://s3.eu-central-1.amazonaws.com/config-preproduction.sensic.net/demo/s2s',
