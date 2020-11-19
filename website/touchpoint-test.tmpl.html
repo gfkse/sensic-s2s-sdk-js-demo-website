@@ -7,7 +7,7 @@
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css">
         <script src="js/url-polyfill.js"></script>
         <script>
-            var publisherUrl = "##ENVS3URL##";
+            var publisherUrl = window.location.hostname;
             var publisherDomain = publisherUrl.match(/https:\/\/([^\/]*)\/.*/)[1];
             var sensicDomain = "##ENVDOMAIN##";
 
@@ -24,7 +24,7 @@
                 document.getElementById("page").style.display = "none";
                 window.addEventListener("message", function (e) {
                     if (e.data.sensic && e.data.sensic.hasOwnProperty("sui")) {
-                        location.href = publisherUrl + "/touchpoint-test.html";
+                        location.href = "/touchpoint-test.html";
                     }
                 });
                 gfkConnector.suiApi.removeSui();

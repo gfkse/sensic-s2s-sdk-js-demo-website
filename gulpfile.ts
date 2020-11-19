@@ -4,9 +4,8 @@ import rename from "gulp-rename";
 import clean from "gulp-clean";
 
 const ENVIRONMENTS = {
+    development: 'demo-config-preproduction.sensic.net',
     production: 'demo-config.sensic.net',
-    preproduction: 'demo-config-preproduction.sensic.net',
-    development: 's2s.dev/website/dist',
     local: 'localhost:8080',
 }
 
@@ -16,7 +15,9 @@ export function clean() {
 }
 
 export function setenv() {
-    const envUrl = ENVIRONMENTS[process.env.ENV || "local"];
+    const env = process.env.ENV || "local";
+    console.log("Setting env to ", env);
+    const envUrl = ENVIRONMENTS[env];
     return src("website/*.tmpl.html")
         .pipe(replace('##ENVDOMAIN##', envUrl))
         .pipe(rename(path => path.basename = path.basename.replace(".tmpl", "")))
