@@ -64,6 +64,8 @@ $files = [
     $pathS3.'/long-url-test.html',
 ];
 
+// Sets ENVDOMAIN and ENVS3URL
+// Copies results to .html files
 foreach ($files as $file) {
     $tmplFile = substr_replace($file, ".tmpl", strrpos($file, '.'), 0);
     copyFile($tmplFile, $file, $argv[1]);
@@ -91,6 +93,9 @@ $filter = new \RecursiveCallbackFilterIterator($directory, function (\SplFileInf
 });
 $iterator = new \RecursiveIteratorIterator($filter);
 $files = 0;
+
+// Upload contents of website/ (except .tmpl.html files) to S3 bucket subfolder
+
 /* @var SplFileObject $fileInfo */
 foreach ($iterator as $fileInfo) {
     $file = $fileInfo->getFilename();
@@ -108,6 +113,8 @@ foreach ($iterator as $fileInfo) {
     uploadS3Object($client, $bucket, $key.'/'.$file, $path.'/'.$file);
     $files++;
 }
+
+// Invalidate Cloudfront files
 
 echo 'Files: '.$files.PHP_EOL;
 echo 'Executing: '.round(microtimeFloat() - $executing, 3)." seconds\n";
