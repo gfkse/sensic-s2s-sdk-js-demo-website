@@ -16,7 +16,6 @@ window.__tcfapi = async (command, version, callback) => {
     baseTcObject.vendor.consents[758] = vendor.includes("consent");
     baseTcObject.vendor.legitimateInterests[758] = vendor.includes("legitimateInterest");
     baseTcObject.purpose.consents[1] = purpose1.includes("consent");
-    baseTcObject.purpose.legitimateInterests[1] = purpose1.includes("legitimateInterest");
     baseTcObject.purpose.consents[9] = purpose9.includes("consent");
     baseTcObject.purpose.legitimateInterests[9] = purpose9.includes("legitimateInterest");
     callback(baseTcObject, true);
