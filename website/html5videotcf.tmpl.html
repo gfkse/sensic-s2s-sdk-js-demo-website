@@ -153,20 +153,39 @@
 <ul>
     <form action="html5videotcf.html">
         <fieldset>
-            <label for="optin_true">optin true</label>
+            <legend>Optin</legend>
+            <label for="optin_true">True</label>
             <input type="radio" value="true" name="optin" id="optin_true">
-            <label for="optin_false">optin false</label>
+            <label for="optin_false">False</label>
             <input type="radio" value="false" name="optin" id="optin_false">
-            <label for="optin_undefined">optin undefined</label>
-            <input type="radio" value="" name="optin" id="optin_undefined">
+            <label for="optin_undefined">Undefined</label>
+            <input type="radio" value="" name="optin" id="optin_undefined" checked>
         </fieldset>
         <fieldset>
-            <label for="noapplies">No GDPR applies</label>
-            <input type="checkbox" name="tcf" value="noapplies" id="noapplies">
-            <label for="consent">Gfk consent</label>
-            <input type="checkbox" name="tcf" value="consent" id="consent">
-            <label for="legitimateInterest">Gfk legitimateInterest</label>
-            <input type="checkbox" name="tcf" value="legitimateInterest" id="legitimateInterest">
+            <legend>GDPR</legend>
+            <label for="gdpr_applies">Applies</label>
+            <input type="radio" value="applies" name="gdpr" id="gdpr_applies">
+            <label for="gdpr_noapplies">Does not apply</label>
+            <input type="radio" value="noapplies" name="gdpr" id="gdpr_noapplies" checked>
+        </fieldset>
+        <fieldset>
+            <legend>GfK vendor</legend>
+            <label for="vendor_consent">Consent</label>
+            <input type="checkbox" name="vendor" value="consent" id="vendor_consent">
+            <label for="vendor_legitimateInterest">Legitimate interest</label>
+            <input type="checkbox" name="vendor" value="legitimateInterest" id="vendor_legitimateInterest">
+        </fieldset>
+        <fieldset>
+            <legend>Purpose 1</legend>
+            <label for="purpose1_consent">Consent</label>
+            <input type="checkbox" name="purpose1" value="consent" id="purpose1_consent">
+        </fieldset>
+        <fieldset>
+            <legend>Purpose 9</legend>
+            <label for="purpose9_consent">Consent</label>
+            <input type="checkbox" name="purpose9" value="consent" id="purpose9_consent">
+            <label for="purpose9_legitimateInterest">Legitimate interest</label>
+            <input type="checkbox" name="purpose9" value="legitimateInterest" id="purpose9_legitimateInterest">
         </fieldset>
         <fieldset>
             <button type="submit">Reload</button>
