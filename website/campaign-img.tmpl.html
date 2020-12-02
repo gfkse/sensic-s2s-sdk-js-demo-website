@@ -70,21 +70,32 @@
             <div class="row">
                 <form action="campaign-img.html">
                     <fieldset>
-                        <label for="optin_true">optin true</label>
+                        <legend>optin</legend>
+                        <label for="optin_true">true</label>
                         <input type="radio" value="true" name="optin" id="optin_true">
-                        <label for="optin_false">optin false</label>
+                        <label for="optin_false">false</label>
                         <input type="radio" value="false" name="optin" id="optin_false">
-                        <label for="optin_undefined">optin undefined</label>
-                        <input type="radio" value="" name="optin" id="optin_undefined">
+                        <label for="optin_undefined">undefined</label>
+                        <input type="radio" value="" name="optin" id="optin_undefined" checked>
                     </fieldset>
                     <fieldset>
-                        <label for="noapplies">No GDPR applies</label>
-                        <input type="radio" name="tcf" value="noapplies" id="noapplies">
-                        <label for="consent">Gfk <b>no</b> consent</label>
-                        <input type="radio" name="tcf" value="noconsent" id="noconsent">
-                        <label for="legitimateInterest">Gfk consent</label>
-                        <input type="radio" name="tcf" value="consent" id="consent">
-                        <label for="invalid">Invalid TC String</label>
+                        <legend>GDPR</legend>
+                        <label for="noapplies">Does not apply</label>
+                        <input type="radio" name="gdpr" value="noapplies" id="noapplies" checked>
+                        <label for="applies">Applies</label>
+                        <input type="radio" name="gdpr" value="applies" id="applies">
+                    </fieldset>
+                    <fieldset>
+                        <legend>Consent/Legitimate interest</legend>
+                        <label for="vendorConsent">Vendor consent</label>
+                        <input type="radio" name="tcf" value="vendorConsent" id="vendorConsent" checked>
+                        <label for="vendorPurpose1Consent">Vendor & Purpose 1 consent</label>
+                        <input type="radio" name="tcf" value="vendorPurpose1Consent" id="vendorPurpose1Consent">
+                        <label for="vendorPurpose1Purpose9Consent">Vendor & Purpose 1 & Purpose 9 consent</label>
+                        <input type="radio" name="tcf" value="vendorPurpose1Purpose9Consent" id="vendorPurpose1Purpose9Consent">
+                        <label for="purpose1Purpose9Consent">Purpose 1 & Purpose 9 consent</label>
+                        <input type="radio" name="tcf" value="purpose1Purpose9Consent" id="purpose1Purpose9Consent">
+                        <label for="invalid">Invalid TCString</label>
                         <input type="radio" name="tcf" value="invalid" id="invalid">
                     </fieldset>
                     <fieldset>
@@ -122,8 +133,10 @@
 <!-- GET pixel -->
 <script>
     const tcStrings = {
-        "consent":  "CO8nJq2O8nJq2AGABBDEA_CgAAAAAGvAAAYgF7QAQF7AZDASAByAE8ALoAXwAyAEFgIOAhABFgCUgF1AMCAYoA14B1ADyAJWAYMAyEAA.YAAAAAAAAAAA",
-        "noconsent": "CO8oSTVO8oSTVAGABBDEA_CgAAAAAGvAAAYgAAAMhgJAA5ACeAF0AL4AZACCwEHAQgAiwBKQC6gGBAMUAa8A6gB5AErAMGAZCAAA.YAAAAAAAAAAA",
+        "vendorConsent":  "CO9K0KjO9K0KjAGABBDEBBCgAAAAAAAAAAYgF7QAQF7AAAAAAAAA.YAAAAAAAAAAA",
+        "vendorPurpose1Consent": "CO9K0SsO9K0SsAGABBDEBBCgAIAAAAAAAAYgGWkR5C5FTWFCQX55QstwGIAHUMAEAGQCAACAAiABAAEQICwAgmASoASABAACAAAAIBIBAAAECAAAAAAAQAAEAACAAAAEAAAIIAIAABEAAAIAAAAKAAAAAAAAgAEAAAAAmEAQAgZiQCAAAAAA.YAAAAAAAAAAA",
+        "vendorPurpose1Purpose9Consent": "CO9K0gVO9K0gVAGABBDEBBCgAICAAAAAAAYgGWkR5D5FTWFCQX55QstwGIAHUMAEAGQCAACAAiABAAEQICwAgmASoASABAACAAAAIBIBAAAECAAAAAAAQAAEAACAAAAEAAAIIAIAABEAAAIAAAAKAAAAAAAAgAEAAAAAmEAQAgZiQCAAAAIlATAAWABkADgAIgAeABEACYAFwAMQAZgBCACGAFKANUAjgBigDqAIvAXmSABAAXAIyAAA.YAAAAAAAAAAA",
+        "purpose1Purpose9Consent": "CO9K0rDO9K0rDAGABBDEBBCgAICAAAAAAAYgGWkR5D5FTWFCQX55QstwGIAHUMAEAGQCAACAAiABAAEQICwAgmASoASABAACAAAAIBIBAAAECAAAAAAAQAAEAACAAAAEAAAIIAIAABEAAAIAAAAKAAAAAAAAgAEAAAAAiEAQAgZiQCAAAAIlATAAWABkADgAIgAeABEACYAFwAMQAZgBCACGAFKANUAjgBigDqAIvAXmSABAAXAIyAAA.YAAAAAAAAAAA",
         "invalid": "iamnotavalidtcstring",
     }
 
@@ -131,7 +144,8 @@
     var urlParams = new URLSearchParams(window.location.search);
     var tpUrl = urlParams.get("pixelUrl") || "https://##ENVDOMAIN##/tp";
     var optin = urlParams.get("optin");
-    const tcf = urlParams.get("tcf");
+    var gdpr = urlParams.get("gdpr");
+    var tcf = urlParams.get("tcf");
     if (!/[?&]ty=/.test(tpUrl)) {
         tpUrl += (tpUrl.indexOf("?") === -1 ? "?" : "&") + "ty=IM";
     }
@@ -147,13 +161,9 @@
     if (optin && !/[?&]optin=/.test(tpUrl)) {
         tpUrl += "&optin=" + optin;
     }
+    tpUrl += "&gdpr=" + ((gdpr === "applies") ? "1" : "0");
     if (tcf) {
-        if (tcf === "noapplies") {
-            tpUrl += "&gdpr=0";
-        } else {
-            tpUrl += "&gdpr=1";
-            tpUrl += `&gdpr_consent=${tcStrings[tcf]}`;
-        }
+        tpUrl += `&gdpr_consent=${tcStrings[tcf]}`;
     }
     var pixelTag = document.createElement("img");
     pixelTag.src = tpUrl;
@@ -161,6 +171,9 @@
 
     window.addEventListener("DOMContentLoaded", () => {
         (window.document.getElementById("optin_" + optin) || window.document.getElementById("optin_undefined")).checked = true;
+        if (gdpr) {
+            window.document.getElementById(gdpr).checked = true;
+        }
         if (tcf) {
             window.document.getElementById(tcf).checked = true;
         }
