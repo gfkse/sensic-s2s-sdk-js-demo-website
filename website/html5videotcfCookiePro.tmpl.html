@@ -80,7 +80,7 @@
                     "volume",
                     "impression"
                 ];
-                w.s            = (
+                w.gfks            = (
                     function () {
                         function f(sA, e, cb) {
                             return function () {
@@ -103,7 +103,7 @@
                 );
                 w[id].getAgent = function (cb, pId) {
                     var a = {
-                        a: new w.s(c, pId || "", cb || function () {
+                        a: new w.gfks(c, pId || "", cb || function () {
                             return 0;
                         })
                     };
