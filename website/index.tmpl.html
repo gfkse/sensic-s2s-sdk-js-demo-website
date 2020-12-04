@@ -19,8 +19,8 @@
             xhr.send();
         }
         window.onload = function () {
-            hey("/suiapi.js", /this\.VERSION\s*=\s*"([^"]*)"/, "vmsver");
-            hey("/s2s-web.js", /this\.sdkVersion\s*=\s*"([^"]*)"/, "s2sver");
+            hey("//##ENVDOMAIN##/suiapi.js", /this\.VERSION\s*=\s*"([^"]*)"/, "vmsver");
+            hey("//##ENVDOMAIN##/s2s-web.js", /this\.sdkVersion\s*=\s*"([^"]*)"/, "s2sver");
         };
     </script>
     <style>
