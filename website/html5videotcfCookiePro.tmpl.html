@@ -206,6 +206,25 @@
 
 </script>
 
+<script>
+    function addPixelTag({tcString, gdprApplies}) {
+        const pixelTag = document.createElement("img");
+        pixelTag.src = `https://##ENVDOMAIN##/tp?ty=IM&m=campaign_demosite&c=demosite&cp_cp1=1553256932919&gdpr=${gdprApplies}&gdpr_consent=${tcString}`;
+        document.body.appendChild(pixelTag);
+    }
+
+    // Call Tracking pixel with the TC string after user has submitted/TC is loaded
+    document.addEventListener("DOMContentLoaded", () => {
+        setTimeout(() => {
+            __tcfapi('addEventListener', 2, (tcData, success) => {
+                if(success && (tcData.eventStatus === "tcloaded" || tcData.eventStatus === "useractioncomplete")) {
+                    addPixelTag(tcData);
+                }
+            });
+        }, 2000);
+    });
+</script>
+
 <!-- CookiePro Cookies Settings button start -->
 <button id="ot-sdk-btn" class="ot-sdk-show-settings">Cookie Settings</button>
 <!-- CookiePro Cookies Settings button end -->

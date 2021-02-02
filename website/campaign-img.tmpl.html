@@ -132,20 +132,9 @@
 
 <!-- GET pixel -->
 <script>
-    const tcStrings = {
-        "vendorConsent":  "CO9K0KjO9K0KjAGABBDEBBCgAAAAAAAAAAYgF7QAQF7AAAAAAAAA.YAAAAAAAAAAA",
-        "vendorPurpose1Consent": "CO9K0SsO9K0SsAGABBDEBBCgAIAAAAAAAAYgGWkR5C5FTWFCQX55QstwGIAHUMAEAGQCAACAAiABAAEQICwAgmASoASABAACAAAAIBIBAAAECAAAAAAAQAAEAACAAAAEAAAIIAIAABEAAAIAAAAKAAAAAAAAgAEAAAAAmEAQAgZiQCAAAAAA.YAAAAAAAAAAA",
-        "vendorPurpose1Purpose9Consent": "CO9K0gVO9K0gVAGABBDEBBCgAICAAAAAAAYgGWkR5D5FTWFCQX55QstwGIAHUMAEAGQCAACAAiABAAEQICwAgmASoASABAACAAAAIBIBAAAECAAAAAAAQAAEAACAAAAEAAAIIAIAABEAAAIAAAAKAAAAAAAAgAEAAAAAmEAQAgZiQCAAAAIlATAAWABkADgAIgAeABEACYAFwAMQAZgBCACGAFKANUAjgBigDqAIvAXmSABAAXAIyAAA.YAAAAAAAAAAA",
-        "purpose1Purpose9Consent": "CO9K0rDO9K0rDAGABBDEBBCgAICAAAAAAAYgGWkR5D5FTWFCQX55QstwGIAHUMAEAGQCAACAAiABAAEQICwAgmASoASABAACAAAAIBIBAAAECAAAAAAAQAAEAACAAAAEAAAIIAIAABEAAAIAAAAKAAAAAAAAgAEAAAAAiEAQAgZiQCAAAAIlATAAWABkADgAIgAeABEACYAFwAMQAZgBCACGAFKANUAjgBigDqAIvAXmSABAAXAIyAAA.YAAAAAAAAAAA",
-        "invalid": "iamnotavalidtcstring",
-    }
-
     // Allow overwriting the used tp with url param pixelUrl
     var urlParams = new URLSearchParams(window.location.search);
     var tpUrl = urlParams.get("pixelUrl") || "https://##ENVDOMAIN##/tp";
-    var optin = urlParams.get("optin");
-    var gdpr = urlParams.get("gdpr");
-    var tcf = urlParams.get("tcf");
     if (!/[?&]ty=/.test(tpUrl)) {
         tpUrl += (tpUrl.indexOf("?") === -1 ? "?" : "&") + "ty=IM";
     }
@@ -158,26 +147,9 @@
     if (!/[?&]cp_cp1=/.test(tpUrl)) {
         tpUrl += "&cp_cp1=1553256932919";
     }
-    if (optin && !/[?&]optin=/.test(tpUrl)) {
-        tpUrl += "&optin=" + optin;
-    }
-    tpUrl += "&gdpr=" + ((gdpr === "applies") ? "1" : "0");
-    if (tcf) {
-        tpUrl += `&gdpr_consent=${tcStrings[tcf]}`;
-    }
     var pixelTag = document.createElement("img");
     pixelTag.src = tpUrl;
     document.body.appendChild(pixelTag);
-
-    window.addEventListener("DOMContentLoaded", () => {
-        (window.document.getElementById("optin_" + optin) || window.document.getElementById("optin_undefined")).checked = true;
-        if (gdpr) {
-            window.document.getElementById(gdpr).checked = true;
-        }
-        if (tcf) {
-            window.document.getElementById(tcf).checked = true;
-        }
-    });
 </script>
 
 </body>
