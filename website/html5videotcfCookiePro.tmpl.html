@@ -53,12 +53,39 @@
         var urlParams = new URLSearchParams(window.location.search);
         var url       = urlParams.get("sdkUrl") || "//##ENVDOMAIN##/s2s-web.js";
 
+        // Optin via GET param
+        var optinGetValue = urlParams.get("optin");
+
         var gfkS2sConf = {
+            optin: (typeof optinGetValue === "string") ? (optinGetValue === "true") : undefined,
             media: "s2s-html5-demo",
             url: url,
             type: "WEB",
             logLevel: "debug"
         };
+
+        function getIndexOfOptinValue() {
+            return (gfkS2sConf.optin === true) ? 2 : (gfkS2sConf.optin === false) ? 1 : 0;
+        }
+
+        window.addEventListener("load", function(event) {
+            var r = document.getElementsByClassName("radio");
+            r[getIndexOfOptinValue()].checked = true;
+            r[0].onclick = r[1].onclick = r[2].onclick = function() { optinClickHdl(this.value); }
+        });
+
+        function optinClickHdl(value) {
+            var url = location.href;
+            var re = /([?&])optin=[^&]*([&]?)/;
+            var m = url.match(re);
+            if (m) {
+                url = url.replace(m[0], (m[1] === "?" && m[2] === "&") ? "?" : (m[1] === "&" && m[2] === "&") ? "&" : "");
+            }
+            if (value !== "undefined") {
+                url += (url.indexOf("?") < 0 ? "?" : "&") + "optin=" + value;
+            }
+            location.href = url;
+        }
 
         (
             function (w, d, c, s, id, v) {
@@ -147,6 +174,11 @@
     <div id="title">S2S HTML5 Video Demo</div>
     <h1>TCF</h1>
     <div id="position"></div>
+    <div class="optionsbox inline">
+        <table>
+            <tr><td class="key">Opt-in:</td><td class="value"><div class="radiobox"><input type="radio" name="optin" class="radio" value="undefined" /><label for="undefined">undefined</label><input type="radio" name="optin" class="radio" value="false" /><label for="false">false</label><input type="radio" name="optin" class="radio" value="true" /><label for="true">true</label></div></td></tr>
+        </table>
+    </div>
 </div>
 
 <video id="v1" controls preload="metadata">
