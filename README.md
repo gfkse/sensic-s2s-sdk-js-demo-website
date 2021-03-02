@@ -1,52 +1,41 @@
-# Second by Second, Typescript 2 Version
+# S2S Demo Website
 
-1. [Configuring](#configuring)
-2. [Running](#running-locally)
-3. [Deployment](#deployment)
-4. [Requirements](#requirements)
+Websites that demonstrate features of our tracking solution. 
+Used also for manual tests.
 
-## Configuring
+## Developing
+Setup:
 
-The different *.html files reference all elements of the frontend stack.
-The URL these are referenced with can be configured using:
-```shell
-> ENV=<environment> gulp setenv
-(or on windows)
-> set ENV=<environment>
-> gulp setenv
+    $ npm install
+
+The following build scripts are available, which will build the website into _dist/_ 
 ```
-where \<environment> is one of `local|development|preproduction|prodution`.
-This will replace the URL prefix of all references with:
-
-| Environment   | URL-Prefix                             |
-|---------------|----------------------------------------|
-| local         | 'localhost:8080/dist'                  |
-| development   | 's2s.dev/website/dist'                 |
-| preproduction | 'demo-config-preproduction.sensic.net' |
-| production    | 'demo-config.sensic.net'               |
-
-For example for the production environment, this projects pages will then reference:
-
-- https://demo-config.sensic.net/tp
-- https://demo-config.sensic.net/tag-im.js
-- demo-config.sensic.net/s2s-web.js
-- demo-config.sensic.net/sui-connector.js
-- demo-config.sensic.net/s2s-web.js
-
-## Running locally
-
-Simply host the website/ directory with a webserver, for example:
-
-```shell
-> npm i -g http-server
-> http-server -p 8081 website/
+$ npm run build         # <-- builds production version
+$ npm run build:dev     # <-- builds unminified version
+$ npm run build:local   # <-- builds unminified local version
+```
+You can also start a web server that hosts the website at http://localhost:8080/index.html . For more info, have a look at [webpack dev server](https://webpack.js.org/configuration/dev-server/).
+```
+$ npm run serve
+$ npm run serve:dev
+$ npm run serve:local
 ```
 
-and visit http://localhost:8081/index.html
+### Production version
+Will use the sensic stack hosted at https://demo-config.sensic.net/ .
 
-## Running the entire frontend stack
+### Dev version
+Will use the sensic stack hosted at https://demo-config-preproduction.sensic.net/ .
 
-Read the guide on how to develop locally in confluence (https://confluence.gfk.com/pages/viewpage.action?pageId=292572332&moved=true)
+### Local version
+Will use a sensic stack hosted at http://localhost[:port] .
+
+This allows running the website together with the [VMS](https://stash.gfk.com/projects/DAM/repos/visitor-management-system) and [SDK](https://stash.gfk.com/projects/DAM/repos/s2s-sdk-web) to create a local environment for developing. 
+By default it expects the web SDK to be available at localhost:8082/s2s-web.js and the VMS files to be available at localhost:8083 (example: http://localhost:8083/suiapi.js).
+The default `serve` tasks in the SDK & VMS repositories are set to these ports.
+ If you need to change the ports, have a look at the `local` env settings in [env.config.ts](./config/env.config.ts).
+
+
 
 ## Testing alternate deployments of sensic components
 
@@ -64,24 +53,3 @@ For this each page takes an optional query parameter that can point to a differe
 | html5video.html | sdkUrl | html5video.html?sdkUrl=http://sg-config.sensic.net/s2s-web.js |
 | video.html | sdkUrl | video.html?sdkUrl=http://sg-config.sensic.net/s2s-web.js |
 | sui-connector-test.html | connectorUrl | sui-connector-test.html?connectorUrl=http://sg-config.sensic.net/sui-connector.js |
-
-
-## Deployment
-
-You need to create a file *aws_credentials.php* at the top level of the repository with the following content:
-```
-<?php
-return [
-    'key' => 'AWS_KEY_ID',
-    'secret' => 'AWS_SECRET_KEY',
-];
-```
-
-Then run `php S3upload.php <preproduction|production>`.
-
-## Requirements
-- php7+
-- npm5+
-- php composer
-- typescript 2+
-- Some webserver (python http.server or node http-server)

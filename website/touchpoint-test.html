@@ -1,21 +1,20 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <meta charset="utf-8">
+        <meta charset="utf-8" />
         <title>Touchpoint Test</title>
-        <link rel="shortcut icon" href="images/favicon.png">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css">
+        <link rel="shortcut icon" href="images/favicon.png" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" />
         <script src="js/url-polyfill.js"></script>
         <script>
             var publisherUrl = window.location.href;
             var publisherDomain = publisherUrl.match(/https:\/\/([^\/]*)\/.*/)[1];
-            var sensicDomain = "##ENVDOMAIN##";
 
             var urlParams = new URLSearchParams(location.search);
-            var connectorUrl = "https://" + sensicDomain + "/sui-connector.js";
+            var connectorUrl = window.env.SUI_CONNECTOR_URL;
             var gfkConnectorConf = {
-                suigen: false
-            }
+                suigen: false,
+            };
             var suiConnectorTag = document.createElement("script");
             suiConnectorTag.src = connectorUrl;
             document.head.insertBefore(suiConnectorTag, document.getElementsByTagName("script")[0]);
@@ -98,7 +97,7 @@
 
             function updateSuiElement(suiObj, suiIdFromTouchpoint) {
                 document.getElementById("sui-from-connector").innerText = JSON.stringify(suiObj, null, 4);
-                document.getElementById("del-sui").disabled = (suiObj == null);
+                document.getElementById("del-sui").disabled = suiObj == null;
                 if (suiObj) {
                     if (suiObj.pid) {
                         document.getElementById("pid").value = suiObj.pid;
@@ -121,13 +120,13 @@
                 }
                 if (suiIdFromTouchpoint) {
                     document.getElementById("sui-id-from-touchpoint").innerHTML = suiIdFromTouchpoint;
-                    if (suiObj && (suiObj.id === suiIdFromTouchpoint)) {
+                    if (suiObj && suiObj.id === suiIdFromTouchpoint) {
                         document.getElementById("result").innerHTML = "<span style='color: green;'>&#x2714;</span> OK";
                     } else {
                         document.getElementById("result").innerHTML = "<span style='color: red;'>&#x274C;</span> SUIs are different!";
                     }
                     if (urlParams.get("iframe") === "true") {
-                        window.parent.postMessage({sensic: {sui: JSON.stringify(suiObj), suiidFromTp: suiIdFromTouchpoint}}, "*");
+                        window.parent.postMessage({ sensic: { sui: JSON.stringify(suiObj), suiidFromTp: suiIdFromTouchpoint } }, "*");
                     } else {
                         var iframe = document.getElementById("suitp-iframe");
                         if (iframe) {
@@ -147,8 +146,8 @@
 
             function showInfo() {
                 var infoElem = document.getElementById("info");
-                var becomesVisible = (infoElem.style.display !== "block");
-                infoElem.style.display = (becomesVisible ? "block" : "none");
+                var becomesVisible = infoElem.style.display !== "block";
+                infoElem.style.display = becomesVisible ? "block" : "none";
                 document.getElementById("show-info").innerHTML = "<i class='fas fa-angle-double-" + (becomesVisible ? "up" : "down") + "'></i>&nbsp;&nbsp;Info";
             }
 
@@ -169,7 +168,7 @@
                         updateSuiElement(this.suiObj, e.data.sensic.suiidFromTp);
                     }
                 });
-            }
+            };
         </script>
         <style>
             body {
@@ -291,16 +290,66 @@
             <h1>Touchpoint Test</h1>
             <div id="page">
                 <table>
-                    <tr><td class="name">Publisher domain:</td><td class="value"><div class="code"><code id="pdomain">...</code></div></td></tr>
-                    <tr><td class="name">SENSIC domain:</td><td class="value"><div class="code space-below"><code id="sdomain">...</code></div></td></tr>
-                    <tr id="row-pid"><td class="name">Panel ID:</td><td class="value"><div class="input"><input type="text" id="pid"></div></td></tr>
-                    <tr><td class="name">Household ID:</td><td class="value"><div class="input"><input type="text" id="hhid"></div></td></tr>
-                    <tr><td class="name">User ID:</td><td class="value"><div class="input"><input type="text" id="uid"></div></td></tr>
-                    <tr><td class="name">Panel User ID:</td><td class="value"><div class="input"><input type="text" id="paneluserid"></div></td></tr>
-                    <tr id="row-adid"><td class="name">Advertising ID:</td><td class="value"><div class="input space-below"><input type="text" id="adid"></div></td></tr>
-                    <tr id="row-sui-from-tp"><td class="name">SUI ID from Touchpint:</td><td class="value"><div class="code"><code id="sui-id-from-touchpoint">...</code></div></td></tr>
-                    <tr><td class="name">SUI from Connector:</td><td class="value"><div class="code"><code id="sui-from-connector">...</code></div></td></tr>
-                    <tr id="row-result"><td class="name">Result:</td><td class="value"><div class="result"><span id="result">...</span></div></td></tr>
+                    <tr>
+                        <td class="name">Publisher domain:</td>
+                        <td class="value">
+                            <div class="code"><code id="pdomain">...</code></div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="name">SENSIC domain:</td>
+                        <td class="value">
+                            <div class="code space-below"><code id="sdomain">...</code></div>
+                        </td>
+                    </tr>
+                    <tr id="row-pid">
+                        <td class="name">Panel ID:</td>
+                        <td class="value">
+                            <div class="input"><input type="text" id="pid" /></div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="name">Household ID:</td>
+                        <td class="value">
+                            <div class="input"><input type="text" id="hhid" /></div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="name">User ID:</td>
+                        <td class="value">
+                            <div class="input"><input type="text" id="uid" /></div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="name">Panel User ID:</td>
+                        <td class="value">
+                            <div class="input"><input type="text" id="paneluserid" /></div>
+                        </td>
+                    </tr>
+                    <tr id="row-adid">
+                        <td class="name">Advertising ID:</td>
+                        <td class="value">
+                            <div class="input space-below"><input type="text" id="adid" /></div>
+                        </td>
+                    </tr>
+                    <tr id="row-sui-from-tp">
+                        <td class="name">SUI ID from Touchpint:</td>
+                        <td class="value">
+                            <div class="code"><code id="sui-id-from-touchpoint">...</code></div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="name">SUI from Connector:</td>
+                        <td class="value">
+                            <div class="code"><code id="sui-from-connector">...</code></div>
+                        </td>
+                    </tr>
+                    <tr id="row-result">
+                        <td class="name">Result:</td>
+                        <td class="value">
+                            <div class="result"><span id="result">...</span></div>
+                        </td>
+                    </tr>
                 </table>
                 <div class="buttons">
                     <button type="button" id="del-sui">Delete SUI</button>
@@ -310,25 +359,36 @@
                     <button type="button" id="show-info"><i class="fas fa-angle-double-down"></i>&nbsp;&nbsp;Info</button>
                 </div>
                 <div id="info">
-                    <p>This page allows to call the SUI Touchpoint (suitp.html) with parameters as specified in the fields above
-                        (pid, hhid, uid, paneluserid, adid).</p>
-                    <p>To have a publisher-like context, and make it possible to check cross-domain behavior,
-                        this page should not be called with its sensic.net URL, but with amazonaws.com URL.</p>
-                    <p>The field "SUI from Connector" displays the current SUI, which is fetched using the SUI Connector.
-                        This, in any case, happens without calling SUI Generator (what the SUI Connector normally could do),
-                        so the current SUI could be null.</p>
-                    <p>When you click on <b>Call Touchpoint by window</b>, the touchpoint page is called with parameters as specified above.
-                        Additionally a "go" parameter is passed, which instructs the touchpoint to redirect to this page again.</p>
+                    <p>
+                        This page allows to call the SUI Touchpoint (suitp.html) with parameters as specified in the fields above (pid, hhid, uid, paneluserid,
+                        adid).
+                    </p>
+                    <p>
+                        To have a publisher-like context, and make it possible to check cross-domain behavior, this page should not be called with its
+                        sensic.net URL, but with amazonaws.com URL.
+                    </p>
+                    <p>
+                        The field "SUI from Connector" displays the current SUI, which is fetched using the SUI Connector. This, in any case, happens without
+                        calling SUI Generator (what the SUI Connector normally could do), so the current SUI could be null.
+                    </p>
+                    <p>
+                        When you click on <b>Call Touchpoint by window</b>, the touchpoint page is called with parameters as specified above. Additionally a
+                        "go" parameter is passed, which instructs the touchpoint to redirect to this page again.
+                    </p>
                     <p>After the touchpoint was called, we have a touchpoint-generated SUI ID, which is displayed here.</p>
-                    <p>With the redirection, this page calls the SUI Connector again.
-                        Therefore it can be tested whether the touchpoint-generated SUI, set in the sensic.net domain,
-                        is really active in the current domain.</p>
-                    <p>For example, if sensic.net third-party cookies are blocked (which in Firefox is the case by default),
-                        the SUI from the SUI Connector will always be null, although the touchpoint sets a SUI as expected.</p>
-                    <p>When you click on <b>Call Touchpoint by iframe</b>, the touchpoint page is called in similar way, but in an iframe,
-                        not in the top-level window. The result of that call is propagated to the top-level window by message.
-                        Usually, such an iframe would not be visible. However, here it is shown while in action, so you can see that
-                        something is happening.</p>
+                    <p>
+                        With the redirection, this page calls the SUI Connector again. Therefore it can be tested whether the touchpoint-generated SUI, set in
+                        the sensic.net domain, is really active in the current domain.
+                    </p>
+                    <p>
+                        For example, if sensic.net third-party cookies are blocked (which in Firefox is the case by default), the SUI from the SUI Connector
+                        will always be null, although the touchpoint sets a SUI as expected.
+                    </p>
+                    <p>
+                        When you click on <b>Call Touchpoint by iframe</b>, the touchpoint page is called in similar way, but in an iframe, not in the top-level
+                        window. The result of that call is propagated to the top-level window by message. Usually, such an iframe would not be visible. However,
+                        here it is shown while in action, so you can see that something is happening.
+                    </p>
                 </div>
             </div>
         </div>

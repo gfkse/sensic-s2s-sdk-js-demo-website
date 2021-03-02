@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html class="no-js">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Second by Second - DemoSite</title>
+        <link rel="shortcut icon" href="images/favicon.png" />
+        <link rel="stylesheet" href="css/googlefont-raleway.css" />
+        <link rel="stylesheet" href="css/animate.css" />
+        <link rel="stylesheet" href="css/icomoon.css" />
+        <link rel="stylesheet" href="css/bootstrap.css" />
+        <link rel="stylesheet" href="css/flexslider.css" />
+        <link rel="stylesheet" href="css/owl.carousel.min.css" />
+        <link rel="stylesheet" href="css/owl.theme.default.min.css" />
+        <link rel="stylesheet" href="css/style.css" />
+        <link rel="stylesheet" href="css/s2s-demo.css" />
+
+        <!-- Bitmovin player  -->
+        <script type="text/javascript" src="//cdn.bitmovin.com/player/web/8/bitmovinplayer.js"></script>
+
+        <script src="js/modernizr-2.6.2.min.js"></script>
+        <script src="js/url-polyfill.js"></script>
+    </head>
+    <body>
+        <script>
+            // Allow overwriting the used sdk with url param sdkUrl
+            var urlParams = new URLSearchParams(window.location.search);
+            var url = urlParams.get("sdkUrl") || window.env.WEB_SDK_URL;
+
+            // Optin via GET param
+            var optinGetValue = urlParams.get("optin");
+
+            var gfkS2sConf = {
+                optin: typeof optinGetValue === "string" ? optinGetValue === "true" : undefined,
+                media: "s2sdemomediaid_ssa_web",
+                url: url,
+                visUrl: "https://s407.mxcdn.net/bb-mx/serve/mtrcs_943913.js",
+                type: "WEB",
+                logLevel: "debug",
+            };
+
+            function getIndexOfOptinValue() {
+                return gfkS2sConf.optin === true ? 2 : gfkS2sConf.optin === false ? 1 : 0;
+            }
+
+            function optinClickHdl(value) {
+                var url = location.href;
+                var re = /([?&])optin=[^&]*([&]?)/;
+                var m = url.match(re);
+                if (m) {
+                    url = url.replace(m[0], m[1] === "?" && m[2] === "&" ? "?" : m[1] === "&" && m[2] === "&" ? "&" : "");
+                }
+                if (value !== "undefined") {
+                    url += (url.indexOf("?") < 0 ? "?" : "&") + "optin=" + value;
+                }
+                location.href = url;
+            }
+
+            window.addEventListener("load", function (event) {
+                var r = document.getElementsByClassName("radio");
+                r[getIndexOfOptinValue()].checked = true;
+                r[0].onclick = r[1].onclick = r[2].onclick = function () {
+                    optinClickHdl(this.value);
+                };
+            });
+
+            (function (w, d, c, s, id, v) {
+                if (d.getElementById(id)) {
+                    return;
+                }
+
+                w[id] = {};
+                w[id].agents = [];
+                var api = ["playStreamLive", "playLive", "playStreamOnDemand", "playVOD", "stop", "skip", "screen", "volume", "impression"];
+                w.gfks = (function () {
+                    function f(sA, e, cb) {
+                        return function () {
+                            sA.p = cb();
+                            sA.queue.push({ f: e, a: arguments });
+                        };
+                    }
+                    function s(c, pId, cb) {
+                        var sA = { queue: [], config: c, cb: cb, pId: pId };
+                        for (var i = 0; i < api.length; i++) {
+                            e = api[i];
+                            sA[e] = f(sA, e, cb);
+                        }
+                        return sA;
+                    }
+
+                    return s;
+                })();
+                w[id].getAgent = function (cb, pId) {
+                    console.log("### gfkS2s.getAgent()");
+                    var a = {
+                        a: new w.gfks(
+                            c,
+                            pId || "",
+                            cb ||
+                                function () {
+                                    return 0;
+                                }
+                        ),
+                    };
+                    function g(a, e) {
+                        return function () {
+                            return a.a[e].apply(a.a, arguments);
+                        };
+                    }
+                    for (var i = 0; i < api.length; i++) {
+                        e = api[i];
+                        a[e] = g(a, e);
+                    }
+                    w[id].agents.push(a);
+
+                    return a;
+                };
+
+                var lJS = function (eId, url) {
+                    console.log("### Loading S2S Web...");
+                    var tag = d.createElement(s);
+                    var el = d.getElementsByTagName(s)[0];
+                    tag.id = eId;
+                    tag.async = true;
+                    tag.type = "text/javascript";
+                    tag.src = url;
+                    el.parentNode.insertBefore(tag, el);
+                };
+
+                var delayParam = new URL(location.href).searchParams.get("delay");
+                var delay = delayParam ? parseInt(delayParam) : 0;
+                if (delay) {
+                    w.setTimeout(function () {
+                        if (c.hasOwnProperty(v)) {
+                            lJS(id + v, c[v]);
+                        }
+                        lJS(id, c.url);
+                    }, delay);
+                } else {
+                    if (c.hasOwnProperty(v)) {
+                        lJS(id + v, c[v]);
+                    }
+                    lJS(id, c.url);
+                }
+            })(window, document, gfkS2sConf, "script", "gfkS2s", "visUrl");
+        </script>
+        <div class="optionsbox fixed">
+            <table>
+                <tr>
+                    <td class="key">Opt-in:</td>
+                    <td class="value">
+                        <div class="radiobox">
+                            <input type="radio" name="optin" class="radio" value="undefined" /><label for="undefined">undefined</label
+                            ><input type="radio" name="optin" class="radio" value="false" /><label for="false">false</label
+                            ><input type="radio" name="optin" class="radio" value="true" /><label for="true">true</label>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <div id="fh5co-page">
+            <div class="container"></div>
+            <aside id="fh5co-hero" class="js-fullheight">
+                <div class="flexslider js-fullheight">
+                    <ul class="slides">
+                        <li style="background-image: url(images/slide_2.jpg)">
+                            <div class="overlay-gradient"></div>
+                            <div class="container">
+                                <div class="col-md-10 col-md-offset-1 text-center js-fullheight slider-text">
+                                    <div class="slider-text-inner">
+                                        <h2>Second by Second &ndash; Video 1</h2>
+                                        <p><a href="#video1" class="btn btn-primary btn-lg">Jump to Video</a></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li style="background-image: url(images/slide_2.jpg)">
+                            <div class="container">
+                                <div class="col-md-10 col-md-offset-1 text-center js-fullheight slider-text">
+                                    <div class="slider-text-inner">
+                                        <h2>Second by Second &ndash; Video 2</h2>
+                                        <p><a href="#video2" class="btn btn-primary btn-lg">Jump to Video</a></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li style="background-image: url(images/slide_3.jpg)">
+                            <div class="container">
+                                <div class="col-md-10 col-md-offset-1 text-center js-fullheight slider-text">
+                                    <div class="slider-text-inner">
+                                        <h2>Second by Second &ndash; Video 3</h2>
+                                        <p><a href="#video3" class="btn btn-primary btn-lg">Jump to Video</a></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </aside>
+            <div id="fh5co-services-section">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-6 col-md-offset-3 text-center fh5co-heading animate-box">
+                            <h2>Our Awesome Features</h2>
+                            <ul>
+                                <li>collect data from user device/browser</li>
+                                <li>record user behavior during video watching</li>
+                                <li>count view time of watching segment</li>
+                            </ul>
+                            <p>
+                                <b
+                                    >For more information read the confluence
+                                    <a title="documentation" target="_blank" href="https://confluence.gfk.com/pages/viewpage.action?pageId=174493271"
+                                        >documentation</a
+                                    >
+                                </b>
+                            </p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 animate-box">
+                            <div class="services">
+                                <i class="icon-pie-chart"></i>
+                                <div class="desc">
+                                    <h3>Business Analytics</h3>
+                                    <p>
+                                        Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts.
+                                        Separated they live in Bookmarksgrove.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="fh5co-work-section" class="fh5co-light-grey-section">
+                <div class="container">
+                    <div class="row">
+                        <div class="text-center fh5co-heading">
+                            <h2>Video Measurement</h2>
+                            <p>MediaId = s2sdemomediaid_ssa_web<br /></p>
+                            <p>
+                                ContentId = Video1<br />
+                                ContentId = Video2<br />
+                                ContentId = Video3<br />
+                                ContentId = VideoCustom<br />
+                            </p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 animate-box">
+                            <div id="video1">
+                                <video id="player" width="100%" height="100%"></video>
+                            </div>
+                            <div class="image" style="background-image: url(images/image_1.jpg)"></div>
+                            <div class="v-align">
+                                <div class="v-align-middle">
+                                    <h3 class="title">Video 1 Live with Content-Time</h3>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 animate-box">
+                            <div id="video2">
+                                <video id="player2" width="100%" height="100%"></video>
+                            </div>
+                            <div class="image" style="background-image: url(images/image_1.jpg)"></div>
+                            <div class="v-align">
+                                <div class="v-align-middle">
+                                    <h3 class="title">Video 2 Live without Content-Time</h3>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 animate-box">
+                            <div id="video3">
+                                <video id="player3" width="100%" height="100%"></video>
+                            </div>
+                            <div class="image" style="background-image: url(images/image_1.jpg)"></div>
+                            <div class="v-align">
+                                <div class="v-align-middle">
+                                    <h3 class="title">Video 3 VOD</h3>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 animate-box">
+                            <div id="videoCustom">
+                                <video id="playerCustom" width="100%" height="100%"></video>
+                            </div>
+                            <div class="image" style="background-image: url(images/image_1.jpg)"></div>
+                            <div class="v-align">
+                                <div class="v-align-middle">
+                                    <h3>Custom Video</h3>
+                                    (Click the 'Load Player' button below to load.)
+                                </div>
+                            </div>
+                            <div class="v-align-middle">
+                                <h4>Custom Video Settings</h4>
+                                <p>
+                                    <label>Video Type :</label>
+                                    <select id="videoType">
+                                        <option value="live">Live Video</option>
+                                        <option selected value="vod">VOD Video</option>
+                                    </select>
+                                </p>
+                                <p>
+                                    <label>ContentStart:</label>
+                                    <input type="text" value="2019-01-01T16:00:00+02:00" id="contentStart" />
+                                </p>
+                                <p>
+                                    <label>VideoOffset:</label>
+                                    <input type="text" value="0" id="videoOffset" />
+                                </p>
+                                <p>
+                                    <button onclick="videoPlayerCustom();">Load player and apply settings</button>
+                                </p>
+                            </div>
+                        </div>
+                        <div class="col-md-4 animate-box">
+                            <div id="video5">
+                                <video id="player5" width="100%" height="100%"></video>
+                            </div>
+                            <div class="image" style="background-image: url(images/image_1.jpg)"></div>
+                            <div class="v-align">
+                                <div class="v-align-middle">
+                                    <h3 class="title">Video 5: VOD with stream position parameter</h3>
+                                </div>
+                            </div>
+                            <div>
+                                <h4>Provide a stream time position when calling the agents play or stop methods</h4>
+                                This can be used when getting the stream position directly from the player is unreliable.
+                                <p>
+                                    <label>Streamposition:</label>
+                                    <input type="text" value="1000" id="video5position" />
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12 text-center animate-box">
+                            <p>
+                                <a href="#" class="btn btn-primary with-arrow">View More Projects <i class="icon-arrow-right"></i></a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="fh5co-cta" style="background-image: url(images/slide_2.jpg)">
+                <div class="overlay"></div>
+                <div class="container">
+                    <div class="col-md-12 text-center animate-box">
+                        <h3>Top</h3>
+                        <p>
+                            <a href="#" class="btn btn-primary btn-outline with-arrow">Get started now! <i class="icon-arrow-right"></i></a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <footer id="fh5co-footer" role="contentinfo">
+                <div class="container">
+                    <div class="col-md-3 col-sm-12 col-sm-push-0 col-xs-12 col-xs-push-0">
+                        <h3>About Us</h3>
+                        <p>SENSIC MM Data Collection Team</p>
+                        <p>
+                            <a href="#" class="btn btn-primary btn-outline with-arrow btn-sm">Enjoy S2S Video Measurement<i class="icon-arrow-right"></i></a>
+                        </p>
+                    </div>
+                    <div class="col-md-6 col-md-push-1 col-sm-12 col-sm-push-0 col-xs-12 col-xs-push-0">
+                        <!--
+                <h3>And here a little more advertising:</h3>
+                <iframe src="https://de.wikipedia.org" width="100%" height="400"></iframe>
+                -->
+                    </div>
+                </div>
+            </footer>
+        </div>
+
+        <script src="js/jquery.min.js"></script>
+        <script src="js/jquery.easing.1.3.js"></script>
+        <script src="js/bootstrap.min.js"></script>
+        <script src="js/jquery.waypoints.min.js"></script>
+        <script src="js/owl.carousel.min.js"></script>
+        <script src="js/jquery.flexslider-min.js"></script>
+
+        <!-- MAIN JS -->
+        <script src="js/main.js"></script>
+        <script src="js/videotracking.js"></script>
+    </body>
+</html>

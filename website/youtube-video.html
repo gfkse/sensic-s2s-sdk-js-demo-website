@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <title>S2S YouTube Video Demo</title>
+        <link rel="shortcut icon" href="images/favicon.png" />
+        <link rel="stylesheet" href="css/s2s-demo.css" />
+
+        <style>
+            body {
+                background-color: #202020;
+                color: white;
+                font-family: Arial, Helvetica, sans-serif;
+                font-size: 14px;
+                width: 100%;
+                height: 100%;
+                overflow: hidden;
+                position: absolute;
+                margin: 0;
+                padding: 0;
+            }
+
+            .header {
+                background-color: #202020;
+                color: #a0a0a0;
+                display: flex;
+                align-items: center;
+                height: 30px;
+            }
+
+            #player {
+                width: calc(100% - 2px);
+                height: calc(100vw * 9 / 16);
+                max-height: calc(100vh - 32px);
+                border: 1px solid #606060;
+            }
+
+            #icon {
+                width: 20px;
+                height: 20px;
+                vertical-align: middle;
+                margin: 0 10px 0 0;
+            }
+
+            #title {
+                margin: 0 20px 0 10px;
+                font-weight: bold;
+            }
+
+            #position {
+                margin: 0 10px 0 40px;
+                color: white;
+                flex-grow: 1;
+                text-align: right;
+            }
+        </style>
+
+        <script src="js/url-polyfill.js"></script>
+    </head>
+    <body>
+        <script>
+            // Allow overwriting the used sdk with url param sdkUrl
+            var urlParams = new URLSearchParams(window.location.search);
+            var url = urlParams.get("sdkUrl") || window.env.WEB_SDK_URL;
+
+            // Optin via GET param
+            var optinGetValue = urlParams.get("optin");
+
+            var gfkS2sConf = {
+                optin: typeof optinGetValue === "string" ? optinGetValue === "true" : undefined,
+                media: "s2s-youtube-demo",
+                url: url,
+                type: "WEB",
+                logLevel: "debug",
+            };
+
+            function getIndexOfOptinValue() {
+                return gfkS2sConf.optin === true ? 2 : gfkS2sConf.optin === false ? 1 : 0;
+            }
+
+            function optinClickHdl(value) {
+                var url = location.href;
+                var re = /([?&])optin=[^&]*([&]?)/;
+                var m = url.match(re);
+                if (m) {
+                    url = url.replace(m[0], m[1] === "?" && m[2] === "&" ? "?" : m[1] === "&" && m[2] === "&" ? "&" : "");
+                }
+                if (value !== "undefined") {
+                    url += (url.indexOf("?") < 0 ? "?" : "&") + "optin=" + value;
+                }
+                location.href = url;
+            }
+
+            window.addEventListener("load", function (event) {
+                var r = document.getElementsByClassName("radio");
+                r[getIndexOfOptinValue()].checked = true;
+                r[0].onclick = r[1].onclick = r[2].onclick = function () {
+                    optinClickHdl(this.value);
+                };
+            });
+
+            (function (w, d, c, s, id, v) {
+                if (d.getElementById(id)) {
+                    return;
+                }
+
+                w.gfkS2sConf = c;
+                w[id] = {};
+                w[id].agents = [];
+                var api = ["playStreamLive", "playLive", "playStreamOnDemand", "playVOD", "stop", "skip", "screen", "volume", "impression"];
+                w.gfks = (function () {
+                    function f(sA, e, cb) {
+                        return function () {
+                            sA.p = cb();
+                            sA.queue.push({ f: e, a: arguments });
+                        };
+                    }
+                    function s(c, pId, cb) {
+                        var sA = { queue: [], config: c, cb: cb, pId: pId };
+                        for (var i = 0; i < api.length; i++) {
+                            e = api[i];
+                            sA[e] = f(sA, e, cb);
+                        }
+                        return sA;
+                    }
+                    return s;
+                })();
+                w[id].getAgent = function (cb, pId) {
+                    var a = {
+                        a: new w.gfks(
+                            c,
+                            pId || "",
+                            cb ||
+                                function () {
+                                    return 0;
+                                }
+                        ),
+                    };
+                    function g(a, e) {
+                        return function () {
+                            return a.a[e].apply(a.a, arguments);
+                        };
+                    }
+                    for (var i = 0; i < api.length; i++) {
+                        e = api[i];
+                        a[e] = g(a, e);
+                    }
+                    w[id].agents.push(a);
+                    return a;
+                };
+
+                var lJS = function (eId, url) {
+                    var tag = d.createElement(s);
+                    var el = d.getElementsByTagName(s)[0];
+                    tag.id = eId;
+                    tag.async = true;
+                    tag.type = "text/javascript";
+                    tag.src = url;
+                    el.parentNode.insertBefore(tag, el);
+                };
+
+                if (c.hasOwnProperty(v)) {
+                    lJS(id + v, c[v]);
+                }
+                lJS(id, c.url);
+            })(window, document, gfkS2sConf, "script", "gfkS2s", "visUrl");
+
+            gfkS2s.getAgent().impression("DemoContent", {
+                cp1: [
+                    { i: "54534", n: "iPhone", b: "Apple", c: "Smartphone" },
+                    { i: "345", n: "Adapter", b: "Samsung", c: "Electronic" },
+                ],
+            });
+        </script>
+        <div class="header">
+            <div id="title">
+                <a href="index.html"><img id="icon" src="images/favicon.png" /></a> S2S YouTube Video Demo
+            </div>
+            <div class="optionsbox inline">
+                <table>
+                    <tr>
+                        <td class="key">Opt-in:</td>
+                        <td class="value">
+                            <div class="radiobox">
+                                <input type="radio" name="optin" class="radio" value="undefined" /><label for="undefined">undefined</label
+                                ><input type="radio" name="optin" class="radio" value="false" /><label for="false">false</label
+                                ><input type="radio" name="optin" class="radio" value="true" /><label for="true">true</label>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div id="position"></div>
+        </div>
+
+        <!-- The following <div> tag will be replaced by an <iframe> tag with same id and youtube.com URL. -->
+        <div id="player"></div>
+
+        <script>
+            var youtubeVideoId = "4TFKZFg5ko4";
+            var tag = document.createElement("script");
+            tag.src = "https://www.youtube.com/iframe_api";
+            var firstScriptTag = document.getElementsByTagName("script")[0];
+            firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+            var video = document.getElementById("player");
+            var agent = gfkS2s.getAgent(getVideoPosition, "player");
+            var positionElement = document.getElementById("position");
+            var currentPosition = 0;
+
+            function onYouTubeIframeAPIReady() {
+                player = new YT.Player("player", {
+                    videoId: youtubeVideoId,
+                    events: {
+                        onReady: onPlayerReady,
+                        onStateChange: onPlayerStateChange,
+                    },
+                });
+            }
+
+            function onPlayerReady(event) {
+                console.log(event);
+                event.target.playVideo();
+            }
+
+            function onPlayerStateChange(event) {
+                console.log(event);
+                switch (event.data) {
+                    case YT.PlayerState.PLAYING:
+                        playing();
+                        break;
+                    case YT.PlayerState.PAUSED:
+                        paused();
+                        break;
+                    case YT.PlayerState.ENDED:
+                        ended();
+                        break;
+                }
+            }
+
+            function playing() {
+                currentPosition = getVideoPosition();
+                updatePositionElem();
+                console.log("### play! " + getPositionText());
+                agent.playStreamOnDemand(video.id, youtubeVideoId, currentPosition, { screen: "1", volume: "1" }, { playerid: video.id, cliptype: "Video" });
+            }
+
+            function paused() {
+                var vp = getVideoPosition();
+                if (vp > currentPosition && vp < currentPosition + 100) {
+                    currentPosition = vp;
+                    updatePositionElem();
+                }
+                console.log("### pause! " + getPositionText());
+                agent.stop(currentPosition);
+            }
+
+            function ended() {
+                var vp = getVideoPosition();
+                if (vp > currentPosition && vp < currentPosition + 100) {
+                    currentPosition = vp;
+                    updatePositionElem();
+                }
+                console.log("### ended! " + getPositionText());
+                agent.stop(currentPosition);
+            }
+
+            function getVideoPosition() {
+                return player && player.getCurrentTime ? Math.floor(player.getCurrentTime() * 1000) : 0;
+            }
+
+            function getPositionText() {
+                return formatDuration(currentPosition) + " (" + currentPosition + ")";
+            }
+
+            function updatePositionElem() {
+                positionElement.innerText = getPositionText();
+            }
+
+            function formatDuration(durationMs) {
+                const ms = durationMs % 1000;
+                durationMs = (durationMs - ms) / 1000;
+                const secs = durationMs % 60;
+                durationMs = (durationMs - secs) / 60;
+                const mins = durationMs % 60;
+                const hrs = (durationMs - mins) / 60;
+                return (hrs ? hrs + ":" : "") + ("0" + mins).slice(-2) + ":" + ("0" + secs).slice(-2) + "." + ("00" + ms).slice(-3);
+            }
+
+            function interval() {
+                currentPosition = getVideoPosition();
+                updatePositionElem();
+            }
+
+            setInterval(interval, 100);
+        </script>
+    </body>
+</html>
