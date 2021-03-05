@@ -13,7 +13,6 @@ const pages = [
     "campaign-img.html",
     "campaign-js.html",
     "content.html",
-    "fingerprints.html",
     "html5video.html",
     "html5videoOldTag.html",
     "html5videoctv.html",
@@ -83,7 +82,7 @@ export default function (env, argv) {
             })
         ],
         devServer: {
-            port: 8080,
+            port: 8079,
             contentBase: path.join(__dirname, 'dist'),
         }
     };
