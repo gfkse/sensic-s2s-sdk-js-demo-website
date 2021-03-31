@@ -6,170 +6,6 @@
         <link rel="shortcut icon" href="images/favicon.png" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" />
         <script src="js/url-polyfill.js"></script>
-        <script>
-            var publisherUrl = window.location.href;
-            var publisherDomain = publisherUrl.match(/https:\/\/([^\/]*)\/.*/)[1];
-
-            var urlParams = new URLSearchParams(location.search);
-            var connectorUrl = window.env.SUI_CONNECTOR_URL;
-            var gfkConnectorConf = {
-                suigen: false,
-            };
-            var suiConnectorTag = document.createElement("script");
-            suiConnectorTag.src = connectorUrl;
-            document.head.insertBefore(suiConnectorTag, document.getElementsByTagName("script")[0]);
-
-            function removeSui(e) {
-                document.getElementById("page").style.display = "none";
-                window.addEventListener("message", function (e) {
-                    if (e.data.sensic && e.data.sensic.hasOwnProperty("sui")) {
-                        location.href = "/touchpoint-test.html";
-                    }
-                });
-                gfkConnector.suiApi.removeSui();
-            }
-
-            function checkAccess() {
-                var xhr = new XMLHttpRequest();
-                xhr.open("GET", tpsrc);
-                xhr.onreadystatechange = function () {
-                    if (this.readyState === this.DONE && this.status === 200) {
-                        tp.srcdoc = this.responseText;
-                        tp.src = "data:text/html;charset=utf-8," + escape(this.responseText);
-                    }
-                };
-                xhr.send();
-            }
-
-            function callTouchpointByWindow(e) {
-                var goUrl = publisherUrl + "/touchpoint-test.html";
-                goUrl += "?connectorUrl=" + encodeURIComponent(connectorUrl);
-                var tpsrc = makeTpSrc(goUrl);
-                location.href = tpsrc;
-            }
-
-            function callTouchpointByIframe(e) {
-                var goUrl = publisherUrl + "/touchpoint-test.html";
-                goUrl += "?connectorUrl=" + encodeURIComponent(connectorUrl);
-                goUrl += "&iframe=true";
-                var tpsrc = makeTpSrc(goUrl);
-                var iframe = document.createElement("iframe");
-                iframe.setAttribute("id", "suitp-iframe");
-                iframe.style.width = "100%";
-                iframe.style.height = "600px";
-                document.body.appendChild(iframe);
-                iframe.setAttribute("src", tpsrc);
-            }
-
-            function makeTpSrc(goUrl) {
-                var tpsrc = "https://" + sensicDomain + "/suitp.html";
-                tpsrc += "?origin=demo";
-                var pid = document.getElementById("pid").value;
-                if (pid) {
-                    tpsrc += "&pid=" + encodeURIComponent(pid);
-                }
-                var hhid = document.getElementById("hhid").value;
-                if (hhid) {
-                    tpsrc += "&hhid=" + encodeURIComponent(hhid);
-                }
-                var uid = document.getElementById("uid").value;
-                if (uid) {
-                    tpsrc += "&uid=" + encodeURIComponent(uid);
-                }
-                var paneluserid = document.getElementById("paneluserid").value;
-                if (paneluserid) {
-                    tpsrc += "&paneluserid=" + encodeURIComponent(paneluserid);
-                }
-                var adid = document.getElementById("adid").value;
-                if (adid) {
-                    tpsrc += "&adid=" + encodeURIComponent(adid);
-                }
-                tpsrc += "&redirectparams=1";
-                tpsrc += "&redirectsui=suiid";
-                tpsrc += "&go=" + encodeURIComponent(goUrl);
-                return tpsrc;
-            }
-
-            function getCookie(name) {
-                var v = document.cookie.match("(^|;) ?" + name + "=([^;]*)(;|$)");
-                return v ? decodeURIComponent(v[2]) : null;
-            }
-
-            function updateSuiElement(suiObj, suiIdFromTouchpoint) {
-                document.getElementById("sui-from-connector").innerText = JSON.stringify(suiObj, null, 4);
-                document.getElementById("del-sui").disabled = suiObj == null;
-                if (suiObj) {
-                    if (suiObj.pid) {
-                        document.getElementById("pid").value = suiObj.pid;
-                    }
-                    if (suiObj.hhid) {
-                        document.getElementById("hhid").value = suiObj.hhid;
-                    }
-                    if (suiObj.uid) {
-                        document.getElementById("uid").value = suiObj.uid;
-                    }
-                    if (suiObj.paneluserid) {
-                        document.getElementById("paneluserid").value = suiObj.paneluserid;
-                    }
-                    if (suiObj.ai) {
-                        document.getElementById("adid").value = suiObj.ai;
-                    }
-                }
-                if (suiIdFromTouchpoint === undefined) {
-                    suiIdFromTouchpoint = urlParams.get("suiid");
-                }
-                if (suiIdFromTouchpoint) {
-                    document.getElementById("sui-id-from-touchpoint").innerHTML = suiIdFromTouchpoint;
-                    if (suiObj && suiObj.id === suiIdFromTouchpoint) {
-                        document.getElementById("result").innerHTML = "<span style='color: green;'>&#x2714;</span> OK";
-                    } else {
-                        document.getElementById("result").innerHTML = "<span style='color: red;'>&#x274C;</span> SUIs are different!";
-                    }
-                    if (urlParams.get("iframe") === "true") {
-                        window.parent.postMessage({ sensic: { sui: JSON.stringify(suiObj), suiidFromTp: suiIdFromTouchpoint } }, "*");
-                    } else {
-                        var iframe = document.getElementById("suitp-iframe");
-                        if (iframe) {
-                            document.body.removeChild(iframe);
-                            delete iframe;
-                        }
-                    }
-                }
-                document.getElementById("row-sui-from-tp").style.display = suiIdFromTouchpoint ? "table-row" : "none";
-                document.getElementById("row-result").style.display = suiIdFromTouchpoint ? "table-row" : "none";
-            }
-
-            function updateSuiFromTpElement(suiIdFromTouchpoint) {
-                document.getElementById("sui-id-from-touchpoint").innerHTML = suiIdFromTouchpoint;
-                document.getElementById("row-sui-from-tp").style.display = suiIdFromTouchpoint ? "table-row" : "none";
-            }
-
-            function showInfo() {
-                var infoElem = document.getElementById("info");
-                var becomesVisible = infoElem.style.display !== "block";
-                infoElem.style.display = becomesVisible ? "block" : "none";
-                document.getElementById("show-info").innerHTML = "<i class='fas fa-angle-double-" + (becomesVisible ? "up" : "down") + "'></i>&nbsp;&nbsp;Info";
-            }
-
-            window.onload = function () {
-                document.getElementById("pdomain").innerText = publisherDomain;
-                document.getElementById("sdomain").innerText = sensicDomain;
-
-                gfkConnector.init(updateSuiElement, true);
-                document.getElementById("del-sui").addEventListener("click", removeSui, false);
-                document.getElementById("call-tp").addEventListener("click", callTouchpointByWindow, false);
-                document.getElementById("call-tp-iframe").addEventListener("click", callTouchpointByIframe, false);
-                document.getElementById("show-info").addEventListener("click", showInfo, false);
-                window.addEventListener("message", function (e) {
-                    if (e.data.sensic) {
-                        if (e.data.sensic.hasOwnProperty("sui")) {
-                            this.suiObj = e.data.sensic.sui && JSON.parse(e.data.sensic.sui);
-                        }
-                        updateSuiElement(this.suiObj, e.data.sensic.suiidFromTp);
-                    }
-                });
-            };
-        </script>
         <style>
             body {
                 background-color: #303030;
@@ -290,18 +126,6 @@
             <h1>Touchpoint Test</h1>
             <div id="page">
                 <table>
-                    <tr>
-                        <td class="name">Publisher domain:</td>
-                        <td class="value">
-                            <div class="code"><code id="pdomain">...</code></div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="name">SENSIC domain:</td>
-                        <td class="value">
-                            <div class="code space-below"><code id="sdomain">...</code></div>
-                        </td>
-                    </tr>
                     <tr id="row-pid">
                         <td class="name">Panel ID:</td>
                         <td class="value">
@@ -333,7 +157,7 @@
                         </td>
                     </tr>
                     <tr id="row-sui-from-tp">
-                        <td class="name">SUI ID from Touchpint:</td>
+                        <td class="name">SUI ID from Touchpoint:</td>
                         <td class="value">
                             <div class="code"><code id="sui-id-from-touchpoint">...</code></div>
                         </td>
@@ -392,5 +216,166 @@
                 </div>
             </div>
         </div>
+        <script>
+            var urlParams = new URLSearchParams(location.search);
+            var connectorUrl = window.env.SUI_CONNECTOR_URL;
+            var gfkConnectorConf = {
+                suigen: false,
+            };
+            var suiConnectorTag = document.createElement("script");
+            suiConnectorTag.src = connectorUrl;
+            document.head.insertBefore(suiConnectorTag, document.getElementsByTagName("script")[0]);
+
+            function removeSui(e) {
+                document.getElementById("page").style.display = "none";
+                window.addEventListener("message", function (e) {
+                    if (e.data.sensic && e.data.sensic.hasOwnProperty("sui")) {
+                        location.href = "/touchpoint-test.html";
+                    }
+                });
+                gfkConnector.suiApi.removeSui();
+            }
+
+            function checkAccess() {
+                var xhr = new XMLHttpRequest();
+                xhr.open("GET", tpsrc);
+                xhr.onreadystatechange = function () {
+                    if (this.readyState === this.DONE && this.status === 200) {
+                        tp.srcdoc = this.responseText;
+                        tp.src = "data:text/html;charset=utf-8," + escape(this.responseText);
+                    }
+                };
+                xhr.send();
+            }
+
+            function callTouchpointByWindow(e) {
+                var goUrl = window.location.href;
+                goUrl += "?connectorUrl=" + encodeURIComponent(connectorUrl);
+                var tpsrc = makeTpSrc(goUrl);
+                location.href = tpsrc;
+            }
+
+            function callTouchpointByIframe(e) {
+                var goUrl = window.location.href;
+                goUrl += "?connectorUrl=" + encodeURIComponent(connectorUrl);
+                goUrl += "&iframe=true";
+                var tpsrc = makeTpSrc(goUrl);
+                var iframe = document.createElement("iframe");
+                iframe.setAttribute("id", "suitp-iframe");
+                iframe.style.width = "100%";
+                iframe.style.height = "600px";
+                document.body.appendChild(iframe);
+                iframe.setAttribute("src", tpsrc);
+            }
+
+            function makeTpSrc(goUrl) {
+                var tpsrc = window.env.TOUCHPOINT_URL;
+                tpsrc += "?origin=demo";
+                var pid = document.getElementById("pid").value;
+                if (pid) {
+                    tpsrc += "&pid=" + encodeURIComponent(pid);
+                }
+                var hhid = document.getElementById("hhid").value;
+                if (hhid) {
+                    tpsrc += "&hhid=" + encodeURIComponent(hhid);
+                }
+                var uid = document.getElementById("uid").value;
+                if (uid) {
+                    tpsrc += "&uid=" + encodeURIComponent(uid);
+                }
+                var paneluserid = document.getElementById("paneluserid").value;
+                if (paneluserid) {
+                    tpsrc += "&paneluserid=" + encodeURIComponent(paneluserid);
+                }
+                var adid = document.getElementById("adid").value;
+                if (adid) {
+                    tpsrc += "&adid=" + encodeURIComponent(adid);
+                }
+                tpsrc += "&redirectparams=1";
+                tpsrc += "&redirectsui=suiid";
+                tpsrc += "&go=" + encodeURIComponent(goUrl);
+                return tpsrc;
+            }
+
+            function getCookie(name) {
+                var v = document.cookie.match("(^|;) ?" + name + "=([^;]*)(;|$)");
+                return v ? decodeURIComponent(v[2]) : null;
+            }
+
+            function updateSuiElement(suiObj, suiIdFromTouchpoint) {
+                document.getElementById("sui-from-connector").innerText = JSON.stringify(suiObj, null, 4);
+                document.getElementById("del-sui").disabled = suiObj == null;
+                if (suiObj) {
+                    if (suiObj.pid) {
+                        document.getElementById("pid").value = suiObj.pid;
+                    }
+                    if (suiObj.hhid) {
+                        document.getElementById("hhid").value = suiObj.hhid;
+                    }
+                    if (suiObj.uid) {
+                        document.getElementById("uid").value = suiObj.uid;
+                    }
+                    if (suiObj.paneluserid) {
+                        document.getElementById("paneluserid").value = suiObj.paneluserid;
+                    }
+                    if (suiObj.ai) {
+                        document.getElementById("adid").value = suiObj.ai;
+                    }
+                }
+                if (suiIdFromTouchpoint === undefined) {
+                    suiIdFromTouchpoint = urlParams.get("suiid");
+                }
+                if (suiIdFromTouchpoint) {
+                    document.getElementById("sui-id-from-touchpoint").innerHTML = suiIdFromTouchpoint;
+                    if (suiObj && suiObj.id === suiIdFromTouchpoint) {
+                        document.getElementById("result").innerHTML = "<span style='color: green;'>&#x2714;</span> OK";
+                    } else {
+                        document.getElementById("result").innerHTML = "<span style='color: red;'>&#x274C;</span> SUIs are different!";
+                    }
+                    if (urlParams.get("iframe") === "true") {
+                        window.parent.postMessage({ sensic: { sui: JSON.stringify(suiObj), suiidFromTp: suiIdFromTouchpoint } }, "*");
+                    } else {
+                        var iframe = document.getElementById("suitp-iframe");
+                        if (iframe) {
+                            document.body.removeChild(iframe);
+                            delete iframe;
+                        }
+                    }
+                }
+                document.getElementById("row-sui-from-tp").style.display = suiIdFromTouchpoint ? "table-row" : "none";
+                document.getElementById("row-result").style.display = suiIdFromTouchpoint ? "table-row" : "none";
+            }
+
+            function updateSuiFromTpElement(suiIdFromTouchpoint) {
+                document.getElementById("sui-id-from-touchpoint").innerHTML = suiIdFromTouchpoint;
+                document.getElementById("row-sui-from-tp").style.display = suiIdFromTouchpoint ? "table-row" : "none";
+            }
+
+            function showInfo() {
+                var infoElem = document.getElementById("info");
+                var becomesVisible = infoElem.style.display !== "block";
+                infoElem.style.display = becomesVisible ? "block" : "none";
+                document.getElementById("show-info").innerHTML = "<i class='fas fa-angle-double-" + (becomesVisible ? "up" : "down") + "'></i>&nbsp;&nbsp;Info";
+            }
+
+            window.onload = function () {
+                // Give the suiconnector.js file some time to load
+                setTimeout(function() {
+                    gfkConnector.init(updateSuiElement, true);
+                    document.getElementById("del-sui").addEventListener("click", removeSui, false);
+                    document.getElementById("call-tp").addEventListener("click", callTouchpointByWindow, false);
+                    document.getElementById("call-tp-iframe").addEventListener("click", callTouchpointByIframe, false);
+                    document.getElementById("show-info").addEventListener("click", showInfo, false);
+                    window.addEventListener("message", function (e) {
+                        if (e.data.sensic) {
+                            if (e.data.sensic.hasOwnProperty("sui")) {
+                                this.suiObj = e.data.sensic.sui && JSON.parse(e.data.sensic.sui);
+                            }
+                            updateSuiElement(this.suiObj, e.data.sensic.suiidFromTp);
+                        }
+                    });
+                }, 3000);
+            };
+        </script>
     </body>
 </html>

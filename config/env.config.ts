@@ -1,6 +1,5 @@
 import TerserPlugin from "terser-webpack-plugin";
 import webpack from "webpack";
-import {NormalModuleReplacementPlugin} from "webpack";
 
 const urls = {
     production: {
@@ -8,6 +7,7 @@ const urls = {
         ENV_WEB_SDK_URL: JSON.stringify(`https://demo-config.sensic.net/s2s-web.js`),
         ENV_WEB_SDK_CTV_URL: JSON.stringify(`https://demo-config.sensic.net/ctv/s2s-web.js`),
         ENV_TP_URL: JSON.stringify(`https://demo-config.sensic.net/tp`),
+        ENV_TOUCHPOINT_URL: JSON.stringify(`https://demo-config.sensic.net/suitp.html`),
         ENV_SUI_CONNECTOR_URL: JSON.stringify(`https://demo-config.sensic.net/sui-connector.js`),
     }, 
     development: {
@@ -15,6 +15,7 @@ const urls = {
         ENV_WEB_SDK_URL: JSON.stringify(`https://demo-config-preproduction.sensic.net/s2s-web.js`),
         ENV_WEB_SDK_CTV_URL: JSON.stringify(`https://demo-config-preproduction.sensic.net/ctv/s2s-web.js`),
         ENV_TP_URL: JSON.stringify(`https://demo-config-preproduction.sensic.net/tp`),
+        ENV_TOUCHPOINT_URL: JSON.stringify(`https://demo-config-preproduction.sensic.net/suitp.html`),
         ENV_SUI_CONNECTOR_URL: JSON.stringify(`https://demo-config-preproduction.sensic.net/sui-connector.js`),
     },
     local: {
@@ -22,6 +23,7 @@ const urls = {
         ENV_WEB_SDK_URL: JSON.stringify(`http://localhost:8082/s2s-web.js`),
         ENV_WEB_SDK_CTV_URL: JSON.stringify(`http://localhost:8082/s2s-web.js`),
         ENV_TP_URL: JSON.stringify(`http://localhost:8090/tp`),
+        ENV_TOUCHPOINT_URL: JSON.stringify(`http://localhost:8083/suitp.html`),
         ENV_SUI_CONNECTOR_URL: JSON.stringify(`http://localhost:8083/sui-connector.js`),
     }
 }
