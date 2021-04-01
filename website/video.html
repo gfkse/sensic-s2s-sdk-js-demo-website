@@ -31,38 +31,19 @@
             var optinGetValue = urlParams.get("optin");
 
             var gfkS2sConf = {
-                optin: typeof optinGetValue === "string" ? optinGetValue === "true" : undefined,
+                // optin: typeof optinGetValue === "string" ? optinGetValue === "true" : undefined,
                 media: "s2sdemomediaid_ssa_web",
                 url: url,
                 visUrl: "https://s407.mxcdn.net/bb-mx/serve/mtrcs_943913.js",
                 type: "WEB",
                 logLevel: "debug",
             };
-
-            function getIndexOfOptinValue() {
-                return gfkS2sConf.optin === true ? 2 : gfkS2sConf.optin === false ? 1 : 0;
+            if (urlParams.get("vmsversion") === "v2") {
+                gfkS2sConf.useVms2 = true;
             }
-
-            function optinClickHdl(value) {
-                var url = location.href;
-                var re = /([?&])optin=[^&]*([&]?)/;
-                var m = url.match(re);
-                if (m) {
-                    url = url.replace(m[0], m[1] === "?" && m[2] === "&" ? "?" : m[1] === "&" && m[2] === "&" ? "&" : "");
-                }
-                if (value !== "undefined") {
-                    url += (url.indexOf("?") < 0 ? "?" : "&") + "optin=" + value;
-                }
-                location.href = url;
+            if (urlParams.get("optin") === "true" || urlParams.get("optin") === "false") {
+                gfkS2sConf.optin = urlParams.get("optin");
             }
-
-            window.addEventListener("load", function (event) {
-                var r = document.getElementsByClassName("radio");
-                r[getIndexOfOptinValue()].checked = true;
-                r[0].onclick = r[1].onclick = r[2].onclick = function () {
-                    optinClickHdl(this.value);
-                };
-            });
 
             (function (w, d, c, s, id, v) {
                 if (d.getElementById(id)) {
@@ -153,6 +134,15 @@
                             <input type="radio" name="optin" class="radio" value="undefined" /><label for="undefined">undefined</label
                             ><input type="radio" name="optin" class="radio" value="false" /><label for="false">false</label
                             ><input type="radio" name="optin" class="radio" value="true" /><label for="true">true</label>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="key">VMS:</td>
+                    <td class="value">
+                        <div class="radiobox">
+                            <input type="radio" name="vmsversion" class="radio" value="v1" /><label for="v1">V1</label
+                            ><input type="radio" name="vmsversion" class="radio" value="v2" /><label for="v2">V2</label>
                         </div>
                     </td>
                 </tr>
