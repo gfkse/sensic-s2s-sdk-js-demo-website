@@ -23,8 +23,8 @@ const urls = {
         ENV_WEB_SDK_URL: JSON.stringify(`http://localhost:8082/s2s-web.js`),
         ENV_WEB_SDK_CTV_URL: JSON.stringify(`http://localhost:8082/s2s-web.js`),
         ENV_TP_URL: JSON.stringify(`http://localhost:8090/tp`),
-        ENV_TOUCHPOINT_URL: JSON.stringify(`http://localhost:8083/suitp.html`),
-        ENV_SUI_CONNECTOR_URL: JSON.stringify(`http://localhost:8083/sui-connector.js`),
+        ENV_TOUCHPOINT_URL: JSON.stringify(`http://localhost:8082/suitp.html`),
+        ENV_SUI_CONNECTOR_URL: JSON.stringify(`http://localhost:8082/sui-connector.js`),
     }
 }
 
