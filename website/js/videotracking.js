@@ -190,5 +190,26 @@ $(document).ready(function () {
         videoPlayerInit("video2", "player2", document.getElementById("video2"), videoSources.video2, autoplay == 2, true, "", 0);
         videoPlayerInit("video3", "player3", document.getElementById("video3"), videoSources.video3, autoplay == 3, false, "", 0);
         customPositionPlayerInit("video5", "player5", document.getElementById("video5"), videoSources.video5,  "#video5position");
+        setOptionsBoxValues();
+        addOptionsBoxListeners();
     });
 });
+
+function setOptionsBoxValues() {
+    var url = new URL(window.location.href);
+    var optin = url.searchParams.get("optin") || "undefined";
+    var vmsversion = url.searchParams.get("vmsversion") || "v1";
+    $("input[name='optin'][value='"+optin+"']").prop("checked", true);
+    $("input[name='vmsversion'][value='"+vmsversion+"']").prop("checked", true);
+}
+
+function addOptionsBoxListeners() {
+    $('.optionsbox input').click(function(){
+        var optin = $("input[name='optin']:checked").val();
+        var vmsversion = $("input[name='vmsversion']:checked").val();
+        var url = new URL(window.location.href);
+        url.searchParams.set("optin", optin);
+        url.searchParams.set("vmsversion", vmsversion);
+        window.location.href = url.href;
+    });
+}

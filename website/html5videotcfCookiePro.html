@@ -66,6 +66,10 @@
             logLevel: "debug"
         };
 
+        if (urlParams.get("vmsversion") === "v2") {
+            gfkS2sConf.useVms2 = true;
+        }
+
         function getIndexOfOptinValue() {
             return (gfkS2sConf.optin === true) ? 2 : (gfkS2sConf.optin === false) ? 1 : 0;
         }
