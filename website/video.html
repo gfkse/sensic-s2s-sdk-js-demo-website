@@ -41,8 +41,11 @@
             if (urlParams.get("vmsversion") === "v2") {
                 gfkS2sConf.useVms2 = true;
             }
-            if (urlParams.get("optin") === "true" || urlParams.get("optin") === "false") {
-                gfkS2sConf.optin = urlParams.get("optin");
+            if (urlParams.get("optin") === "true") {
+                gfkS2sConf.optin = true;
+            }
+            if (urlParams.get("optin") === "false") {
+                gfkS2sConf.optin = false;
             }
 
             (function (w, d, c, s, id, v) {

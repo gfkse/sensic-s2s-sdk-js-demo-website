@@ -4,7 +4,6 @@ import CopyPlugin from "copy-webpack-plugin";
 import { CleanWebpackPlugin } from "clean-webpack-plugin";
 import merge from "webpack-merge";
 import * as envs from "./config/env.config";
-import webpack from "webpack";
 
 const pages = [
     "campaign-img-ai-param.html",
@@ -24,6 +23,7 @@ const pages = [
     "touchpoint-test.html",
     "video.html",
     "youtube-video.html",
+    "relay-img-test.html",
 ];
 
 export default function (env, argv) {
