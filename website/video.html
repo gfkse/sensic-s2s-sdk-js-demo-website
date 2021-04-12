@@ -47,6 +47,9 @@
             if (urlParams.get("optin") === "false") {
                 gfkS2sConf.optin = false;
             }
+            if (urlParams.get("ai")) {
+                gfkS2sConf.ai = urlParams.get("ai");
+            }
 
             (function (w, d, c, s, id, v) {
                 if (d.getElementById(id)) {

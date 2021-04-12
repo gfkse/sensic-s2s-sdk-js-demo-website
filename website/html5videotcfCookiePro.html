@@ -69,6 +69,9 @@
         if (urlParams.get("vmsversion") === "v2") {
             gfkS2sConf.useVms2 = true;
         }
+        if (urlParams.get("ai")) {
+            gfkS2sConf.ai = urlParams.get("ai");
+        }
 
         function getIndexOfOptinValue() {
             return (gfkS2sConf.optin === true) ? 2 : (gfkS2sConf.optin === false) ? 1 : 0;
