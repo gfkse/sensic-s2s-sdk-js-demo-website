@@ -4,27 +4,11 @@ import CopyPlugin from "copy-webpack-plugin";
 import { CleanWebpackPlugin } from "clean-webpack-plugin";
 import merge from "webpack-merge";
 import * as envs from "./config/env.config";
+import { readdirSync } from "fs";
+import { resolve } from "path";
 
-const pages = [
-    "campaign-img-ai-param.html",
-    "campaign-img-debug.html",
-    "campaign-img-fixed-sui.html",
-    "campaign-img.html",
-    "campaign-js.html",
-    "content.html",
-    "html5video.html",
-    "html5videoOldTag.html",
-    "html5videoctv.html",
-    "html5videotcf.html",
-    "html5videotcfCookiePro.html",
-    "index.html",
-    "long-url-test.html",
-    "sui-connector-test.html",
-    "touchpoint-test.html",
-    "video.html",
-    "youtube-video.html",
-    "relay-img-test.html",
-];
+const pages = readdirSync(resolve(__dirname, "website"))
+    .filter(filename => filename.endsWith(".html"));
 
 export default function (env, argv) {
     let config = {
