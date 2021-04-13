@@ -31,7 +31,6 @@
             var optinGetValue = urlParams.get("optin");
 
             var gfkS2sConf = {
-                // optin: typeof optinGetValue === "string" ? optinGetValue === "true" : undefined,
                 media: "s2sdemomediaid_ssa_web",
                 url: url,
                 visUrl: "https://s407.mxcdn.net/bb-mx/serve/mtrcs_943913.js",
@@ -40,6 +39,9 @@
             };
             if (urlParams.get("vmsversion") === "v2") {
                 gfkS2sConf.useVms2 = true;
+            }
+            if (urlParams.get("vmsversion") === "v1") {
+                gfkS2sConf.useVms2 = false;
             }
             if (urlParams.get("optin") === "true") {
                 gfkS2sConf.optin = true;
@@ -147,7 +149,7 @@
                     <td class="key">VMS:</td>
                     <td class="value">
                         <div class="radiobox">
-                            <input type="radio" name="vmsversion" class="radio" value="v1" /><label for="v1">Unchanged</label
+                            <input type="radio" name="vmsversion" class="radio" value="v1" /><label for="v1">v1</label
                             ><input type="radio" name="vmsversion" class="radio" value="v2" /><label for="v2">V2</label>
                         </div>
                     </td>

@@ -198,9 +198,11 @@ $(document).ready(function () {
 function setOptionsBoxValues() {
     var url = new URL(window.location.href);
     var optin = url.searchParams.get("optin") || "undefined";
-    var vmsversion = url.searchParams.get("vmsversion") || "v1";
     $("input[name='optin'][value='"+optin+"']").prop("checked", true);
-    $("input[name='vmsversion'][value='"+vmsversion+"']").prop("checked", true);
+    var vmsversion = url.searchParams.get("vmsversion");
+    if (vmsversion === "v1" || vmsversion === "v2") {
+        $("input[name='vmsversion'][value='"+vmsversion+"']").prop("checked", true);
+    }
 }
 
 function addOptionsBoxListeners() {
