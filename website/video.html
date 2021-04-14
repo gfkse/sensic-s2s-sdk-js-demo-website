@@ -37,12 +37,7 @@
                 type: "WEB",
                 logLevel: "debug",
             };
-            if (urlParams.get("vmsversion") === "v2") {
-                gfkS2sConf.useVms2 = true;
-            }
-            if (urlParams.get("vmsversion") === "v1") {
-                gfkS2sConf.useVms2 = false;
-            }
+
             if (urlParams.get("optin") === "true") {
                 gfkS2sConf.optin = true;
             }
@@ -142,15 +137,6 @@
                             <input type="radio" name="optin" class="radio" value="undefined" /><label for="undefined">undefined</label
                             ><input type="radio" name="optin" class="radio" value="false" /><label for="false">false</label
                             ><input type="radio" name="optin" class="radio" value="true" /><label for="true">true</label>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <td class="key">VMS:</td>
-                    <td class="value">
-                        <div class="radiobox">
-                            <input type="radio" name="vmsversion" class="radio" value="v1" /><label for="v1">v1</label
-                            ><input type="radio" name="vmsversion" class="radio" value="v2" /><label for="v2">V2</label>
                         </div>
                     </td>
                 </tr>

@@ -66,12 +66,6 @@
             logLevel: "debug"
         };
 
-        if (urlParams.get("vmsversion") === "v2") {
-            gfkS2sConf.useVms2 = true;
-        }
-        if (urlParams.get("vmsversion") === "v1") {
-            gfkS2sConf.useVms2 = false;
-        }
         if (urlParams.get("ai")) {
             gfkS2sConf.ai = urlParams.get("ai");
         }

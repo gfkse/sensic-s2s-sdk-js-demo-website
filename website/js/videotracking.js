@@ -199,19 +199,13 @@ function setOptionsBoxValues() {
     var url = new URL(window.location.href);
     var optin = url.searchParams.get("optin") || "undefined";
     $("input[name='optin'][value='"+optin+"']").prop("checked", true);
-    var vmsversion = url.searchParams.get("vmsversion");
-    if (vmsversion === "v1" || vmsversion === "v2") {
-        $("input[name='vmsversion'][value='"+vmsversion+"']").prop("checked", true);
-    }
 }
 
 function addOptionsBoxListeners() {
     $('.optionsbox input').click(function(){
         var optin = $("input[name='optin']:checked").val();
-        var vmsversion = $("input[name='vmsversion']:checked").val();
         var url = new URL(window.location.href);
         url.searchParams.set("optin", optin);
-        url.searchParams.set("vmsversion", vmsversion);
         window.location.href = url.href;
     });
 }
