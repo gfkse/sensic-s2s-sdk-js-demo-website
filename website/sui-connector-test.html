@@ -70,6 +70,10 @@
             var optinGetValue = urlParams.get("optin");
             var gfkConnectorConf = {
                 optin: typeof optinGetValue === "string" ? optinGetValue === "true" : undefined,
+                extID: {
+                    myID1: "extID1Value",
+                    someID2: "someID2 value"
+                },
             };
 
             var suiConnectorTag = document.createElement("script");
