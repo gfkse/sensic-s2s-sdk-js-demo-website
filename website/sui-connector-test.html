@@ -74,7 +74,11 @@
                     myID1: "extID1Value",
                     someID2: "someID2 value"
                 },
+                logLevel: "debug"
             };
+            if (urlParams.has("logUrl")) {
+                gfkConnectorConf.logUrl = urlParams.get("logUrl");
+            }
 
             var suiConnectorTag = document.createElement("script");
             suiConnectorTag.src = connectorUrl;
