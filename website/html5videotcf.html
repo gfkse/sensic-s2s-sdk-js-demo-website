@@ -1,311 +1,321 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="utf-8" />
-    <title>S2S HTML5 Video Demo</title>
-    <link rel="shortcut icon" href="images/favicon.png" />
-    <link rel="stylesheet" href="css/s2s-demo.css" />
-    <style>
+<head>
+  <meta charset='utf-8' />
+  <title>S2S HTML5 Video Demo</title>
+  <link rel='shortcut icon' href='images/favicon.png' />
+  <link rel='stylesheet' href='css/s2s-demo.css' />
+  <style>
       body {
-        margin: 0;
-        background-color: #202020;
-        font-family: Arial, Helvetica, sans-serif;
-        font-size: 14px;
-        color: #e0a000;
+          margin: 0;
+          background-color: #202020;
+          font-family: Arial, Helvetica, sans-serif;
+          font-size: 14px;
+          color: #e0a000;
       }
 
       .header {
-        background-color: #202020;
-        color: #a0a0a0;
-        display: flex;
-        align-items: center;
-        height: 30px;
+          background-color: #202020;
+          color: #a0a0a0;
+          display: flex;
+          align-items: center;
+          height: 30px;
       }
 
       #v1 {
-        width: 100%;
-        max-height: calc(100vh - 30px);
+          width: 100%;
+          max-height: calc(100vh - 30px);
       }
 
       #title {
-        margin: 0 20px 0 10px;
-        font-weight: bold;
+          margin: 0 20px 0 10px;
+          font-weight: bold;
       }
 
       #position {
-        margin: 0 10px 0 40px;
-        color: white;
-        flex-grow: 1;
-        text-align: right;
+          margin: 0 10px 0 40px;
+          color: white;
+          flex-grow: 1;
+          text-align: right;
       }
-    </style>
-    <script src="js/jquery.min.js"></script>
-    <script src="js/url-polyfill.js"></script>
-  </head>
-  <body>
-    <script>
-      // Allow overwriting the used sdk with url param sdkUrl
-      var urlParams = new URLSearchParams(window.location.search);
-      var url = urlParams.get('sdkUrl') || window.env.WEB_SDK_URL;
+  </style>
+  <script src='js/jquery.min.js'></script>
+  <script src='js/url-polyfill.js'></script>
+</head>
+<body>
+<script>
+  // Allow overwriting the used sdk with url param sdkUrl
+  var urlParams = new URLSearchParams(window.location.search);
+  var url = urlParams.get('sdkUrl') || window.env.WEB_SDK_URL;
 
-      var gfkS2sConf = {
-        media: 's2s-html5-demo',
-        url: url,
-        type: 'WEB',
-        logLevel: 'debug',
+  var gfkS2sConf = {
+    media: 's2s-html5-demo',
+    url: url,
+    type: 'WEB',
+    logLevel: 'debug'
+  };
+  var optinGetValue = urlParams.get('optin');
+  if (optinGetValue) {
+    gfkS2sConf.optin = optinGetValue;
+  }
+
+  (function(w, d, c, s, id, v) {
+    if (d.getElementById(id)) {
+      return;
+    }
+
+    w.gfkS2sConf = c;
+    w[id] = {};
+    w[id].agents = [];
+    var api = [
+      'playStreamLive',
+      'playLive',
+      'playStreamOnDemand',
+      'playVOD',
+      'stop',
+      'skip',
+      'screen',
+      'volume',
+      'impression'
+    ];
+    w.gfks = (function() {
+      function f(sA, e, cb) {
+        return function() {
+          sA.p = cb();
+          sA.queue.push({ f: e, a: arguments });
+        };
+      }
+
+      function s(c, pId, cb) {
+        var sA = { queue: [], config: c, cb: cb, pId: pId };
+        for (var i = 0; i < api.length; i++) {
+          e = api[i];
+          sA[e] = f(sA, e, cb);
+        }
+        return sA;
+      }
+
+      return s;
+    })();
+    w[id].getAgent = function(cb, pId) {
+      var a = {
+        a: new w.gfks(
+          c,
+          pId || '',
+          cb ||
+          function() {
+            return 0;
+          }
+        )
       };
-      var optinGetValue = urlParams.get('optin');
-      if (optinGetValue) {
-        gfkS2sConf.optin = optinGetValue;
+
+      function g(a, e) {
+        return function() {
+          return a.a[e].apply(a.a, arguments);
+        };
       }
 
-      (function (w, d, c, s, id, v) {
-        if (d.getElementById(id)) {
-          return;
-        }
+      for (var i = 0; i < api.length; i++) {
+        e = api[i];
+        a[e] = g(a, e);
+      }
+      w[id].agents.push(a);
+      return a;
+    };
 
-        w.gfkS2sConf = c;
-        w[id] = {};
-        w[id].agents = [];
-        var api = [
-          'playStreamLive',
-          'playLive',
-          'playStreamOnDemand',
-          'playVOD',
-          'stop',
-          'skip',
-          'screen',
-          'volume',
-          'impression',
-          'playbackSpeed',
-        ];
-        w.gfks = (function () {
-          function f(sA, e, cb) {
-            return function () {
-              sA.p = cb();
-              sA.queue.push({ f: e, a: arguments });
-            };
-          }
+    var lJS = function(eId, url) {
+      var tag = d.createElement(s);
+      var el = d.getElementsByTagName(s)[0];
+      tag.id = eId;
+      tag.async = true;
+      tag.type = 'text/javascript';
+      tag.src = url;
+      el.parentNode.insertBefore(tag, el);
+    };
 
-          function s(c, pId, cb) {
-            var sA = { queue: [], config: c, cb: cb, pId: pId };
-            for (var i = 0; i < api.length; i++) {
-              e = api[i];
-              sA[e] = f(sA, e, cb);
-            }
-            return sA;
-          }
+    if (c.hasOwnProperty(v)) {
+      lJS(id + v, c[v]);
+    }
+    lJS(id, c.url);
+  })(window, document, gfkS2sConf, 'script', 'gfkS2s', 'visUrl');
+</script>
+<div class='header'>
+  <div id='title'>S2S HTML5 Video Demo</div>
+  <h1>TCF</h1>
+  <div id='position'></div>
+</div>
 
-          return s;
-        })();
-        w[id].getAgent = function (cb, pId) {
-          var a = {
-            a: new w.gfks(
-              c,
-              pId || '',
-              cb ||
-                function () {
-                  return 0;
-                }
-            ),
-          };
+<video id='v1' controls preload='metadata'>
+  <source src='videos/big_buck_bunny.mp4' type='video/mp4' />
+</video>
 
-          function g(a, e) {
-            return function () {
-              return a.a[e].apply(a.a, arguments);
-            };
-          }
+<ul>
+  <form action='html5videotcf.html'>
+    <fieldset>
+      <legend>Optin</legend>
+      <label for='optin_true'>True</label>
+      <input type='radio' value='true' name='optin' id='optin_true' />
+      <label for='optin_false'>False</label>
+      <input type='radio' value='false' name='optin' id='optin_false' />
+      <label for='optin_undefined'>Undefined</label>
+      <input type='radio' value='' name='optin' id='optin_undefined' checked />
+    </fieldset>
+    <fieldset>
+      <legend>GDPR</legend>
+      <label for='gdpr_applies'>Applies</label>
+      <input type='radio' value='applies' name='gdpr' id='gdpr_applies' />
+      <label for='gdpr_noapplies'>Does not apply</label>
+      <input type='radio' value='noapplies' name='gdpr' id='gdpr_noapplies' checked />
+    </fieldset>
+    <fieldset>
+      <legend>GfK vendor</legend>
+      <label for='vendor_consent'>Consent</label>
+      <input type='checkbox' name='vendor' value='consent' id='vendor_consent' />
+      <label for='vendor_legitimateInterest'>Legitimate interest</label>
+      <input type='checkbox' name='vendor' value='legitimateInterest' id='vendor_legitimateInterest' />
+    </fieldset>
+    <fieldset>
+      <legend>Purpose 1</legend>
+      <label for='purpose1_consent'>Consent</label>
+      <input type='checkbox' name='purpose1' value='consent' id='purpose1_consent' />
+    </fieldset>
+    <fieldset>
+      <legend>Purpose 7</legend>
+      <label for='purpose7_consent'>Consent</label>
+      <input type='checkbox' name='purpose7' value='consent' id='purpose7_consent' />
+      <label for='purpose9_legitimateInterest'>Legitimate interest</label>
+      <input type='checkbox' name='purpose7' value='legitimateInterest' id='purpose7_legitimateInterest' />
+    </fieldset>
+    <fieldset>
+      <legend>Purpose 8</legend>
+      <label for='purpose8_consent'>Consent</label>
+      <input type='checkbox' name='purpose8' value='consent' id='purpose8_consent' />
+      <label for='purpose8_legitimateInterest'>Legitimate interest</label>
+      <input type='checkbox' name='purpose8' value='legitimateInterest' id='purpose8_legitimateInterest' />
+    </fieldset>
+    <fieldset>
+      <legend>Purpose 9</legend>
+      <label for='purpose9_consent'>Consent</label>
+      <input type='checkbox' name='purpose9' value='consent' id='purpose9_consent' />
+      <label for='purpose9_legitimateInterest'>Legitimate interest</label>
+      <input type='checkbox' name='purpose9' value='legitimateInterest' id='purpose9_legitimateInterest' />
+    </fieldset>
+    <fieldset>
+      <legend>Publisher Restrictions for Purpose 1</legend>
+      <label for='publisher_restrictions_1_purpose_1'>consent</label>
+      <input type='radio' name='restriction1' value='1' id='publisher_restrictions_1_purpose_1' />
+      <label for='publisher_restrictions_0_purpose_1'>not allowed</label>
+      <input type='radio' name='restriction1' value='0' id='publisher_restrictions_0_purpose_1' />
+      <label for='publisher_restrictions_undefined_purpose_1'>undefined</label>
+      <input type='radio' name='restriction1' value='' id='publisher_restrictions_undefined_purpose_1' checked />
+    </fieldset>
+    <fieldset>
+      <legend>Publisher Restrictions for Purpose 7</legend>
+      <label for='publisher_restrictions_1_purpose_7'>consent</label>
+      <input type='radio' name='restriction7' value='1' id='publisher_restrictions_1_purpose_7' />
+      <label for='publisher_restrictions_2_purpose_7'>legitimateInterest</label>
+      <input type='radio' name='restriction7' value='2' id='publisher_restrictions_2_purpose_7' />
+      <label for='publisher_restrictions_0_purpose_7'>not allowed</label>
+      <input type='radio' name='restriction7' value='0' id='publisher_restrictions_0_purpose_7' />
+      <label for='publisher_restrictions_undefined_purpose_7'>undefined</label>
+      <input type='radio' name='restriction7' value='' id='publisher_restrictions_undefined_purpose_7' checked />
+    </fieldset>
+    <fieldset>
+      <legend>Publisher Restrictions for Purpose 8</legend>
+      <label for='publisher_restrictions_1_purpose_8'>consent</label>
+      <input type='radio' name='restriction8' value='1' id='publisher_restrictions_1_purpose_8' />
+      <label for='publisher_restrictions_2_purpose_8'>legitimateInterest</label>
+      <input type='radio' name='restriction8' value='2' id='publisher_restrictions_2_purpose_8' />
+      <label for='publisher_restrictions_0_purpose_8'>not allowed</label>
+      <input type='radio' name='restriction8' value='0' id='publisher_restrictions_0_purpose_8' />
+      <label for='publisher_restrictions_undefined_purpose_8'>undefined</label>
+      <input type='radio' name='restriction8' value='' id='publisher_restrictions_undefined_purpose_8' checked />
+    </fieldset>
+    <fieldset>
+      <legend>Publisher Restrictions for Purpose 9</legend>
+      <label for='publisher_restrictions_1_purpose_9'>consent</label>
+      <input type='radio' name='restriction9' value='1' id='publisher_restrictions_1_purpose_9' />
+      <label for='publisher_restrictions_2_purpose_9'>legitimateInterest</label>
+      <input type='radio' name='restriction9' value='2' id='publisher_restrictions_2_purpose_9' />
+      <label for='publisher_restrictions_0_purpose_9'>not allowed</label>
+      <input type='radio' name='restriction9' value='0' id='publisher_restrictions_0_purpose_9' />
+      <label for='publisher_restrictions_undefined_purpose_9'>undefined</label>
+      <input type='radio' name='restriction9' value='' id='publisher_restrictions_undefined_purpose_9' checked />
+    </fieldset>
+    <fieldset>
+      <button type='submit'>Reload</button>
+    </fieldset>
+  </form>
+</ul>
 
-          for (var i = 0; i < api.length; i++) {
-            e = api[i];
-            a[e] = g(a, e);
-          }
-          w[id].agents.push(a);
-          return a;
-        };
+<script>
+  var video = document.getElementById('v1');
+  var agent = gfkS2s.getAgent(getVideoPosition, 'v1');
+  var positionElement = document.getElementById('position');
+  var currentPosition = 0;
+  let playbackSpeedMultiplier = 1;
 
-        var lJS = function (eId, url) {
-          var tag = d.createElement(s);
-          var el = d.getElementsByTagName(s)[0];
-          tag.id = eId;
-          tag.async = true;
-          tag.type = 'text/javascript';
-          tag.src = url;
-          el.parentNode.insertBefore(tag, el);
-        };
+  video.addEventListener('play', () => {
+    currentPosition = getVideoPosition();
+    positionElement.innerText = currentPosition;
+    console.log('### play! ' + currentPosition);
+    agent.playStreamOnDemand(
+      video.id,
+      video.currentSrc,
+      currentPosition,
+      { screen: '1', volume: '1', speed: playbackSpeedMultiplier },
+      { playerid: video.id, cliptype: 'Video' }
+    );
+  });
 
-        if (c.hasOwnProperty(v)) {
-          lJS(id + v, c[v]);
-        }
-        lJS(id, c.url);
-      })(window, document, gfkS2sConf, 'script', 'gfkS2s', 'visUrl');
-    </script>
-    <div class="header">
-      <div id="title">S2S HTML5 Video Demo</div>
-      <h1>TCF</h1>
-      <div id="position"></div>
-    </div>
+  video.addEventListener('pause', () => {
+    var vp = getVideoPosition();
+    if (vp > currentPosition && vp < currentPosition + 100) {
+      currentPosition = vp;
+      positionElement.innerText = currentPosition;
+    }
+    console.log('### pause!' + currentPosition);
+    agent.stop(currentPosition);
+  });
 
-    <video id="v1" controls preload="metadata">
-      <source src="videos/big_buck_bunny.mp4" type="video/mp4" />
-    </video>
-
-    <ul>
-      <form action="html5videotcf.html">
-        <fieldset>
-          <legend>Optin</legend>
-          <label for="optin_true">True</label>
-          <input type="radio" value="true" name="optin" id="optin_true" />
-          <label for="optin_false">False</label>
-          <input type="radio" value="false" name="optin" id="optin_false" />
-          <label for="optin_undefined">Undefined</label>
-          <input type="radio" value="" name="optin" id="optin_undefined" checked />
-        </fieldset>
-        <fieldset>
-          <legend>GDPR</legend>
-          <label for="gdpr_applies">Applies</label>
-          <input type="radio" value="applies" name="gdpr" id="gdpr_applies" />
-          <label for="gdpr_noapplies">Does not apply</label>
-          <input type="radio" value="noapplies" name="gdpr" id="gdpr_noapplies" checked />
-        </fieldset>
-        <fieldset>
-          <legend>GfK vendor</legend>
-          <label for="vendor_consent">Consent</label>
-          <input type="checkbox" name="vendor" value="consent" id="vendor_consent" />
-          <label for="vendor_legitimateInterest">Legitimate interest</label>
-          <input type="checkbox" name="vendor" value="legitimateInterest" id="vendor_legitimateInterest" />
-        </fieldset>
-        <fieldset>
-          <legend>Purpose 1</legend>
-          <label for="purpose1_consent">Consent</label>
-          <input type="checkbox" name="purpose1" value="consent" id="purpose1_consent" />
-        </fieldset>
-        <fieldset>
-          <legend>Purpose 7</legend>
-          <label for="purpose7_consent">Consent</label>
-          <input type="checkbox" name="purpose7" value="consent" id="purpose7_consent" />
-          <label for="purpose9_legitimateInterest">Legitimate interest</label>
-          <input type="checkbox" name="purpose7" value="legitimateInterest" id="purpose7_legitimateInterest" />
-        </fieldset>
-        <fieldset>
-          <legend>Purpose 8</legend>
-          <label for="purpose8_consent">Consent</label>
-          <input type="checkbox" name="purpose8" value="consent" id="purpose8_consent" />
-          <label for="purpose8_legitimateInterest">Legitimate interest</label>
-          <input type="checkbox" name="purpose8" value="legitimateInterest" id="purpose8_legitimateInterest" />
-        </fieldset>
-        <fieldset>
-          <legend>Purpose 9</legend>
-          <label for="purpose9_consent">Consent</label>
-          <input type="checkbox" name="purpose9" value="consent" id="purpose9_consent" />
-          <label for="purpose9_legitimateInterest">Legitimate interest</label>
-          <input type="checkbox" name="purpose9" value="legitimateInterest" id="purpose9_legitimateInterest" />
-        </fieldset>
-        <fieldset>
-          <legend>Publisher Restrictions for Purpose 1</legend>
-          <label for="publisher_restrictions_1_purpose_1">consent</label>
-          <input type="radio" name="restriction1" value="1" id="publisher_restrictions_1_purpose_1" />
-          <label for="publisher_restrictions_0_purpose_1">not allowed</label>
-          <input type="radio" name="restriction1" value="0" id="publisher_restrictions_0_purpose_1" />
-          <label for="publisher_restrictions_undefined_purpose_1">undefined</label>
-          <input type="radio" name="restriction1" value="" id="publisher_restrictions_undefined_purpose_1" checked />
-        </fieldset>
-        <fieldset>
-          <legend>Publisher Restrictions for Purpose 7</legend>
-          <label for="publisher_restrictions_1_purpose_7">consent</label>
-          <input type="radio" name="restriction7" value="1" id="publisher_restrictions_1_purpose_7" />
-          <label for="publisher_restrictions_2_purpose_7">legitimateInterest</label>
-          <input type="radio" name="restriction7" value="2" id="publisher_restrictions_2_purpose_7" />
-          <label for="publisher_restrictions_0_purpose_7">not allowed</label>
-          <input type="radio" name="restriction7" value="0" id="publisher_restrictions_0_purpose_7" />
-          <label for="publisher_restrictions_undefined_purpose_7">undefined</label>
-          <input type="radio" name="restriction7" value="" id="publisher_restrictions_undefined_purpose_7" checked />
-        </fieldset>
-        <fieldset>
-          <legend>Publisher Restrictions for Purpose 8</legend>
-          <label for="publisher_restrictions_1_purpose_8">consent</label>
-          <input type="radio" name="restriction8" value="1" id="publisher_restrictions_1_purpose_8" />
-          <label for="publisher_restrictions_2_purpose_8">legitimateInterest</label>
-          <input type="radio" name="restriction8" value="2" id="publisher_restrictions_2_purpose_8" />
-          <label for="publisher_restrictions_0_purpose_8">not allowed</label>
-          <input type="radio" name="restriction8" value="0" id="publisher_restrictions_0_purpose_8" />
-          <label for="publisher_restrictions_undefined_purpose_8">undefined</label>
-          <input type="radio" name="restriction8" value="" id="publisher_restrictions_undefined_purpose_8" checked />
-        </fieldset>
-        <fieldset>
-          <legend>Publisher Restrictions for Purpose 9</legend>
-          <label for="publisher_restrictions_1_purpose_9">consent</label>
-          <input type="radio" name="restriction9" value="1" id="publisher_restrictions_1_purpose_9" />
-          <label for="publisher_restrictions_2_purpose_9">legitimateInterest</label>
-          <input type="radio" name="restriction9" value="2" id="publisher_restrictions_2_purpose_9" />
-          <label for="publisher_restrictions_0_purpose_9">not allowed</label>
-          <input type="radio" name="restriction9" value="0" id="publisher_restrictions_0_purpose_9" />
-          <label for="publisher_restrictions_undefined_purpose_9">undefined</label>
-          <input type="radio" name="restriction9" value="" id="publisher_restrictions_undefined_purpose_9" checked />
-        </fieldset>
-        <fieldset>
-          <button type="submit">Reload</button>
-        </fieldset>
-      </form>
-    </ul>
-
-    <script>
-      var video = document.getElementById('v1');
-      var agent = gfkS2s.getAgent(getVideoPosition, 'v1');
-      var positionElement = document.getElementById('position');
-      var currentPosition = 0;
-
-      video.addEventListener('play', (event) => {
+  video.addEventListener('ratechange', (event) => {
+    if (!playbackSpeedMultiplier || playbackSpeedMultiplier !== event.target.playbackRate) {
+      if (!video.paused) {
         currentPosition = getVideoPosition();
-        positionElement.innerText = currentPosition;
-        console.log('### play! ' + currentPosition);
+        playbackSpeedMultiplier = event.target.playbackRate;
+        agent.stop(currentPosition);
         agent.playStreamOnDemand(
           video.id,
           video.currentSrc,
           currentPosition,
-          { screen: '1', volume: '1' },
+          { screen: '1', volume: '1', speed: playbackSpeedMultiplier },
           { playerid: video.id, cliptype: 'Video' }
         );
-      });
-
-      video.addEventListener('pause', (event) => {
-        var vp = getVideoPosition();
-        if (vp > currentPosition && vp < currentPosition + 100) {
-          currentPosition = vp;
-          positionElement.innerText = currentPosition;
-        }
-        console.log('### pause!' + currentPosition);
-        agent.stop(currentPosition);
-      });
-      let playbackSpeedMultiplier;
-
-      video.addEventListener('ratechange', (event) => {
-        if (!playbackSpeedMultiplier || playbackSpeedMultiplier !== event.target.playbackRate) {
-          playbackSpeedMultiplier = event.target.playbackRate;
-          agent.playbackSpeed(event.target.playbackRate);
-        }
-      });
-      video.addEventListener('ended', (event) => {
-        var vp = getVideoPosition();
-        if (vp > currentPosition && vp < currentPosition + 100) {
-          currentPosition = vp;
-          positionElement.innerText = currentPosition;
-        }
-        console.log('### ended!' + currentPosition);
-        agent.stop(currentPosition);
-      });
-
-      function getVideoPosition() {
-        return Math.floor(video.currentTime * 1000);
       }
+    }
+  });
 
-      function interval() {
-        currentPosition = getVideoPosition();
-        positionElement.innerText = currentPosition;
-      }
+  video.addEventListener('ended', () => {
+    var vp = getVideoPosition();
+    if (vp > currentPosition && vp < currentPosition + 100) {
+      currentPosition = vp;
+      positionElement.innerText = currentPosition;
+    }
+    console.log('### ended!' + currentPosition);
+    agent.stop(currentPosition);
+  });
 
-      setInterval(interval, 100);
-    </script>
-    <script src="js/tcf/cmpapi.js"></script>
-  </body>
+  function getVideoPosition() {
+    return Math.floor(video.currentTime * 1000);
+  }
+
+  function interval() {
+    currentPosition = getVideoPosition();
+    positionElement.innerText = currentPosition;
+  }
+
+  setInterval(interval, 100);
+</script>
+<script src='js/tcf/cmpapi.js'></script>
+</body>
 </html>
