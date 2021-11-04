@@ -53,3 +53,4 @@ For this each page takes an optional query parameter that can point to a differe
 | html5video.html | sdkUrl | html5video.html?sdkUrl=http://sg-config.sensic.net/s2s-web.js |
 | video.html | sdkUrl | video.html?sdkUrl=http://sg-config.sensic.net/s2s-web.js |
 | sui-connector-test.html | connectorUrl | sui-connector-test.html?connectorUrl=http://sg-config.sensic.net/sui-connector.js |
+| amp-pixel.html | pixelUrl |amp-pixel.html?pixelUrl=http://sg-config.sensic.net/tp |
