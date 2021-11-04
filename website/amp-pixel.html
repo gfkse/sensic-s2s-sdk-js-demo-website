@@ -29,8 +29,9 @@
       urlParams = new URLSearchParams(window.location.search);
       tpUrl = urlParams.get('pixelUrl') || window.env.TP_URL;
       setRadioButtonsCheckbox();
-
-      tpUrl = tpUrl.replace('http', 'https');
+      if (!tpUrl.startsWith('https')) {
+        tpUrl = tpUrl.replace('http', 'https');
+      }
       endpoint = (endpoint) ? endpoint : `${tpUrl}?ty=IM${optinForUrl}&m=campaign_demosite&c=default&pr=RANDOM&cp_c1=CANONICAL_HOSTNAME&cp_c2=DemoContent`;
       console.log(endpoint);
       const ampPixelTag = document.createElement('amp-pixel');
