@@ -1,116 +1,95 @@
 <!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <title>Second by Second &ndash; Demos</title>
-        <link rel="shortcut icon" href="images/favicon.png" />
-        <style>
-            body {
-                background-color: #202020;
-                color: #b0b0b0;
-                font-family: Arial, Helvetica, sans-serif;
-                font-size: 15px;
-                line-height: 17px;
-            }
+<html lang='en'>
+<head>
+  <meta charset='UTF-8' />
+  <title>Second by Second &ndash; Demos</title>
+  <link rel='shortcut icon' href='images/favicon.png' />
+  <link rel='stylesheet' href='./css/index.css'>
+</head>
+<body>
+<div class='container'>
+  <h1>Second by Second &ndash; Demos</h1>
+  <div class='block'>
+    <p class='link'><a href='content/content.html'>Content Measurement</a></p>
+    <p class='link'><a href='pixel/campaign-js.html'>Campaign &ndash; Javascript</a></p>
+    <p class='link'><a href='pixel/campaign-img.html'>Campaign &ndash; Tracking Pixel (with forwarding / relay ID)</a>
+    </p>
+    <p class='link'><a href='pixel/campaign-img-debug.html'>Campaign &ndash; Tracking Pixel (debug mode)</a></p>
+    <p class='link'><a href='pixel/campaign-img-fixed-sui.html'>Campaign &ndash; Tracking Pixel with SUI as GET
+      parameter</a>
+    </p>
+    <p class='link'><a href='pixel/campaign-img-ai-param.html'>Campaign &ndash; Tracking Pixel with AI as GET
+      parameter</a>
+    </p>
+  </div>
 
-            .container {
-                max-width: 1024px;
-                margin: 0 auto;
-            }
+  <div class='block'>
+    <p class='link'><a href='user-identification/sui-connector-test.html'>SUI Connector</a></p>
+    <p class='link'><a href='user-identification/simple-iframe-touchpoint.html'>Simple iframe Touchpoint</a></p>
+  </div>
 
-            h1 {
-                margin: 25px 0 20px 0;
-                font-size: 24px;
-                color: #808080;
-            }
+  <table class='table'>
+    <tr>
+      <th></th>
+      <th>Manual Integration</th>
+      <th>Extension</th>
+    </tr>
+    <tr>
+      <td>Pixel</td>
+      <td>
+        <a href='pixel/AMP/amp-pixel.html'>AMP-Pixel</a>
+      </td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>JW</td>
+      <td>
+        <a href='video/JWPlayer/manual/JWPlayer.html'>JW VOD Player</a><br />
+        <a href='video/JWPlayer/manual/JWLivePlayer.html'>JW Live Video Player</a><br />
+      </td>
+      <td>
+        <a href='video/JWPlayer/extension/JWPlayer.html'>JW VOD Player</a><br />
+        <a href='video/JWPlayer/extension/JWLivePlayer.html'>JW Live Video Player</a><br />
+      </td>
+    </tr>
+    <tr>
+      <td>Bitmovin</td>
+      <td>
+        <a href='video/BitmovinPlayer/manual/BitmovinLiveTimeshifted.html'>Bitmovin Live Timeshifted</a><br />
+        <a href='video/BitmovinPlayer/manual/BitmovinLive.html'>Bitmovin Live</a><br />
+        <a href='video/BitmovinPlayer/manual/BitmovinVOD.html'>Bitmovin VOD</a>
+      </td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>Youtube</td>
+      <td>
+        <a href='video/YouTubePlayer/manual/youtubeVideo.html'>Youtube VOD</a>
+      </td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>HTML5</td>
+      <td>
+        <a href='video/HTML5Player/manual/html5video.html'>HTML5 VOD</a><br />
+        <a href='video/HTML5Player/manual/html5videoCustomTcfSettings.html'>HTML5 Custom TCF Settings</a><br />
+        <a href='video/HTML5Player/manual/html5videotcfCookiePro.html'>HTML5 TCF Cookie Pro</a><br />
+      </td>
+      <td>
+        <a href='video/HTML5Player/extension/html5video.html'>HTML5 VOD</a>
+      </td>
+    </tr>
+  </table>
+</div>
 
-            a {
-                color: #e0a000;
-                text-decoration: none;
-            }
-
-            a:hover {
-                color: #ffb000;
-                text-decoration: underline;
-            }
-
-            .block {
-                margin-top: 36px;
-            }
-
-            .link {
-                font-size: 18px;
-                line-height: 22px;
-                margin: 15px 0px;
-            }
-
-            .info {
-                color: #a0a0a0;
-            }
-
-            #infos {
-                margin-top: 60px;
-            }
-        </style>
-    </head>
-    <body>
-        <div class="container">
-            <h1>Second by Second &ndash; Demos</h1>
-            <div class="block">
-                <p class="link">
-                    <a href="video.html">Video Measurement</a><br />
-                    &nbsp;&nbsp;&nbsp;&nbsp;&ndash; with autoplay: &nbsp;&nbsp;<a href="video.html?autoplay=1">#1</a>&nbsp;&nbsp;<a href="video.html?autoplay=2"
-                        >#2</a
-                    >&nbsp;&nbsp;<a href="video.html?autoplay=3">#3</a>
-                </p>
-                <p class="link">
-                    <a href="video.html?delay=5000">Video Measurement with delayed SDK</a><br />
-                    &nbsp;&nbsp;&nbsp;&ndash;&nbsp; with autoplay: &nbsp;&nbsp;<a href="video.html?autoplay=1&delay=5000">#1</a>&nbsp;&nbsp;<a
-                        href="video.html?autoplay=2&delay=5000"
-                        >#2</a
-                    >&nbsp;&nbsp;<a href="video.html?autoplay=3&delay=5000">#3</a>
-                </p>
-                <p class="link"><a href="youtube-video.html">Video Measurement &ndash; YouTube</a></p>
-                <p class="link"><a href="html5video.html">Video Measurement &ndash; HTML5</a></p>
-                <p class="link"><a href="html5videoOldTag.html">Video Measurement &ndash; HTML5 old Tag</a></p>
-                <p class="link"><a href="html5videoctv.html">Video Measurement &ndash; HTML5 CTV</a></p>
-                <p class="link"><a href="html5videotcf.html">Video Measurement - HTML5 TCF</a></p>
-                <p class="link"><a href="html5videotcfCookiePro.html">TCF Banner (Cookie Pro) with VMS/Tracking Pixel</a></p>
-            </div>
-
-            <div class="block">
-                <p class="link"><a href="content.html">Content Measurement</a></p>
-                <p class="link"><a href="campaign-js.html">Campaign &ndash; Javascript</a></p>
-                <p class="link"><a href="campaign-img.html">Campaign &ndash; Tracking Pixel (with forwarding / relay ID)</a></p>
-                <p class="link"><a href="campaign-img-debug.html">Campaign &ndash; Tracking Pixel (debug mode)</a></p>
-                <p class="link"><a href="campaign-img-fixed-sui.html">Campaign &ndash; Tracking Pixel with SUI as GET parameter</a></p>
-                <p class="link"><a href="campaign-img-ai-param.html">Campaign &ndash; Tracking Pixel with AI as GET parameter</a></p>
-            </div>
-
-            <div class="block">
-                <p class="link"><a href="sui-connector-test.html">SUI Connector</a></p>
-                <p class="link"><a href="touchpoint-test.html">Touchpoint</a></p>
-                <p class="link"><a href="simple-iframe-touchpoint.html">Simple iframe Touchpoint</a></p>
-            </div>
-
-            <div class="block">
-                <p class="link"><a href="long-url-test.html">Long Url test</a></p>
-                <p class="link"><a href="relay-img-test.html">Relay image tag test</a></p>
-            </div>
-
-            <div class="block">
-                <p class="link"><a href='amp-pixel.html'>AMP-Pixel Demo</a></p>
-            </div>
-
-            <div class="block" id="infos">
-                <p><span class="info">Domain: ##ENVDOMAIN##</span></p>
-                <p>
-                    <span class="info">VMS Version: <span id="vmsver"></span></span>
-                </p>
-                <p>
-                    <span class="info">S2S Web Version: <span id="s2sver"></span></span>
-                </p>
-            </div>
-        </div>
-    </body>
+<div class='block' id='infos'>
+  <p><span class='info'>Domain: ##ENVDOMAIN##</span></p>
+  <p>
+    <span class='info'>VMS Version: <span id='vmsver'></span></span>
+  </p>
+  <p>
+    <span class='info'>S2S Web Version: <span id='s2sver'></span></span>
+  </p>
+</div>
+</body>
 </html>

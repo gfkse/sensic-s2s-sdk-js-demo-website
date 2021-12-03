@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset='utf-8' />
+  <title>HTML5 TCF Cookie Pro</title>
+  <link rel='shortcut icon' href='../../../images/favicon.png' />
+  <link rel='stylesheet' href='../../../css/s2s-demo.css' />
+
+  <script src='https://cdn.cookielaw.org/consent/tcf.stub.js' type='text/javascript' charset='UTF-8'></script>
+  <!-- CookiePro Cookies Consent Notice start for development.sensic-demo.gfk.com -->
+  <script
+    src='https://cookie-cdn.cookiepro.com/scripttemplates/otSDKStub.js'
+    type='text/javascript'
+    charset='UTF-8'
+    data-domain-script='0edcd832-896a-4ad5-bb7b-69b05eca59b1-test'
+  ></script>
+  <script type='module' src='../../../js/optin-box.js'></script>
+  <script type='text/javascript'>
+    function OptanonWrapper() {
+    }
+  </script>
+  <!-- CookiePro Cookies Consent Notice end for development.sensic-demo.gfk.com -->
+  <script src='../../../js/url-polyfill.js'></script>
+</head>
+<body>
+<script>
+  // Allow overwriting the used sdk with url param sdkUrl
+  var urlParams = new URLSearchParams(window.location.search);
+  var url = urlParams.get('sdkUrl') || window.env.WEB_SDK_URL;
+
+  // Optin via GET param
+  var optinGetValue = urlParams.get('optin');
+  var optin = typeof optinGetValue === 'string' ? optinGetValue === 'true' : undefined;
+  // optin can be set in order to override the SDKs default behavior.
+  // Per default, if optin is not set, the legal bases for tracking PII will be determined automatically based on TCF2.0.
+  // In order to overrive this behavior, please set optin  to true or false, depending on applicible law.
+  // If optin is set to true cookies (or similar) will be set and PII will be collected.
+  // If optin is set to false neither cookies (or similar) will be set nor PII will be collected.
+  // Read more about privacy...https://confluence-docu.gfk.com/pages/viewpage.action?pageId=13043961
+  var gfkS2sConf = {
+    optin: optin,
+    media: 's2s-html5-demo',
+    url: url,
+    type: 'WEB',
+    logLevel: 'debug',
+    extID: {
+      myID1: 'extID1Value',
+      someID2: 'someID2 value'
+    }
+  };
+
+  if (urlParams.get('ai')) {
+    gfkS2sConf.ai = urlParams.get('ai');
+  }
+
+  (function(w, d, c, s, id, v) {
+    if (d.getElementById(id)) {
+      return;
+    }
+
+    w.gfkS2sConf = c;
+    w[id] = {};
+    w[id].agents = [];
+    var api = [
+      'playStreamLive',
+      'playStreamOnDemand',
+      'stop',
+      'skip',
+      'screen',
+      'volume',
+      'impression'
+    ];
+    w.gfks = (function() {
+      function f(sA, e, cb) {
+        return function() {
+          sA.p = cb();
+          sA.queue.push({ f: e, a: arguments });
+        };
+      }
+
+      function s(c, pId, cb) {
+        var sA = { queue: [], config: c, cb: cb, pId: pId };
+        for (var i = 0; i < api.length; i++) {
+          e = api[i];
+          sA[e] = f(sA, e, cb);
+        }
+        return sA;
+      }
+
+      return s;
+    })();
+    w[id].getAgent = function(cb, pId) {
+      var a = {
+        a: new w.gfks(
+          c,
+          pId || '',
+          cb ||
+          function() {
+            return 0;
+          }
+        )
+      };
+
+      function g(a, e) {
+        return function() {
+          return a.a[e].apply(a.a, arguments);
+        };
+      }
+
+      for (var i = 0; i < api.length; i++) {
+        e = api[i];
+        a[e] = g(a, e);
+      }
+      w[id].agents.push(a);
+      return a;
+    };
+
+    var lJS = function(eId, url) {
+      var tag = d.createElement(s);
+      var el = d.getElementsByTagName(s)[0];
+      tag.id = eId;
+      tag.async = true;
+      tag.type = 'text/javascript';
+      tag.src = url;
+      el.parentNode.insertBefore(tag, el);
+    };
+
+    if (c.hasOwnProperty(v)) {
+      lJS(id + v, c[v]);
+    }
+    lJS(id, c.url);
+  })(window, document, gfkS2sConf, 'script', 'gfkS2s', 'visUrl');
+</script>
+
+<div class='header'>
+  <div id='title'>HTML5 TCF Cookie Pro</div>
+  <optin-box></optin-box>
+</div>
+
+<video id='my_video_id' controls preload='metadata'>
+  <source src='../../../res/big_buck_bunny.mp4' type='video/mp4' />
+</video>
+
+<script>
+  var video = document.getElementById('my_video_id');
+  var agent = gfkS2s.getAgent(getVideoPosition, 'my_video_id');
+  var currentPosition = getVideoPosition();
+  var currentPlaybackSpeed = video.playbackRate;
+
+  video.addEventListener('playing', () => {
+    agent.playStreamOnDemand(
+      'default',
+      video.currentSrc,
+      { volume: getVolume(), speed: currentPlaybackSpeed },
+      { /** add your custom parameter here as comma-seperated <key>: "<value>" pairs */ }
+    );
+  });
+
+  video.addEventListener('timeupdate', () => {
+    if (!video.paused) {
+      currentPosition = getVideoPosition();
+    }
+  });
+
+  video.addEventListener('pause', () => {
+    if (video.seeking) {
+      agent.stop(currentPosition);
+    } else {
+      agent.stop();
+    }
+  });
+
+  video.addEventListener('ratechange', () => {
+    if (!currentPlaybackSpeed || currentPlaybackSpeed !== video.playbackRate) {
+      currentPlaybackSpeed = video.playbackRate;
+      if (!video.paused) {
+        agent.stop();
+        agent.playStreamOnDemand(
+          'default',
+          video.currentSrc,
+          { volume: getVolume(), speed: currentPlaybackSpeed },
+          {/** add your custom parameter here as comma-seperated <key>: "<value>" pairs */ }
+        );
+      }
+    }
+  });
+
+  video.addEventListener('volumechange', () => {
+    agent.volume(getVolume());
+  });
+
+  function getVolume() {
+    return video.muted ? '0' : Math.round(video.volume * 100).toString();
+  }
+
+  function getVideoPosition() {
+    currentPosition = Math.floor(video.currentTime * 1000);
+    return currentPosition;
+  }
+</script>
+<script>
+  function addPixelTag({ tcString, gdprApplies }) {
+    var pixelTag = document.createElement('img');
+    pixelTag.src = `${window.env.TP_URL}?ty=IM&m=campaign_demosite&c=demosite&cp_cp1=1553256932919&gdpr=${gdprApplies}&gdpr_consent=${tcString}`;
+    document.body.appendChild(pixelTag);
+  }
+
+  // Call Tracking pixel with the TC string after user has submitted/TC is loaded
+  document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => {
+      __tcfapi('addEventListener', 2, (tcData, success) => {
+        if (success && (tcData.eventStatus === 'tcloaded' || tcData.eventStatus === 'useractioncomplete')) {
+          addPixelTag(tcData);
+        }
+        console.log('### pause!' + currentPosition);
+        if (!video.paused) {
+          agent.stop(currentPosition);
+        }
+      });
+
+      video.addEventListener('ended', () => {
+        var vp = getVideoPosition();
+        if (vp > currentPosition && vp < currentPosition + 100) {
+          currentPosition = vp;
+          positionElement.innerText = currentPosition;
+        }
+        console.log('### ended!' + currentPosition);
+        agent.stop(currentPosition);
+      });
+    });
+  });
+</script>
+
+<script>
+  function addPixelTag({ tcString, gdprApplies }) {
+    var pixelTag = document.createElement('img');
+    pixelTag.src = `${window.env.TP_URL}?ty=IM&m=campaign_demosite&c=demosite&cp_cp1=1553256932919&gdpr=${gdprApplies}&gdpr_consent=${tcString}`;
+    document.body.appendChild(pixelTag);
+  }
+
+  // Call Tracking pixel with the TC string after user has submitted/TC is loaded
+  document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => {
+      __tcfapi('addEventListener', 2, (tcData, success) => {
+        if (success && (tcData.eventStatus === 'tcloaded' || tcData.eventStatus === 'useractioncomplete')) {
+          addPixelTag(tcData);
+        }
+      });
+    }, 2000);
+  });
+</script>
+
+<!-- CookiePro Cookies Settings button start -->
+<button id='ot-sdk-btn' class='ot-sdk-show-settings'>Cookie Settings</button>
+<!-- CookiePro Cookies Settings button end -->
+
+<!-- CookiePro Cookies List start -->
+<div id='ot-sdk-cookie-policy'></div>
+<!-- CookiePro Cookies List end -->
+</body>
+</html>

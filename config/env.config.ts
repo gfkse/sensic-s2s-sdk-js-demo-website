@@ -8,7 +8,8 @@ const urls = {
     ENV_WEB_SDK_CTV_URL: JSON.stringify(`https://demo-config.sensic.net/ctv/s2s-web.js`),
     ENV_TP_URL: JSON.stringify(`https://demo-config.sensic.net/tp`),
     ENV_TOUCHPOINT_URL: JSON.stringify(`https://demo-config.sensic.net/suitp.html`),
-    ENV_SUI_CONNECTOR_URL: JSON.stringify(`https://demo-config.sensic.net/sui-connector.js`)
+    ENV_SUI_CONNECTOR_URL: JSON.stringify(`https://demo-config.sensic.net/sui-connector.js`),
+    ENV_EXTENSION_BASE_URL: JSON.stringify(`https://demo-config.sensic.net`)
   },
   development: {
     ENV_TAG_URL: JSON.stringify(`https://demo-config-preproduction.sensic.net/tag-im.js`),
@@ -16,7 +17,8 @@ const urls = {
     ENV_WEB_SDK_CTV_URL: JSON.stringify(`https://demo-config-preproduction.sensic.net/ctv/s2s-web.js`),
     ENV_TP_URL: JSON.stringify(`https://demo-config-preproduction.sensic.net/tp`),
     ENV_TOUCHPOINT_URL: JSON.stringify(`https://demo-config-preproduction.sensic.net/suitp.html`),
-    ENV_SUI_CONNECTOR_URL: JSON.stringify(`https://demo-config-preproduction.sensic.net/sui-connector.js`)
+    ENV_SUI_CONNECTOR_URL: JSON.stringify(`https://demo-config-preproduction.sensic.net/sui-connector.js`),
+    ENV_EXTENSION_BASE_URL: JSON.stringify(`https://demo-config-preproduction.sensic.net`)
   },
   local: {
     ENV_TAG_URL: JSON.stringify(`http://localhost:8082/tag-im.js`),
@@ -24,10 +26,10 @@ const urls = {
     ENV_WEB_SDK_CTV_URL: JSON.stringify(`http://localhost:8082/s2s-web.js`),
     ENV_TP_URL: JSON.stringify(`http://localhost:8090/tp`),
     ENV_TOUCHPOINT_URL: JSON.stringify(`http://localhost:8082/suitp.html`),
-    ENV_SUI_CONNECTOR_URL: JSON.stringify(`http://localhost:8082/sui-connector.js`)
+    ENV_SUI_CONNECTOR_URL: JSON.stringify(`http://localhost:8082/sui-connector.js`),
+    ENV_EXTENSION_BASE_URL: JSON.stringify(`http://localhost:8082`)
   }
 };
-debugger
 export const production = {
   mode: 'production',
   optimization: {
@@ -55,7 +57,6 @@ export const development = {
   ]
 
 };
-
 export const local = {
   ...development,
   plugins: [

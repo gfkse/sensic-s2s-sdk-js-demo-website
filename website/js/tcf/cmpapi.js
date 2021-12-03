@@ -15,10 +15,10 @@ window.__tcfapi = async (command, version, callback) => {
         return;
     }
     if (gdpr !== "applies") {
-        return callback(await (await fetch(`js/tcf/tcf-without-gdpr.json`)).json(), true);
+        return callback(await (await fetch(`../../../js/tcf/tcf-without-gdpr.json`)).json(), true);
     }
 
-    const baseTcObject = await (await fetch(`js/tcf/tcf-with-gdpr.json`)).json();
+    const baseTcObject = await (await fetch(`../../../js/tcf/tcf-with-gdpr.json`)).json();
     baseTcObject.vendor.consents[758] = vendor.includes("consent");
     baseTcObject.vendor.legitimateInterests[758] = vendor.includes("legitimateInterest");
     baseTcObject.purpose.consents[1] = purpose1.includes("consent");
