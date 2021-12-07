@@ -119,21 +119,23 @@
 <video id='my_video_id' controls preload='metadata'>
   <source src='../../../res/big_buck_bunny.mp4' type='video/mp4' />
 </video>
-<button onclick="playVideo()" style="visibility: hidden">play</button>
-<button onclick="stopVideo()" style="visibility: hidden">stop</button>
+<button id='play_video' onclick='playVideo()' style='visibility: hidden'>play</button>
+<button id='stop_video' onclick='stopVideo()' style='visibility: hidden'>stop</button>
 
 <script>
-  function playVideo(){
+  function playVideo() {
     document.getElementById('my_video_id').play();
   }
-  function stopVideo(){
+
+  function stopVideo() {
     document.getElementById('my_video_id').pause();
   }
+
   var script = document.createElement('script');
   script.src = `${window.env.EXTENSION_BASE_URL}/html5extension.js`;
   document.head.appendChild(script);
   script.onload = function() {
-    var extension = new window.HTML5Extension('my_video_id', gfkS2s, 'default', {  });
+    var extension = new window.HTML5Extension('my_video_id', gfkS2s, 'default', {});
     // call setParameter() as soon as your player is switching over to different content. Otherwise new content will be reported with parameters of the video played before.
     // extension.setParameter('news', { cp1: '<your new cp1 value here>', cp2: '<your new cp2 value here>', ... });
   };
