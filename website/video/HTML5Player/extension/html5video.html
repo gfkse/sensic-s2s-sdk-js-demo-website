@@ -119,18 +119,8 @@
 <video id='my_video_id' controls preload='metadata'>
   <source src='../../../res/big_buck_bunny.mp4' type='video/mp4' />
 </video>
-<button id='play_video' onclick='playVideo()' style='opacity: 0'>play</button>
-<button id='stop_video' onclick='stopVideo()' style='opacity: 0'>stop</button>
 
 <script>
-  function playVideo() {
-    document.getElementById('my_video_id').play();
-  }
-
-  function stopVideo() {
-    document.getElementById('my_video_id').pause();
-  }
-
   var script = document.createElement('script');
   script.src = `${window.env.EXTENSION_BASE_URL}/html5extension.js`;
   document.head.appendChild(script);
