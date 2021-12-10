@@ -118,38 +118,12 @@
   <optin-box></optin-box>
 </div>
 <div id='my_video_id'></div>
-<!--<div class='playbackRateBtnsContainer'>-->
-<!--  <p class='playbackRateDescr'>Playback speed: <span id='playbackRateValue'></span></p>-->
-<!--  <button class='playbackRateBtns' value='minus' onclick='changePlaybackSpeed(this.value)'>-</button>-->
-<!--  <button class='playbackRateBtns' value='plus' onclick='changePlaybackSpeed(this.value)'>+</button>-->
-<!--</div>-->
 <script>
   var video = document.getElementById('my_video_id');
   var jwPlayer = jwplayer('my_video_id').setup({
     file: 'https://cph-p2p-msl.akamaized.net/hls/live/2000341/test/master.m3u8',
     autostart: true
   });
-  // var playbackRateControls = [0.5, 1, 2];
-
-  // we are taking the middle value in the array for default playback speed
-  // var currentPlaybackSpeed = playbackRateControls[Math.round((playbackRateControls.length - 1) / 2)];
-  // document.getElementById('playbackRateValue').innerHTML = currentPlaybackSpeed.toString();
-  //
-  // function changePlaybackSpeed(event) {
-  //   var matchedPlaybackSpeedInArray = playbackRateControls.find((playbackSpeed) => playbackSpeed === currentPlaybackSpeed);
-  //   var lastArrayEl = playbackRateControls.length - 1;
-  //   var firstArrayEl = playbackRateControls[0];
-  //   var indexOfMatchedVal = playbackRateControls.indexOf(matchedPlaybackSpeedInArray);
-  //   if (event === 'plus' && playbackRateControls.indexOf(matchedPlaybackSpeedInArray) !== lastArrayEl) {
-  //     currentPlaybackSpeed = playbackRateControls[indexOfMatchedVal + 1];
-  //     document.getElementById('playbackRateValue').innerHTML = currentPlaybackSpeed.toString();
-  //     jwPlayer.setPlaybackRate(currentPlaybackSpeed);
-  //   } else if (event === 'minus' && playbackRateControls.indexOf(matchedPlaybackSpeedInArray) !== playbackRateControls.indexOf(firstArrayEl)) {
-  //     currentPlaybackSpeed = playbackRateControls[indexOfMatchedVal - 1];
-  //     document.getElementById('playbackRateValue').innerHTML = currentPlaybackSpeed.toString();
-  //     jwPlayer.setPlaybackRate(currentPlaybackSpeed);
-  //   }
-  // }
 
   var agent = gfkS2s.getAgent('my_video_id');
 
@@ -170,19 +144,6 @@
     agent.stop();
   });
 
-  // Fires when playback speed changed
-  // jwPlayer.on('playbackRateChanged', function() {
-  //   if (jwPlayer.getState() === 'playing') {
-  //     agent.stop();
-  //     agent.playStreamLive(jwPlayer.getContainer().id,
-  //       '',
-  //       0,
-  //       jwPlayer.getPlaylistItem().file,
-  //       { volume: getVolume(), speed: jwPlayer.getPlaybackRate() },
-  //       { /*please add your custom parameters here or keep empty*/ }
-  //     );
-  //   }
-  // });
   // Fires when a stream is idling
   jwPlayer.on('idle', function() {
     agent.stop();
