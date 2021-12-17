@@ -122,8 +122,10 @@
   var script = document.createElement('script');
   script.src = `${window.env.EXTENSION_BASE_URL}/jwextension.js`;
   document.head.appendChild(script);
+  var jwPlayer;
+
   script.onload = function() {
-    var jwPlayer = jwplayer('my_video_id').setup({
+    jwPlayer = jwplayer('my_video_id').setup({
       file: '../../../res/big_buck_bunny.mp4'
     });
 
