@@ -241,6 +241,12 @@
     }
   });
 
+  video.addEventListener('seeking', () => {
+    if (!video.paused) {
+      agent.stop(currentPosition);
+    }
+  });
+
   video.addEventListener('ratechange', () => {
     if (!currentPlaybackSpeed || currentPlaybackSpeed !== video.playbackRate) {
       currentPlaybackSpeed = video.playbackRate;
