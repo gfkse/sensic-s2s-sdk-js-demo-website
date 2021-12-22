@@ -126,6 +126,7 @@
   var currentPlaybackSpeed = video.playbackRate;
 
   video.addEventListener('playing', () => {
+    console.log('playing');
     agent.playStreamOnDemand(
       'default',
       video.currentSrc,
@@ -135,12 +136,14 @@
   });
 
   video.addEventListener('timeupdate', () => {
+    console.log('timeupdate', video.paused);
     if (!video.paused) {
       currentPosition = getVideoPosition();
     }
   });
 
   video.addEventListener('pause', () => {
+    console.log('pause', video.seeking)
     if (video.seeking) {
       agent.stop(currentPosition);
     } else {
@@ -149,6 +152,7 @@
   });
 
   video.addEventListener('seeking', () => {
+    console.log('seeking', video.paused);
     if (!video.paused) {
       agent.stop(currentPosition);
     }
