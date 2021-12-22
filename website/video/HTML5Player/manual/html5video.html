@@ -124,14 +124,19 @@
   var agent = window.gfkS2s.getAgent(getVideoPosition, 'my_video_id');
   var currentPosition = getVideoPosition();
   var currentPlaybackSpeed = video.playbackRate;
+  var seeked = false;
 
   video.addEventListener('playing', () => {
-    agent.playStreamOnDemand(
-            'default',
-            video.currentSrc,
-            { volume: getVolume(), speed: currentPlaybackSpeed },
-            { /** add your custom parameter here as comma-seperated <key>: "<value>" pairs */ }
-    );
+    if(!seeked){
+      agent.playStreamOnDemand(
+              'default',
+              video.currentSrc,
+              { volume: getVolume(), speed: currentPlaybackSpeed },
+              { /** add your custom parameter here as comma-seperated <key>: "<value>" pairs */ }
+      );
+    }else {
+      seeked = false;
+    }
   });
 
   video.addEventListener('timeupdate', (time) => {
@@ -158,6 +163,7 @@
   video.addEventListener('seeked', () => {
     if (!video.paused) {
       agent.stop(currentPosition);
+      seeked = true;
       agent.playStreamOnDemand(
               'default',
               video.currentSrc,
