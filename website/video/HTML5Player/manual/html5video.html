@@ -135,8 +135,8 @@
     );
   });
 
-  video.addEventListener('timeupdate', () => {
-    console.log('timeupdate', video.paused);
+  video.addEventListener('timeupdate', (time) => {
+    console.log('timeupdate', video.paused, time);
     if (!video.paused) {
       currentPosition = getVideoPosition();
     }
