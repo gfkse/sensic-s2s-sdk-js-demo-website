@@ -61,12 +61,22 @@ a:hover {
     margin-left: 40px;
 }
 
-.table, th, td {
+th, td {
     border: 1px solid #808080;
 }
 
 td, th {
     padding: 5px;
+    text-align: left;
+}
+
+th {
+    background: #404040;
+}
+
+.empty-row td {
+    border: 0 none;
+    padding: 15px;
 }
 
 .table {
