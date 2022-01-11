@@ -126,6 +126,7 @@
   script.src = `${window.env.EXTENSION_BASE_URL}/jwliveextension.js`;
   document.head.appendChild(script);
   var jwPlayer;
+  var extension;
   script.onload = function() {
     jwPlayer = jwplayer('my_video_id').setup({
       file: 'https://cph-p2p-msl.akamaized.net/hls/live/2000341/test/master.m3u8'
@@ -133,14 +134,13 @@
 
     /**
      * Initializing the extension
-     * @param {string} playerID id of the player
-     * @param {gfkS2s} gfkS2s configuration
      * @param {JWPlayer} playerInstance instance of the player
+     * @param {gfkS2s} gfkS2s configuration
      * @param {string} contentId
      * @param {object} customParams example: { cp1: '<your new cp1 value here>', cp2: '<your new cp2 value here>', ... }
      * @returns {extension}
      */
-    var extension = new window.gfkS2s.JWLiveExtension('my_video_id', gfkS2s, jwPlayer, 'default', {});
+    extension = new window.gfkS2s.JWLiveExtension(jwPlayer, gfkS2s, 'default', {});
 
     // call setParameter() as soon as your player is switching over to different content. Otherwise, new content will be
     // reported with parameters of the video played before.
