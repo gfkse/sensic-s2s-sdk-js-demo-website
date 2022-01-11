@@ -17,11 +17,10 @@ export class TcfBox extends HTMLElement {
 
   constructor() {
     super();
-    //per default, tcf is turned off
+    //by default, tcf is turned off
     if (!document.location.href.includes('tcf')) {
-        window.history.pushState({},'',document.location.href + `?${this.falseTcf}`);
+        window.history.replaceState({},'',document.location.href + `?${this.falseTcf}`);
     }
-    
     this.addTcfOptions();
     this.addSettingsButton();
     this.style = 'display:block';

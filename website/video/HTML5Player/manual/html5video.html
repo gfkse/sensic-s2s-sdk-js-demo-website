@@ -60,7 +60,7 @@
       function s(c, pId, cb) {
         var sA = { queue: [], config: c, cb: cb, pId: pId };
         for (var i = 0; i < api.length; i++) {
-          e = api[i];
+          var e = api[i];
           sA[e] = f(sA, e, cb);
         }
         return sA;
@@ -87,7 +87,7 @@
       }
 
       for (var i = 0; i < api.length; i++) {
-        e = api[i];
+        var e = api[i];
         a[e] = g(a, e);
       }
       w[id].agents.push(a);
@@ -128,14 +128,14 @@
   var seeked = false;
 
   video.addEventListener('playing', () => {
-    if(!seeked){
+    if (!seeked) {
       agent.playStreamOnDemand(
-              'default',
-              video.currentSrc,
-              { volume: getVolume(), speed: currentPlaybackSpeed },
-              { /** add your custom parameter here as comma-seperated <key>: "<value>" pairs */ }
+        'default',
+        video.currentSrc,
+        { volume: getVolume(), speed: currentPlaybackSpeed },
+        { /** add your custom parameter here as comma-seperated <key>: "<value>" pairs */ }
       );
-    }else {
+    } else {
       seeked = false;
     }
   });
@@ -166,10 +166,10 @@
       agent.stop(currentPosition);
       seeked = true;
       agent.playStreamOnDemand(
-              'default',
-              video.currentSrc,
-              { volume: getVolume(), speed: currentPlaybackSpeed },
-              { /** add your custom parameter here as comma-seperated <key>: "<value>" pairs */ }
+        'default',
+        video.currentSrc,
+        { volume: getVolume(), speed: currentPlaybackSpeed },
+        { /** add your custom parameter here as comma-seperated <key>: "<value>" pairs */ }
       );
     }
   });
