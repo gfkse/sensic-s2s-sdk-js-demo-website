@@ -73,7 +73,6 @@ export default function(env, argv) {
       new CopyPlugin({
         patterns: [
           { from: 'website/css', to: 'css' },
-          { from: 'website/fonts', to: 'fonts' },
           { from: 'website/images', to: 'images' },
           { from: 'website/js', to: 'js' },
           { from: 'website/res', to: 'res' }
