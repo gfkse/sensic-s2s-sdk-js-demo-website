@@ -43,15 +43,18 @@
 <tcf-box></tcf-box>
 <div id='my_video_id'></div>
 <script>
+  var jwPlayer;
+  jwPlayer = jwplayer('my_video_id').setup({
+    file: 'https://cph-p2p-msl.akamaized.net/hls/live/2000341/test/master.m3u8'
+  });
+</script>
+<script>
+  var extension;
   var script = document.createElement('script');
   script.src = `${window.env.EXTENSION_BASE_URL}/jwliveextension.js`;
   document.head.appendChild(script);
-  var jwPlayer;
-  var extension;
+
   script.onload = function() {
-    jwPlayer = jwplayer('my_video_id').setup({
-      file: 'https://cph-p2p-msl.akamaized.net/hls/live/2000341/test/master.m3u8'
-    });
 
     /**
      * Initializing the extension
