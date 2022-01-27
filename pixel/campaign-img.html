@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset='utf-8' />
+  <meta http-equiv='X-UA-Compatible' content='IE=edge' />
+  <title>Second by Second - DemoSite</title>
+  <meta name='viewport' content='width=device-width, initial-scale=1' />
+
+  <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+  <link rel='shortcut icon' href='../images/favicon.png' />
+  <!-- Theme style  -->
+  <link rel='stylesheet' href='../css/style.css' />
+  <script src='../js/url-polyfill.js'></script>
+</head>
+<body onload='onLoad()'>
+<div id='fh5co-page'>
+  <div id='fh5co-work-section'>
+    <div>
+      <div>
+        <div>
+          <h2>Content Tracking</h2>
+          <p>MediaId = campaign_demosite<br /></p>
+          <p>ContentId = demosite1<br /></p>
+          <h3>Custom parameters for SST</h3>
+          <p>
+            <label>cp1: timestamp</label>
+          </p>
+        </div>
+      </div>
+      <div>
+        <form action='campaign-img.html'>
+          <fieldset>
+            <legend>optin</legend>
+            <label for='optin_true'>true</label>
+            <input type='radio' value='true' name='optin' id='optin_true' />
+            <label for='optin_false'>false</label>
+            <input type='radio' value='false' name='optin' id='optin_false' />
+            <label for='optin_undefined'>undefined</label>
+            <input type='radio' value='' name='optin' id='optin_undefined' />
+          </fieldset>
+          <fieldset>
+            <legend>GDPR</legend>
+            <label for='noapplies'>Does not apply</label>
+            <input type='radio' name='gdpr' value='0' id='noapplies' />
+            <label for='applies'>Applies</label>
+            <input type='radio' name='gdpr' value='1' id='applies' />
+            <label for='gdpr_empty'>Empty</label>
+            <input type='radio' name='gdpr' value='' id='gdpr_empty' />
+          </fieldset>
+          <fieldset>
+            <legend>Consent/Legitimate interest</legend>
+            <label for='consent'>Consent</label>
+            <input type='radio' name='gdpr_consent' value='valid' id='consent' />
+            <label for='noconsent'>No consent</label>
+            <input type='radio' name='gdpr_consent' value='invalid' id='noconsent' />
+            <label for='consent_empty'>Empty</label>
+            <input type='radio' name='gdpr_consent' value='' id='consent_empty' />
+          </fieldset>
+          <fieldset>
+            <button type='submit'>Reload</button>
+          </fieldset>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- GET pixel -->
+<script>
+  // Allow overwriting the used tp with url param pixelUrl
+  var urlParams = new URLSearchParams(window.location.search);
+  var tpUrl = urlParams.get('pixelUrl') || window.env.TP_URL;
+  var gdpr_consent = 'CPOee_BPOee_BAcABBENBiCsAP_AAH_AAChQIENf_X__b3_j-_59f_t0eY1P9_7_v-0zjhfdt-8N2f_X_L8X42M7vF36pq4KuR4Eu3LBIQdlHOHcTUmw6okVrzPsbk2Mr7NKJ7PEmnMbO2dYGH9_n93TuZKY7__8___z__-v_v____f_r-3_3__59X---_e_V399zLv9_____9nN__wQEAJMNS-AC7EscGTaNKoUQIwrCQ6AUAFFAMLRNYQMrgp2VwEeoIWACE1ARgRAgxBRiwCAAQCAJCIgJADwQCIAiAQAAgBUgIQAEbAILACwMAgAFANCxAigCECQgyOCo5TAgIkWignsrAEou9jTCEMosAKBR_RUYCJQggWBkJCwcxwBIAAA.f_gAD_gAAAAA';
+  var gdpr_noconsent = 'CPOegAqPOegAqAcABBENBiCgAAAAAH_AAChQIENf_X__b3_j-_59f_t0eY1P9_7_v-0zjhfdt-8N2f_X_L8X42M7vF36pq4KuR4Eu3LBIQdlHOHcTUmw6okVrzPsbk2Mr7NKJ7PEmnMbO2dYGH9_n93TuZKY7__8___z__-v_v____f_r-3_3__59X---_e_V399zLv9_____9nN__wQEAJMNS-AC7EscGTaNKoUQIwrCQ6AUAFFAMLRNYQMrgp2VwEeoIWACE1ARgRAgxBRiwCAAQCAJCIgJADwQCIAiAQAAgBUgIQAEbAILACwMAgAFANCxAigCECQgyOCo5TAgIkWignsrAEou9jTCEMosAKBR_RUYCJQggWBkJCwcxwBIAAA.YAAAD_gAAAAA';
+  if (!/[?&]ty=/.test(tpUrl)) {
+    tpUrl += (tpUrl.indexOf('?') === -1 ? '?' : '&') + 'ty=IM';
+  }
+  if (!/[?&]m=/.test(tpUrl)) {
+    tpUrl += '&m=campaign_demosite';
+  }
+  if (!/[?&]c=/.test(tpUrl)) {
+    tpUrl += '&c=demosite';
+  }
+  if (!/[?&]cp_cp1=/.test(tpUrl)) {
+    tpUrl += '&cp_cp1=1553256932919';
+  }
+  if (!/[?&]gdpr=/.test(tpUrl)) {
+    tpUrl += '&gdpr=' + urlParams.get('gdpr');
+  }
+  if (!/[?&]gdpr_consent=/.test(tpUrl)) {
+    tpUrl += '&gdpr_consent=' + (urlParams.get('gdpr_consent') === 'valid' ? gdpr_consent : gdpr_noconsent);
+  }
+  if (!/[?&]optin=/.test(tpUrl)) {
+    tpUrl += '&optin=' + urlParams.get('optin');
+  }
+  var pixelTag = document.createElement('img');
+  pixelTag.src = tpUrl;
+  pixelTag.style.display = 'none';
+  document.body.appendChild(pixelTag);
+
+  function onLoad() {
+    if (urlParams.get('optin') && urlParams.get('optin') !== '') {
+      document.getElementById('optin_' + urlParams.get('optin')).setAttribute('checked', true);
+    } else {
+      document.getElementById('optin_undefined').setAttribute('checked', true);
+    }
+    if (urlParams.get('gdpr') !== '') {
+      document.getElementById(urlParams.get('gdpr') === '1' ? 'applies' : 'noapplies').setAttribute('checked', true);
+    } else {
+      document.getElementById('gdpr_empty').setAttribute('checked', true);
+    }
+    if (urlParams.get('gdpr_consent') !== '') {
+      document.getElementById(urlParams.get('gdpr_consent') === 'valid' ? 'consent' : 'noconsent').setAttribute('checked', true);
+    } else {
+      document.getElementById('consent_empty').setAttribute('checked', true);
+    }
+  }
+</script>
+</body>
+</html>

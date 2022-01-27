@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset='utf-8' />
+  <meta http-equiv='X-UA-Compatible' content='IE=edge' />
+  <title>Second by Second - DemoSite</title>
+  <meta name='viewport' content='width=device-width, initial-scale=1' />
+  <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+  <link rel='shortcut icon' href='../images/favicon.png' />
+  <link rel='stylesheet' href='../css/campaign-img-debug.css' />
+  <script src='../js/url-polyfill.js'></script>
+</head>
+<body>
+<script>
+  // Allow overwriting the used tp with url param pixelUrl
+  var urlParams = new URLSearchParams(window.location.search);
+  var tpUrl = urlParams.get('pixelUrl') || window.env.TP_URL;
+  if (!/[?&]ty=/.test(tpUrl)) {
+    tpUrl += (tpUrl.indexOf('?') === -1 ? '?' : '&') + 'ty=IM';
+  }
+  if (!/[?&]m=/.test(tpUrl)) {
+    tpUrl += '&m=campaign_demosite';
+  }
+  if (!/[?&]c=/.test(tpUrl)) {
+    tpUrl += '&c=demosite';
+  }
+  if (!/[?&]cp_cp1=/.test(tpUrl)) {
+    tpUrl += '&cp_cp1=1553256932919';
+  }
+  if (!/[?&]tp-type=/.test(tpUrl)) {
+    tpUrl += '&tp-type=html';
+  }
+  var pixelFrame = document.createElement('iframe');
+  pixelFrame.src = tpUrl;
+  pixelFrame.width = '100%';
+  pixelFrame.height = '100%';
+  document.body.appendChild(pixelFrame);
+</script>
+<div>
+  <div>
+    <div>
+      <div>
+        <div>
+          <div>
+            <h2>Content Tracking</h2>
+            <p>MediaId = campaign_demosite<br /></p>
+            <p>ContentId = demosite1<br /></p>
+            <h3>Custom parameters for SST</h3>
+            <p>
+              <label>cp1: timestamp</label>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div></div>
+      <div>
+        <div >
+          <h3>Top</h3>
+          <p>
+            <a href='#' >Get started now!</a>
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <footer role='contentinfo'>
+      <div>
+        <div>
+          <h3>About Us</h3>
+          <p>SENSIC MM Data Collection Team</p>
+        </div>
+        <div></div>
+      </div>
+    </footer>
+  </div>
+</div>
+<div id='tp'></div>
+</body>
+</html>
