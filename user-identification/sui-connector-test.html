@@ -124,13 +124,13 @@
       optinClickHdl(this.value);
     };
     document.getElementById('suiconnver').innerText = gfkConnector.VERSION;
-    document.getElementById('suiapiver').innerText = gfkConnector.suiApi.VERSION;
     var ts1 = new Date().getTime();
     gfkConnector.init(function(suiId) {
       var ts2 = new Date().getTime();
       document.getElementById('userid').innerText = suiId;
       document.getElementById('duration1').innerHTML = ts1 - ts0 + '&thinsp;ms';
       document.getElementById('duration2').innerHTML = ts2 - ts1 + '&thinsp;ms';
+      document.getElementById('suiapiver').innerText = gfkConnector.suiApi.VERSION;
       gfkConnector.init(function(suiObj) {
         document.getElementById('suiobj').innerText = JSON.stringify(suiObj, null, 4);
         showCookies();
