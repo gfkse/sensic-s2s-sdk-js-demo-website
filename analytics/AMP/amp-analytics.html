@@ -92,25 +92,16 @@
 <amp-analytics type='gfksensic' data-block-on-consent='_till_responded'>
   <script type='application/json'>
     {
-      "requestOrigin": "https://demo-config-preproduction.sensic.net",
       "vars": {
+        "environment": "-preproduction",
         "regionID": "demo",
         "mediaID": "demomedia",
-        "cp1": "custom param example",
-        "cp2": "custom param example 2",
-        "ty": "IM",
-        "t": "s2s-amp",
-        "client_params": "p=${regionID}&m=${mediaID}&cid=${clientId(cid)}"
-      },
-      "requests": {
-        "custom_params": "cp_cp1=${cp1}&cp_cp2=${cp2}",
-        "impression_params": "ty=${ty}&c=${contentID}&pr=RANDOM&t=${t}&${page_params}",
-        "req": "/tp?${impression_params}&${client_params}&${custom_params}&gdpr=1&gdpr_consent=${consentString}"
+        "custom_params": "cp_cp1=example1&cp_cp2=example2"
       },
       "triggers": {
         "trackConsent": {
           "on": "visible",
-          "request": "req"
+          "request": "impression"
         }
       }
     }
