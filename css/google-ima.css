@@ -1,0 +1,18 @@
+#ad-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+}
+
+#video_container {
+    position: relative;
+}
+
+#my_video_id {
+    /* forces the contents to fill the container */
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 500px;
+}

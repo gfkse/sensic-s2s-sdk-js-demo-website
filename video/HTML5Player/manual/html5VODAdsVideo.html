@@ -5,30 +5,11 @@
   <title>S2S HTML5 Video Demo</title>
   <link rel='shortcut icon' href='../../../images/favicon.png' />
   <link rel='stylesheet' href='../../../css/s2s-demo.css' />
+  <link rel='stylesheet' href='../../../css/google-ima.css' />
   <script src='../../../js/url-polyfill.js'></script>
   <script type='module' src='../../../js/optin-box.js'></script>
   <script type='module' src='../../../js/tcf-box.js'></script>
   <script src='//imasdk.googleapis.com/js/sdkloader/ima3.js'></script>
-  <style>
-      #ad-container {
-          position: absolute;
-          top: 0;
-          left: 0;
-          width: 100%;
-      }
-
-      #video_container {
-          position: relative;
-      }
-
-      #my_video_id {
-          /* forces the contents to fill the container */
-          position: absolute;
-          top: 0;
-          left: 0;
-          width: 500px;
-      }
-  </style>
 </head>
 <body>
 <script>
@@ -39,12 +20,8 @@
   // Optin via GET param
   var optinGetValue = urlParams.get('optin');
   var optin = typeof optinGetValue === 'string' ? optinGetValue === 'true' : undefined;
-  // optin can be set in order to override the SDKs default behavior.
-  // Per default, if optin is not set, the legal bases for tracking PII will be determined automatically based on TCF2.0.
-  // In order to overrive this behavior, please set optin  to true or false, depending on applicible law.
-  // If optin is set to true cookies (or similar) will be set and PII will be collected.
-  // If optin is set to false neither cookies (or similar) will be set nor PII will be collected.
-  // Read more about privacy...https://confluence-docu.gfk.com/pages/viewpage.action?pageId=13043961
+  // In case questions about the optin parameter, please read the documentation: https://confluence-docu.gfk.com/display/SENSIC/Javascript+SDK+Integration
+  // Read more about privacy:https://confluence-docu.gfk.com/pages/viewpage.action?pageId=13043961
   var gfkS2sConf = {
     optin: optin,
     media: 's2s-html5-demo',
@@ -145,10 +122,11 @@
 </div>
 <script src='../../../js/google-ima.js'></script>
 <script>
+  initGoogleIma(document.getElementById('my_video_id'));
+</script>
+<script>
   var currentAdTime = 0;
   var adAgent = window.gfkS2s.getAgent(getAdCurrentPosition, 'my_ad_id');
-
-  initGoogleIma(document.getElementById('my_video_id'));
 
   function getAdCurrentPosition() {
     return currentAdTime;
