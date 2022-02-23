@@ -126,7 +126,7 @@
 </script>
 <script>
   var currentAdTime = 0;
-  var adAgent = window.gfkS2s.getAgent(getAdCurrentPosition, 'my_ad_id');
+  var adAgent = window.gfkS2s.getAgent(getAdCurrentPosition);
 
   function getAdCurrentPosition() {
     return currentAdTime;
@@ -138,7 +138,7 @@
       'ad',
       video.currentSrc + 'ads',
       {},
-      { /** add your custom parameter here as comma-seperated <key>: "<value>" pairs */ }
+      {}
     );
   }
 
@@ -163,7 +163,7 @@
       video.currentSrc + 'ads',
       0,
       {},
-      { /** add your custom parameter here as comma-seperated <key>: "<value>" pairs */ }
+      {}
     );
   }
 
@@ -187,7 +187,7 @@
 </script>
 <script>
   var video = document.getElementById('my_video_id');
-  var agent = window.gfkS2s.getAgent(getVideoPosition, 'my_video_id');
+  var agent = window.gfkS2s.getAgent(getVideoPosition);
   var currentPosition = getVideoPosition();
   var currentPlaybackSpeed = video.playbackRate;
   var seeked = false;
