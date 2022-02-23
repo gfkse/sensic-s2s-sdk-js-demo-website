@@ -39,7 +39,7 @@ function onLoaded(adEvent) {
   }
 }
 
-function onContentPauseRequested() {
+function stopVideo() {
   adRunning = true;
   if (!video.paused) {
     video.pause();
@@ -50,7 +50,7 @@ function onStarted() {
   adContainer.style.display = 'block';
 }
 
-function onContentResumeRequested() {
+function hideAdAndPlayVideo() {
   adContainer.style.display = 'none';
   if (video.paused && !video.ended) {
     adRunning = false;
@@ -111,12 +111,12 @@ function addEvents() {
 function onAdsManagerLoaded(adsManagerLoadedEvent) {
   adsManager = adsManagerLoadedEvent.getAdsManager(video);
   adsManager.addEventListener(google.ima.AdErrorEvent.Type.AD_ERROR, onAdError);
-  adsManager.addEventListener(google.ima.AdEvent.Type.CONTENT_RESUME_REQUESTED, onContentResumeRequested);
+  adsManager.addEventListener(google.ima.AdEvent.Type.CONTENT_RESUME_REQUESTED, hideAdAndPlayVideo);
   adsManager.addEventListener(google.ima.AdEvent.Type.LOADED, onLoaded);
   // For non-auto ad breaks, listen for ad break ready
   adsManager.addEventListener(google.ima.AdEvent.Type.AD_BREAK_READY, onAdBreakReady);
   adsManager.addEventListener(google.ima.AdEvent.Type.STARTED, onStarted);
-  adsManager.addEventListener(google.ima.AdEvent.Type.CONTENT_PAUSE_REQUESTED, onContentPauseRequested);
+  adsManager.addEventListener(google.ima.AdEvent.Type.CONTENT_PAUSE_REQUESTED, stopVideo);
   adContainer.addEventListener('click', onAdContainerClick);
   initAdsManager();
 }
