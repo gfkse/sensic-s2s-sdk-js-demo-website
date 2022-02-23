@@ -19,9 +19,13 @@ function initGoogleIma(videoElement) {
   adsRequest.linearAdSlotHeight = video.clientHeight;
   adsRequest.nonLinearAdSlotWidth = video.clientWidth;
   adsRequest.nonLinearAdSlotHeight = video.clientHeight / 3;
-  // Pass the request to the adsLoader to request ads
-  adsLoader.requestAds(adsRequest);
   addEvents();
+  video.addEventListener('playing', function () {
+    if(video.played.length === 0){
+      // Pass the request to the adsLoader to request ads
+      adsLoader.requestAds(adsRequest);
+    }
+  })
 }
 
 function onAdError(adErrorEvent) {
