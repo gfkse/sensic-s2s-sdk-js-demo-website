@@ -6,55 +6,12 @@
   <script async src='https://cdn.ampproject.org/v0.js'></script>
   <script async custom-element='amp-analytics' src='https://cdn.ampproject.org/v0/amp-analytics-0.1.js'></script>
   <script async custom-element='amp-consent' src='https://cdn.ampproject.org/v0/amp-consent-0.1.js'></script>
-  <script>
-    var optinForUrl = (sessionStorage.getItem('optinValue')) ? sessionStorage.getItem('optinValue') : '';
-    var endpoint;
-    var urlParams;
-    var tpUrl;
-
-    function setRadioButtonsCheckbox() {
-      switch (sessionStorage.getItem('optinValue')) {
-        case '&optin=false':
-          document.getElementById('falseOptin').checked = true;
-          break;
-        case '&optin=true':
-          document.getElementById('trueOptin').checked = true;
-          break;
-        case '':
-          document.getElementById('undefOptin').checked = true;
-          break;
-      }
-    }
-
-    function createAmpTag() {
-      urlParams = new URLSearchParams(window.location.search);
-      tpUrl = urlParams.get('pixelUrl') || window.env.TP_URL;
-      setRadioButtonsCheckbox();
-      // if (!tpUrl.startsWith('https')) {
-      //   tpUrl = tpUrl.replace('http', 'https');
-      // }
-      var ampAnalyticsTag = document.createElement('amp-analytics');
-      ampAnalyticsTag.setAttribute('data-block-on-consent', '_till_responded');
-      ampAnalyticsTag.setAttribute('config', `${tpUrl}?ty=IM${optinForUrl}&m=BisbarraAmp&c=default&pr=RANDOM&cp_c1=bisbarra.es&cp_c2=actualidad&gdpr=1&gdpr_consent=CONSENT_STRING`);
-      ampAnalyticsTag.setAttribute('id', 'amp');
-      document.body.appendChild(ampAnalyticsTag);
-    }
-
-    function optinClickHdl() {
-      sessionStorage.clear();
-      var optinValue = Array.from(document.getElementsByName('optin')).find(r => r.checked).value;
-      optinForUrl = (optinValue !== 'undefined') ? `&optin=${optinValue}` : '';
-      endpoint = `${tpUrl}?ty=IM${optinForUrl}&m=BisbarraAmp&c=default&pr=RANDOM&cp_c1=bisbarra.es&cp_c2=actualidad&gdpr=CONSENT_STATE_VALUE&gdpr_consent=CONSENT_STRING`;
-      var ampPixelTag = document.getElementById('amp');
-      ampPixelTag.setAttribute('src', endpoint);
-      sessionStorage.setItem('optinValue', optinForUrl);
-      window.location.reload();
-    }
-
-  </script>
+  <link rel='shortcut icon' href='../../images/favicon.png' />
+  <link rel='canonical' href='$SOME_URL'>
+  <link rel='stylesheet' href='../../css/amp-analytics.css' amp-boilerplate>
   <meta name='viewport' content='width=device-width'>
 </head>
-<body onload='createAmpTag()'>
+<body>
 <amp-consent layout='nodisplay' id='didomi' type='didomi'>
   <script type='application/json'>
     {
@@ -73,39 +30,23 @@
     }
   </script>
 </amp-consent>
-<!--<amp-analytics data-block-on-consent='_till_responded'-->
-<!--               config='https://demo-config-preproduction.sensic.net/tp?ty=IM&m=BisbarraAmp&c=default&pr=RANDOM&cp_c1=bisbarra.es&cp_c2=actualidad&gdpr=CONSENT_STATE_VALUE&gdpr_consent=CONSENT_STRING'>-->
-<!--  <script type='application/json'>-->
-<!--    {-->
-<!--      "vars": {-->
-<!--        "apid": "XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX",-->
-<!--        "apv": "1.0",-->
-<!--        "apn": "My AMP Website",-->
-<!--        "section": "Entertainment",-->
-<!--        "segA": "Music",-->
-<!--        "segB": "News",-->
-<!--        "segC": "Google AMP"-->
-<!--      }-->
-<!--    }-->
-<!--  </script>-->
-<!--</amp-analytics>-->
-<div class='optionsbox inline'>
-  <table>
-    <tr>
-      <td class='key'>Opt-in:</td>
-      <td class='value'>
-        <div class='radiobox'>
-          <input id='undefOptin' type='radio' name='optin' class='radio' value='undefined'
-                 onclick='optinClickHdl()' /><label for='undefOptin'
-        >undefined</label
-        ><input id='falseOptin' type='radio' name='optin' class='radio' value='false' onclick='optinClickHdl()' /><label
-          for='falseOptin'>false</label
-        ><input id='trueOptin' type='radio' name='optin' class='radio' value='true' onclick='optinClickHdl()' /><label
-          for='trueOptin'>true</label>
-        </div>
-      </td>
-    </tr>
-  </table>
-</div>
+<amp-analytics type='gfksensic' data-block-on-consent='_till_responded'>
+  <script type='application/json'>
+    {
+      "vars": {
+        "environment": "-preproduction",
+        "regionID": "demo",
+        "mediaID": "demomedia",
+        "custom_params": "cp_cp1=example1&cp_cp2=example2"
+      },
+      "triggers": {
+        "trackConsent": {
+          "on": "visible",
+          "request": "impression"
+        }
+      }
+    }
+  </script>
+</amp-analytics>
 </body>
 </html>

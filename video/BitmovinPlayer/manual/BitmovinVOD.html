@@ -20,8 +20,12 @@
   // Optin via GET param
   var optinGetValue = urlParams.get('optin');
   var optin = typeof optinGetValue === 'string' ? optinGetValue === 'true' : undefined;
-  // In case questions about the optin parameter, please read the documentation: https://confluence-docu.gfk.com/display/SENSIC/Javascript+SDK+Integration
-  // Read more about privacy:https://confluence-docu.gfk.com/pages/viewpage.action?pageId=13043961
+  // optin can be set in order to override the SDKs default behavior.
+  // Per default, if optin is not set, the legal bases for tracking PII will be determined automatically based on TCF2.0.
+  // In order to overrive this behavior, please set optin  to true or false, depending on applicible law.
+  // If optin is set to true cookies (or similar) will be set and PII will be collected.
+  // If optin is set to false neither cookies (or similar) will be set nor PII will be collected.
+  // Read more about privacy...https://confluence-docu.gfk.com/pages/viewpage.action?pageId=13043961
   var gfkS2sConf = {
     optin: optin,
     media: 's2sdemomediaid_ssa_web',
