@@ -109,7 +109,7 @@
 
 </script>
 <div class='header'>
-  <div id='title'>HTML5 Player Live</div>
+  <div id='title'>S2S HTML5 Live Video Demo</div>
 </div>
 <optin-box></optin-box>
 <tcf-box></tcf-box>
@@ -151,14 +151,12 @@
   });
 
   video.addEventListener('pause', () => {
-    console.log('pause', video.seeking);
     if (!video.seeking) {
       agent.stop();
     }
   });
 
   video.addEventListener('seeked', () => {
-    console.log('seeked', video.paused);
     if (!video.paused) {
       agent.stop();
       seeked = true;

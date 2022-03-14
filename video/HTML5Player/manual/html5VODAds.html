@@ -2,14 +2,13 @@
 <html xmlns='http://www.w3.org/1999/html'>
 <head>
   <meta charset='utf-8' />
-  <title>S2S HTML5 Video Live + Google IMA</title>
+  <title>S2S HTML5 Video Demo</title>
   <link rel='shortcut icon' href='../../../images/favicon.png' />
   <link rel='stylesheet' href='../../../css/s2s-demo.css' />
   <link rel='stylesheet' href='../../../css/google-ima.css' />
   <script src='../../../js/url-polyfill.js'></script>
   <script type='module' src='../../../js/optin-box.js'></script>
   <script type='module' src='../../../js/tcf-box.js'></script>
-  <script src='//cdn.jsdelivr.net/hls.js/latest/hls.min.js'></script>
   <script src='//imasdk.googleapis.com/js/sdkloader/ima3.js'></script>
 </head>
 <body>
@@ -111,40 +110,19 @@
 
 </script>
 <div class='header'>
-  <div id='title'>S2S HTML5 Live Video + Google IMA Demo</div>
+  <div id='title'>S2S HTML5 VOD + Google IMA Demo</div>
 </div>
 <optin-box></optin-box>
 <tcf-box></tcf-box>
 <div id='video_container'>
-  <video id='my_video_id' controls preload='metadata'></video>
+  <video id='my_video_id' controls preload='metadata'>
+    <source src='../../../res/big_buck_bunny.mp4' type='video/mp4' />
+  </video>
   <div id='ad-container'></div>
 </div>
 <script src='../../../js/google-ima.js'></script>
 <script>
-  var LIVE_STREAM = '//cph-p2p-msl.akamaized.net/hls/live/2000341/test/master.m3u8';
-  var video = document.getElementById('my_video_id');
-  if (Hls.isSupported()) {
-    var hls = new Hls();
-    // bind them together
-    hls.attachMedia(video);
-    hls.on(Hls.Events.MEDIA_ATTACHED, function() {
-      console.log('video and hls.js are now bound together!');
-      hls.loadSource(LIVE_STREAM);
-      hls.on(Hls.Events.MANIFEST_PARSED, function(event, data) {
-        initGoogleIma(video);
-
-        adsLoader.addEventListener(google.ima.AdsManagerLoadedEvent.Type.ADS_MANAGER_LOADED, function(adsManagerLoadedEvent) {
-          // adsManager = adsManagerLoadedEvent.getAdsManager(video);
-          adsManager.addEventListener(google.ima.AdEvent.Type.CONTENT_RESUME_REQUESTED, onContentResumeRequested);
-          adsManager.addEventListener(google.ima.AdEvent.Type.CONTENT_PAUSE_REQUESTED, onContentPauseRequested);
-          adsManager.addEventListener(google.ima.AdEvent.Type.RESUMED, onResumed);
-          adsManager.addEventListener(google.ima.AdEvent.Type.PAUSED, onPaused);
-          adsManager.addEventListener(google.ima.AdEvent.Type.AD_PROGRESS, onAdProgress, false);
-        });
-        console.log('manifest loaded, found ' + data.levels.length + ' quality level');
-      });
-    });
-  }
+  initGoogleIma(document.getElementById('my_video_id'));
 </script>
 <script>
   var currentAdTime = 0;
@@ -177,9 +155,8 @@
    * That will give an error like "current position 9th second is lower than the last position - 10th second".
    */
   function onContentPauseRequested() {
-    console.log('onContentPauseRequested');
-    if (!video.ended) {
-      agent.stop();
+    if (currentPosition > 0 && !video.ended) {
+      agent.stop(currentPosition);
     }
     adAgent.playStreamOnDemand(
       'ad',
@@ -198,18 +175,27 @@
     currentAdTime = Math.floor(event.getAdData().currentTime * 1000);
   }
 
+  adsLoader.addEventListener(google.ima.AdsManagerLoadedEvent.Type.ADS_MANAGER_LOADED, function(adsManagerLoadedEvent) {
+    // adsManager = adsManagerLoadedEvent.getAdsManager(video);
+    adsManager.addEventListener(google.ima.AdEvent.Type.CONTENT_RESUME_REQUESTED, onContentResumeRequested);
+    adsManager.addEventListener(google.ima.AdEvent.Type.CONTENT_PAUSE_REQUESTED, onContentPauseRequested);
+    adsManager.addEventListener(google.ima.AdEvent.Type.RESUMED, onResumed);
+    adsManager.addEventListener(google.ima.AdEvent.Type.PAUSED, onPaused);
+    adsManager.addEventListener(google.ima.AdEvent.Type.AD_PROGRESS, onAdProgress, false);
+  });
+
 </script>
 <script>
-  var agent = window.gfkS2s.getAgent(null);
+  var video = document.getElementById('my_video_id');
+  var agent = window.gfkS2s.getAgent(getVideoPosition);
+  var currentPosition = getVideoPosition();
   var currentPlaybackSpeed = video.playbackRate;
   var seeked = false;
 
   video.addEventListener('playing', () => {
     if (!seeked) {
-      agent.playStreamLive(
+      agent.playStreamOnDemand(
         'default',
-        '',
-        0,
         video.currentSrc,
         { volume: getVolume(), speed: currentPlaybackSpeed },
         { /** add your custom parameter here as comma-seperated <key>: "<value>" pairs */ }
@@ -219,20 +205,28 @@
     }
   });
 
-  video.addEventListener('pause', () => {
-    if (!video.seeking && !adRunning) {
-      agent.stop();
+  video.addEventListener('timeupdate', function() {
+    if (!video.paused) {
+      currentPosition = getVideoPosition();
     }
   });
 
-  video.addEventListener('seeked', () => {
+  video.addEventListener('pause', function() {
+    if (!adRunning) {
+      if (video.seeking) {
+        agent.stop(currentPosition);
+      } else {
+        agent.stop();
+      }
+    }
+  });
+
+  video.addEventListener('seeked', function() {
     if (!video.paused) {
-      agent.stop();
+      agent.stop(currentPosition);
       seeked = true;
-      agent.playStreamLive(
+      agent.playStreamOnDemand(
         'default',
-        '',
-        0,
         video.currentSrc,
         { volume: getVolume(), speed: currentPlaybackSpeed },
         { /** add your custom parameter here as comma-seperated <key>: "<value>" pairs */ }
@@ -240,15 +234,13 @@
     }
   });
 
-  video.addEventListener('ratechange', () => {
+  video.addEventListener('ratechange', function() {
     if (!currentPlaybackSpeed || currentPlaybackSpeed !== video.playbackRate) {
       currentPlaybackSpeed = video.playbackRate;
       if (!video.paused) {
         agent.stop();
-        agent.playStreamLive(
+        agent.playStreamOnDemand(
           'default',
-          '',
-          0,
           video.currentSrc,
           { volume: getVolume(), speed: currentPlaybackSpeed },
           {/** add your custom parameter here as comma-seperated <key>: "<value>" pairs */ }
@@ -257,7 +249,7 @@
     }
   });
 
-  video.addEventListener('volumechange', () => {
+  video.addEventListener('volumechange', function() {
     if (!video.paused) {
       agent.volume(getVolume());
     }
@@ -265,6 +257,11 @@
 
   function getVolume() {
     return video.muted ? '0' : Math.round(video.volume * 100).toString();
+  }
+
+  function getVideoPosition() {
+    currentPosition = Math.floor(video.currentTime * 1000);
+    return currentPosition;
   }
 </script>
 </body>
