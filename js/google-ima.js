@@ -6,6 +6,7 @@ var adsLoader;
 var adsManager;
 var adRunning = false;
 var video;
+adContainer.style.display = 'none';
 
 function initGoogleIma(videoElement, tagUrl) {
   video = videoElement;
@@ -13,10 +14,9 @@ function initGoogleIma(videoElement, tagUrl) {
   adsLoader = new google.ima.AdsLoader(adDisplayContainer);
   var adsRequest = new google.ima.AdsRequest();
   adsRequest.adTagUrl = '//pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/ad_rule_samples&ciu_szs=300x250&ad_rule=1&impl=s&gdfp_req=1&env=vp&output=vmap&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ar%3Dpremidpost&cmsid=496&vid=short_onecue&correlator=';
-  if(tagUrl){
+  if (tagUrl) {
     adsRequest.adTagUrl = tagUrl;
   }
-
 
   // Specify the linear and nonlinear slot sizes. This helps the SDK to
   // select the correct creative if multiple are returned.
@@ -25,11 +25,11 @@ function initGoogleIma(videoElement, tagUrl) {
   adsRequest.nonLinearAdSlotWidth = video.clientWidth;
   adsRequest.nonLinearAdSlotHeight = video.clientHeight / 3;
   // Pass the request to the adsLoader to request ads
-  video.addEventListener('playing', function (){
-    if(video.played.length === 0){
+  video.addEventListener('playing', function() {
+    // if (video.played.length === 0) {
       adsLoader.requestAds(adsRequest);
-    }
-  })
+    // }
+  });
   addEvents();
 }
 
