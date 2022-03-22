@@ -47,7 +47,7 @@
 <script>
   var extension;
   var script = document.createElement('script');
-  script.src = `${window.env.EXTENSION_BASE_URL}/jwvodextension.js`;
+  script.src = `${window.env.EXTENSION_BASE_URL}/html5vodextension.js`;
   document.head.appendChild(script);
 
   script.onload = function() {
@@ -59,7 +59,7 @@
      * @param {object} customParams example: { cp1: '<your new cp1 value here>', cp2: '<your new cp2 value here>', ... }
      * @returns {extension}
      */
-    extension = new window.gfkS2sExtension.JWVODExtension(jwPlayer, gfkS2sConf, 'default', {});
+    extension = new window.gfkS2sExtension.HTML5VODExtension(document.getElementsByClassName( 'jw-video')[0], gfkS2sConf, 'default', {});
 
     // call setParameter() as soon as your player is switching over to different content. Otherwise, new content will be
     // reported with parameters of the video played before.

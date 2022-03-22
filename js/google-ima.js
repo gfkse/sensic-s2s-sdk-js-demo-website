@@ -27,7 +27,7 @@ function initGoogleIma(videoElement, tagUrl) {
   // Pass the request to the adsLoader to request ads
   video.addEventListener('playing', function() {
     // if (video.played.length === 0) {
-      adsLoader.requestAds(adsRequest);
+    adsLoader.requestAds(adsRequest);
     // }
   });
   addEvents();
