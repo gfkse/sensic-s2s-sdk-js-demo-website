@@ -10,9 +10,11 @@ adContainer.style.display = 'none';
 
 function initGoogleIma(videoElement, tagUrl) {
   video = videoElement;
+  google.ima.settings.setDisableCustomPlaybackForIOS10Plus(true);
   adDisplayContainer = new google.ima.AdDisplayContainer(adContainer, video);
   adsLoader = new google.ima.AdsLoader(adDisplayContainer);
   var adsRequest = new google.ima.AdsRequest();
+  // adsRequest.adTagUrl = '//ad13.adfarm1.adition.com/banner?wpt=X&ts=1647952877&sid=4420431&p[stype:vod,scat:doku-reportage,scatid:1173,spro:der-talentierte-herr-hessenthaler,sproid:13893759,episodeid:14128205,duration:2721000,advertisingtags:null,oon-ds-ads:undefined,platform:web,test:false,viewport:tablet,orientation:landscape,user-agent:orf-tvthek-mozilla-50-windows-nt-100-win64-x64-applewebkit-53736-khtml-like-gecko-chrome-990484451-safari-53736,ctype:12]';
   adsRequest.adTagUrl = '//pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/ad_rule_samples&ciu_szs=300x250&ad_rule=1&impl=s&gdfp_req=1&env=vp&output=vmap&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ar%3Dpremidpost&cmsid=496&vid=short_onecue&correlator=';
   if (tagUrl) {
     adsRequest.adTagUrl = tagUrl;
