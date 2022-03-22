@@ -15,6 +15,7 @@ function initGoogleIma(videoElement, tagUrl) {
   adsLoader = new google.ima.AdsLoader(adDisplayContainer);
   var adsRequest = new google.ima.AdsRequest();
   // adsRequest.adTagUrl = '//ad13.adfarm1.adition.com/banner?wpt=X&ts=1647952877&sid=4420431&p[stype:vod,scat:doku-reportage,scatid:1173,spro:der-talentierte-herr-hessenthaler,sproid:13893759,episodeid:14128205,duration:2721000,advertisingtags:null,oon-ds-ads:undefined,platform:web,test:false,viewport:tablet,orientation:landscape,user-agent:orf-tvthek-mozilla-50-windows-nt-100-win64-x64-applewebkit-53736-khtml-like-gecko-chrome-990484451-safari-53736,ctype:12]';
+  // adsRequest.adTagUrl = '//pubads.g.doubleclick.net/gampad/ads?iu=/21775744923/external/single_ad_samples&sz=640x480&cust_params=sample_ct%3Dlinear&ciu_szs=300x250%2C728x90&gdfp_req=1&output=vast&unviewed_position_start=1&env=vp&impl=s&correlator=';
   adsRequest.adTagUrl = '//pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/ad_rule_samples&ciu_szs=300x250&ad_rule=1&impl=s&gdfp_req=1&env=vp&output=vmap&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ar%3Dpremidpost&cmsid=496&vid=short_onecue&correlator=';
   if (tagUrl) {
     adsRequest.adTagUrl = tagUrl;
@@ -44,6 +45,7 @@ function onAdError(adErrorEvent) {
 }
 
 function onLoaded(adEvent) {
+  console.log(adEvent, 'onLoaded==============================================================');
   var ad = adEvent.getAd();
   if (!ad.isLinear()) {
     video.play();
@@ -51,6 +53,7 @@ function onLoaded(adEvent) {
 }
 
 function stopVideo() {
+  console.log('stopVideo==============================================================')
   adRunning = true;
   if (!video.paused) {
     video.pause();
@@ -58,10 +61,12 @@ function stopVideo() {
 }
 
 function onStarted() {
+  console.log('onStarted==============================================================')
   adContainer.style.display = 'block';
 }
 
 function hideAdAndPlayVideo() {
+  console.log('hideAdAndPlayVideo==============================================================')
   adContainer.style.display = 'none';
   if (video.paused && !video.ended) {
     adRunning = false;
@@ -70,6 +75,7 @@ function hideAdAndPlayVideo() {
 }
 
 function onAdBreakReady() {
+  console.log('onAdBreakReady==============================================================')
   adsManager.start();
 }
 
