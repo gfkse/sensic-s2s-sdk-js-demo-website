@@ -11,6 +11,7 @@ adContainer.style.display = 'none';
 function initGoogleIma(videoElement, tagUrl) {
   video = videoElement;
   google.ima.settings.setDisableCustomPlaybackForIOS10Plus(true);
+  google.ima.settings.setAutoPlayAdBreaks(true);
   adDisplayContainer = new google.ima.AdDisplayContainer(adContainer, video);
   adsLoader = new google.ima.AdsLoader(adDisplayContainer);
   var adsRequest = new google.ima.AdsRequest();
