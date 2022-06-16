@@ -39,30 +39,37 @@
 <optin-box></optin-box>
 <tcf-box></tcf-box>
 <div id='video_container'>
-  <video id='my_video_id' controls preload='metadata'></video>
+  <video id='my_video_id' controls preload='metadata' playsinline></video>
   <div id='ad-container'></div>
 </div>
 <script src='../../../js/google-ima.js'></script>
 <script>
-  var LIVE_CONTENT = '//cph-p2p-msl.akamaized.net/hls/live/2000341/test/master.m3u8';
+  var LIVE_STREAM = '//cph-p2p-msl.akamaized.net/hls/live/2000341/test/master.m3u8';
   var video = document.getElementById('my_video_id');
+
+  function initializeIma() {
+    initGoogleIma(video);
+    adsLoader.addEventListener(google.ima.AdsManagerLoadedEvent.Type.ADS_MANAGER_LOADED, function(adsManagerLoadedEvent) {
+      // adsManager = adsManagerLoadedEvent.getAdsManager(video);
+      extension.activateGoogleIMASupport(adsManager);
+    }, false);
+  }
+
   if (Hls.isSupported()) {
     var hls = new Hls();
     // bind them together
     hls.attachMedia(video);
     hls.on(Hls.Events.MEDIA_ATTACHED, function() {
       console.log('video and hls.js are now bound together!');
-      hls.loadSource(LIVE_CONTENT);
+      hls.loadSource(LIVE_STREAM);
       hls.on(Hls.Events.MANIFEST_PARSED, function(event, data) {
-        initGoogleIma(video);
-
-        adsLoader.addEventListener(google.ima.AdsManagerLoadedEvent.Type.ADS_MANAGER_LOADED, function(adsManagerLoadedEvent) {
-          // adsManager = adsManagerLoadedEvent.getAdsManager(video);
-          extension.activateGoogleIMASupport(adsManager);
-        }, false);
+        initializeIma();
         console.log('manifest loaded, found ' + data.levels.length + ' quality level');
       });
     });
+  } else {
+    video.src = LIVE_STREAM;
+    initializeIma();
   }
 </script>
 <script>

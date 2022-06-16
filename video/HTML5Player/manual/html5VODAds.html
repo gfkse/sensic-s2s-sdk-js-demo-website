@@ -115,7 +115,7 @@
 <optin-box></optin-box>
 <tcf-box></tcf-box>
 <div id='video_container'>
-  <video id='my_video_id' controls preload='metadata'>
+  <video id='my_video_id' controls preload='metadata' playsinline>
     <source src='../../../res/big_buck_bunny.mp4' type='video/mp4' />
   </video>
   <div id='ad-container'></div>
@@ -221,9 +221,14 @@
     }
   });
 
-  video.addEventListener('seeked', function() {
+  video.addEventListener('seeking', () => {
     if (!video.paused) {
       agent.stop(currentPosition);
+    }
+  });
+
+  video.addEventListener('seeked', function() {
+    if (!video.paused) {
       seeked = true;
       agent.playStreamOnDemand(
         'default',

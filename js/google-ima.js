@@ -6,17 +6,20 @@ var adsLoader;
 var adsManager;
 var adRunning = false;
 var video;
+adContainer.style.display = 'none';
 
 function initGoogleIma(videoElement, tagUrl) {
   video = videoElement;
+  google.ima.settings.setDisableCustomPlaybackForIOS10Plus(true);
   adDisplayContainer = new google.ima.AdDisplayContainer(adContainer, video);
   adsLoader = new google.ima.AdsLoader(adDisplayContainer);
   var adsRequest = new google.ima.AdsRequest();
-  adsRequest.adTagUrl = '//pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/ad_rule_samples&ciu_szs=300x250&ad_rule=1&impl=s&gdfp_req=1&env=vp&output=vmap&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ar%3Dpremidpost&cmsid=496&vid=short_onecue&correlator=';
-  if(tagUrl){
+  // real live ad
+  // adsRequest.adTagUrl = '//ad13.adfarm1.adition.com/banner?wpt=X&ts=1647952877&sid=4420431&p[stype:vod,scat:doku-reportage,scatid:1173,spro:der-talentierte-herr-hessenthaler,sproid:13893759,episodeid:14128205,duration:2721000,advertisingtags:null,oon-ds-ads:undefined,platform:web,test:false,viewport:tablet,orientation:landscape,user-agent:orf-tvthek-mozilla-50-windows-nt-100-win64-x64-applewebkit-53736-khtml-like-gecko-chrome-990484451-safari-53736,ctype:12]';
+  adsRequest.adTagUrl = '//pubads.g.doubleclick.net/gampad/ads?iu=/21775744923/external/vmap_ad_samples&sz=640x480&cust_params=sample_ar%3Dpremidpost&ciu_szs=300x250&gdfp_req=1&ad_rule=1&output=vmap&unviewed_position_start=1&env=vp&impl=s&cmsid=496&vid=short_onecue&correlator='
+  if (tagUrl) {
     adsRequest.adTagUrl = tagUrl;
   }
-
 
   // Specify the linear and nonlinear slot sizes. This helps the SDK to
   // select the correct creative if multiple are returned.
@@ -24,12 +27,15 @@ function initGoogleIma(videoElement, tagUrl) {
   adsRequest.linearAdSlotHeight = video.clientHeight;
   adsRequest.nonLinearAdSlotWidth = video.clientWidth;
   adsRequest.nonLinearAdSlotHeight = video.clientHeight / 3;
+  video.addEventListener('click', function() {
+    adDisplayContainer.initialize();
+  });
   // Pass the request to the adsLoader to request ads
-  video.addEventListener('playing', function (){
-    if(video.played.length === 0){
+  video.addEventListener('playing', function() {
+    setTimeout(() => {
       adsLoader.requestAds(adsRequest);
-    }
-  })
+    }, 3000);
+  });
   addEvents();
 }
 
@@ -88,7 +94,6 @@ function initAdsManager() {
       return;
     }
     adsLoaded = true;
-    adDisplayContainer.initialize();
     var width = video.clientWidth;
     var height = video.clientHeight;
     try {

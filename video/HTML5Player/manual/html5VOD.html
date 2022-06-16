@@ -150,16 +150,15 @@
     }
   });
 
-  // video.addEventListener('seeking', () => {
-  //   console.log('seeking', video.paused);
-  //   if (!video.paused) {
-  //     agent.stop(currentPosition);
-  //   }
-  // });
-
-  video.addEventListener('seeked', () => {
+  video.addEventListener('seeking', () => {
     if (!video.paused) {
       agent.stop(currentPosition);
+    }
+  });
+
+  video.addEventListener('seeked', () => {
+    console.log(currentPosition)
+    if (!video.paused) {
       seeked = true;
       agent.playStreamOnDemand(
         'default',

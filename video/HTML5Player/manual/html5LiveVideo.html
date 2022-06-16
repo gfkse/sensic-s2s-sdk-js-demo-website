@@ -8,7 +8,7 @@
   <script src='../../../js/url-polyfill.js'></script>
   <script type='module' src='../../../js/optin-box.js'></script>
   <script type='module' src='../../../js/tcf-box.js'></script>
-  <script src="//cdn.jsdelivr.net/hls.js/latest/hls.min.js"></script>
+  <script src='//cdn.jsdelivr.net/hls.js/latest/hls.min.js'></script>
 </head>
 <body>
 <script>
@@ -117,14 +117,15 @@
 <script>
   var LIVE_STREAM = 'https://cph-p2p-msl.akamaized.net/hls/live/2000341/test/master.m3u8';
   var video = document.getElementById('my_video_id');
+
   if (Hls.isSupported()) {
     var hls = new Hls();
     // bind them together
     hls.attachMedia(video);
-    hls.on(Hls.Events.MEDIA_ATTACHED, function () {
+    hls.on(Hls.Events.MEDIA_ATTACHED, function() {
       console.log('video and hls.js are now bound together!');
       hls.loadSource(LIVE_STREAM);
-      hls.on(Hls.Events.MANIFEST_PARSED, function (event, data) {
+      hls.on(Hls.Events.MANIFEST_PARSED, function(event, data) {
         console.log('manifest loaded, found ' + data.levels.length + ' quality level');
       });
     });
