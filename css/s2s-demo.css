@@ -124,6 +124,19 @@ body {
     margin: 0;
 }
 
+#video_container {
+    position: absolute;
+    display: inline;
+}
+
+#next_video {
+    position: absolute;
+    z-index: 111;
+    right:0;
+    font-size: 2rem;
+    cursor: pointer;
+}
+
 #my_video_id {
     width: 600px;
 }
