@@ -1,0 +1,82 @@
+<!doctype html>
+<html ⚡ lang='en'>
+<head>
+  <meta charset='utf-8'>
+  <title>amp-pixel</title>
+  <script>
+
+  var optinForUrl = (sessionStorage.getItem('optinValue')) ? sessionStorage.getItem('optinValue') : '';
+  var endpoint;
+  var urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get('optin')) {
+    optinForUrl = `&optin=${urlParams.get('optin')}`;
+    sessionStorage.setItem('optinValue', optinForUrl);
+  }
+  var tpUrl;
+
+  function setRadioButtonsCheckbox() {
+    switch (sessionStorage.getItem('optinValue')) {
+      case '&optin=false':
+        document.getElementById('falseOptin').checked = true;
+        break;
+      case '&optin=true':
+        document.getElementById('trueOptin').checked = true;
+        break;
+      case '':
+        document.getElementById('undefOptin').checked = true;
+        break;
+    }
+  }
+
+  // example url: "https://demo-config.sensic.net/tp?ty=IM&optin=false&m=campaign_demosite&c=default&pr=TIMESTAMP&cp_c1=CANONICAL_HOSTNAME&cp_c2=DemoContent"
+  function createAmpTag() {
+    tpUrl = urlParams.get('pixelUrl') || window.env.TP_URL;
+    setRadioButtonsCheckbox();
+    if (!tpUrl.startsWith('https')) {
+      tpUrl = tpUrl.replace('http', 'https');
+    }
+    endpoint = (endpoint) ? endpoint : `${tpUrl}?ty=IM${optinForUrl}&m=amp_demosite&c=default&pr=RANDOM&cp_c1=CANONICAL_HOSTNAME&cp_c2=DemoContent`;
+    var ampPixelTag = document.createElement('amp-pixel');
+    ampPixelTag.setAttribute('src', endpoint);
+    ampPixelTag.setAttribute('layout', 'nodisplay');
+    ampPixelTag.setAttribute('id', 'amp');
+    document.body.appendChild(ampPixelTag);
+  }
+
+  function optinClickHdl() {
+    sessionStorage.clear();
+    var optinValue = Array.from(document.getElementsByName('optin')).find(r => r.checked).value;
+    optinForUrl = (optinValue !== 'undefined') ? `&optin=${optinValue}` : '';
+    endpoint = `${tpUrl}?ty=IM${optinForUrl}&m=campaign_demosite&c=default&pr=RANDOM&cp_c1=CANONICAL_HOSTNAME&cp_c2=DemoContent`;
+    var ampPixelTag = document.getElementById('amp');
+    ampPixelTag.setAttribute('src', endpoint);
+    sessionStorage.setItem('optinValue', optinForUrl);
+    window.location.reload();
+  }
+
+  </script>
+  <script async src='https://cdn.ampproject.org/v0.js'></script>
+  <link rel='canonical' href='https://example.com/original-page.html'>
+  <meta name='viewport' content='width=device-width'>
+</head>
+<body onload='createAmpTag()'>
+<div class='optionsbox inline'>
+  <table>
+    <tr>
+      <td class='key'>Opt-in:</td>
+      <td class='value'>
+        <div class='radiobox'>
+          <input id='undefOptin' type='radio' name='optin' class='radio' value='undefined'
+                 onclick='optinClickHdl()' /><label for='undefOptin'
+        >undefined</label
+        ><input id='falseOptin' type='radio' name='optin' class='radio' value='false' onclick='optinClickHdl()' /><label
+          for='falseOptin'>false</label
+        ><input id='trueOptin' type='radio' name='optin' class='radio' value='true' onclick='optinClickHdl()' /><label
+          for='trueOptin'>true</label>
+        </div>
+      </td>
+    </tr>
+  </table>
+</div>
+</body>
+</html>

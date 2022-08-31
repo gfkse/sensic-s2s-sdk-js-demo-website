@@ -1,0 +1,23 @@
+body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+table {
+    border-collapse: collapse;
+    width: calc(100% - 16px);
+    table-layout: fixed;
+    margin: 8px;
+}
+
+td {
+    border: 1px solid gray;
+    padding: 2px 5px;
+    white-space: pre;
+    vertical-align: top;
+}
+
+td.key {
+    width: 200px;
+}

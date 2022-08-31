@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset='utf-8' />
+  <title>JWPLayer VOD</title>
+  <link rel='shortcut icon' href='../../../images/favicon.png' />
+  <link rel='stylesheet' href='../../../css/s2s-demo.css' />
+  <link rel='stylesheet' href='../../../css/jwplayer.css' />
+
+  <script src='../../../js/url-polyfill.js'></script>
+  <script type='module' src='../../../js/optin-box.js'></script>
+  <script type='module' src='../../../js/tcf-box.js'></script>
+</head>
+<body>
+<script>
+  // Allow overwriting the used sdk with url param sdkUrl
+  var urlParams = new URLSearchParams(window.location.search);
+  var url = urlParams.get('sdkUrl') || window.env.WEB_SDK_URL;
+
+  // Optin via GET param
+  var optinGetValue = urlParams.get('optin');
+  var optin = typeof optinGetValue === 'string' ? optinGetValue === 'true' : undefined;
+  // In case questions about the optin parameter, please read the documentation: https://confluence-docu.gfk.com/display/SENSIC/Javascript+SDK+Integration
+  // Read more about privacy:https://confluence-docu.gfk.com/pages/viewpage.action?pageId=13043961
+  var gfkS2sConf = {
+    optin: optin,
+    media: 's2s-html5-demo',
+    url: url,
+    type: 'WEB',
+    logLevel: 'debug'
+  };
+</script>
+<!--JW Player Script-->
+<script src='https://jwpsrv.com/library/FfMxTl3oEeSEiiIACxmInQ.js'></script>
+<div class='header'>
+  <div id='title'>JWPLayer VOD</div>
+</div>
+<optin-box></optin-box>
+<tcf-box></tcf-box>
+<div id='my_video_id'></div>
+<script>
+  var jwPlayer;
+  jwPlayer = jwplayer('my_video_id').setup({
+    file: '../../../res/big_buck_bunny.mp4'
+  });
+</script>
+<script>
+  var extension;
+  var script = document.createElement('script');
+  script.src = `${window.env.EXTENSION_BASE_URL}/jwvodextension.js`;
+  document.head.appendChild(script);
+
+  script.onload = function() {
+    /**
+     * Initializing the extension
+     * @param {JWPlayer} playerInstance instance of the player
+     * @param {gfkS2sConf} gfkS2sConf configuration
+     * @param {string} contentId
+     * @param {object} customParams example: { cp1: '<your new cp1 value here>', cp2: '<your new cp2 value here>', ... }
+     * @returns {extension}
+     */
+    extension = new window.gfkS2sExtension.JWVODExtension(jwPlayer, gfkS2sConf, 'default', {});
+
+    // call setParameter() as soon as your player is switching over to different content. Otherwise, new content will be
+    // reported with parameters of the video played before.
+    // extension.setParameter('news', { cp1: '<your new cp1 value here>', cp2: '<your new cp2 value here>', ... });
+
+  };
+</script>
+</body>
+</html>

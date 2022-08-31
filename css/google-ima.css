@@ -1,0 +1,35 @@
+#ad-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+}
+
+#my_ad_id {
+    width: 500px;
+    height: 300px;
+}
+
+#play_ad {
+    cursor: pointer;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    left: 50%;
+    color: #e0a000;
+    background: #202020;
+    border: 0;
+    font-size: 4rem;
+    top: 50%;
+    text-align: center;
+    -webkit-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+}
+
+#my_video_id {
+    /* forces the contents to fill the container */
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 500px;
+}

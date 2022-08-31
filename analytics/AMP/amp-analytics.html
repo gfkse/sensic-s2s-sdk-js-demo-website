@@ -1,0 +1,54 @@
+<!doctype html>
+<html ⚡ lang='en'>
+<head>
+  <meta charset='utf-8'>
+  <title>amp-analytics</title>
+  <script async src='//cdn.ampproject.org/v0.js'></script>
+  <script async custom-element='amp-analytics' src='https://cdn.ampproject.org/v0/amp-analytics-0.1.js'></script>
+  <script async custom-element='amp-consent' src='https://cdn.ampproject.org/v0/amp-consent-0.1.js'></script>
+  <link rel='shortcut icon' href='../../images/favicon.png' />
+  <link rel='canonical' href='$SOME_URL'>
+  <link rel='stylesheet' href='../../css/amp-analytics.css'>
+  <meta name='viewport' content='width=device-width'>
+</head>
+<body>
+<amp-consent layout='nodisplay' id='didomi' type='didomi'>
+  <script type='application/json'>
+  {
+    "clientConfig": {
+      "gdprAppliesGlobally": true,
+      "config": {
+        "website": {
+          "vendors": {
+            "iab": {
+              "all": true
+            }
+          }
+        }
+      }
+    }
+  }
+  </script>
+</amp-consent>
+<amp-analytics type='gfksensic' data-block-on-consent='_till_responded'>
+  <script type='application/json'>
+  {
+    "requests": {
+      "custom_params": "cp_cp1=example1&cp_cp2=example2"
+    },
+    "vars": {
+      "environment": "-preproduction",
+      "regionID": "demo",
+      "mediaID": "demomedia"
+    },
+    "triggers": {
+      "trackConsent": {
+        "on": "visible",
+        "request": "impression"
+      }
+    }
+  }
+  </script>
+</amp-analytics>
+</body>
+</html>

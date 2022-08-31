@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+  <meta charset='UTF-8'>
+  <title>Bitmovin Live with Content-Time</title>
+  <link rel='shortcut icon' href='../../../images/favicon.png' />
+  <link rel='stylesheet' href='../../../css/s2s-demo.css' />
+  <!-- Bitmovin player  -->
+  <script type='text/javascript' src='//cdn.bitmovin.com/player/web/8/bitmovinplayer.js'></script>
+  <script src='../../../js/url-polyfill.js'></script>
+  <script type='module' src='../../../js/optin-box.js'></script>
+  <script type='module' src='../../../js/tcf-box.js'></script>
+</head>
+<body>
+<script>
+  // Allow overwriting the used sdk with url param sdkUrl
+  var urlParams = new URLSearchParams(window.location.search);
+  var url = urlParams.get('sdkUrl') || window.env.WEB_SDK_URL;
+
+  // Optin via GET param
+  var optinGetValue = urlParams.get('optin');
+  var optin = typeof optinGetValue === 'string' ? optinGetValue === 'true' : undefined;
+  // In case questions about the optin parameter, please read the documentation: https://confluence-docu.gfk.com/display/SENSIC/Javascript+SDK+Integration
+  // Read more about privacy:https://confluence-docu.gfk.com/pages/viewpage.action?pageId=13043961
+  var gfkS2sConf = {
+    optin: optin,
+    media: 's2sdemomediaid_ssa_web',
+    url: url,
+    visUrl: 'https://s407.mxcdn.net/bb-mx/serve/mtrcs_943913.js',
+    type: 'WEB',
+    logLevel: 'debug'
+  };
+
+  (function(w, d, c, s, id, v) {
+    if (d.getElementById(id)) {
+      return;
+    }
+
+    w[id] = {};
+    w[id].agents = [];
+    var api = [
+      'playStreamLive',
+      'playStreamOnDemand',
+      'stop',
+      'skip',
+      'screen',
+      'volume',
+      'impression'
+    ];
+    w.gfks = (function() {
+      function f(sA, e, cb) {
+        return function() {
+          sA.p = cb();
+          sA.queue.push({ f: e, a: arguments });
+        };
+      }
+
+      function s(c, pId, cb) {
+        var sA = { queue: [], config: c, cb: cb, pId: pId };
+        for (var i = 0; i < api.length; i++) {
+          var e = api[i];
+          sA[e] = f(sA, e, cb);
+        }
+        return sA;
+      }
+
+      return s;
+    })();
+    w[id].getAgent = function(cb, pId) {
+      console.log('### gfkS2s.getAgent()');
+      var a = {
+        a: new w.gfks(
+          c,
+          pId || '',
+          cb ||
+          function() {
+            return 0;
+          }
+        )
+      };
+
+      function g(a, e) {
+        return function() {
+          return a.a[e].apply(a.a, arguments);
+        };
+      }
+
+      for (var i = 0; i < api.length; i++) {
+        var e = api[i];
+        a[e] = g(a, e);
+      }
+      w[id].agents.push(a);
+
+      return a;
+    };
+
+    var lJS = function(eId, url) {
+      console.log('### Loading S2S Web...');
+      var tag = d.createElement(s);
+      var el = d.getElementsByTagName(s)[0];
+      tag.id = eId;
+      tag.async = true;
+      tag.type = 'text/javascript';
+      tag.src = url;
+      el.parentNode.insertBefore(tag, el);
+    };
+
+    var delayParam = new URL(location.href).searchParams.get('delay');
+    var delay = delayParam ? parseInt(delayParam) : 0;
+    if (delay) {
+      w.setTimeout(function() {
+        if (c.hasOwnProperty(v)) {
+          lJS(id + v, c[v]);
+        }
+        lJS(id, c.url);
+      }, delay);
+    } else {
+      if (c.hasOwnProperty(v)) {
+        lJS(id + v, c[v]);
+      }
+      lJS(id, c.url);
+    }
+  })(window, document, gfkS2sConf, 'script', 'gfkS2s', 'visUrl');
+</script>
+<div class='header'>
+  <div id='title'>Bitmovin Live Timeshifted Video</div>
+</div>
+<div>
+  <optin-box></optin-box>
+  <tcf-box></tcf-box>
+  <div id='video'>
+    <video id='my_video_id' width='100%' height='100%'></video>
+  </div>
+</div>
+<script>
+  var playerConfig = {
+    key: '7C60F446-6054-446D-B829-816AF360D7F3',
+    playback: {
+      muted: true
+    },
+    style: {
+      width: '40%'
+    }
+  };
+  var containerElement = document.getElementById('video');
+  var playerInstance = new bitmovin.player.Player(containerElement, playerConfig);
+  var currentPlaybackSpeed = getCurrentPlaybackSpeed();
+  var agent = gfkS2s.getAgent('my_video_id');
+
+  function getVolume() {
+    return (playerInstance.isMuted() ? 0 : playerInstance.getVolume()).toString();
+  }
+
+  function getCurrentPlaybackSpeed() {
+    return playerInstance.getPlaybackSpeed();
+  }
+
+  playerInstance.on(bitmovin.player.PlayerEvent.Play, function() {
+    agent.playStreamLive(
+      'default',
+      '2018-10-05T14:48:00+06:00',
+      0,
+      JSON.stringify(playerInstance.getSource()),
+      { volume: getVolume(), speed: getCurrentPlaybackSpeed() },
+      {/*please add your custom parameters here or keep empty*/ }
+    );
+  });
+
+  playerInstance.on(bitmovin.player.PlayerEvent.Paused, function() {
+    agent.stop();
+  });
+
+  playerInstance.on(bitmovin.player.PlayerEvent.PlaybackSpeedChanged, function() {
+    if (playerInstance.isPlaying()) {
+      agent.stop();
+      agent.playStreamLive(
+        'default',
+        '2018-10-05T14:48:00+06:00',
+        0,
+        JSON.stringify(playerInstance.getSource()),
+        { volume: getVolume(), speed: getCurrentPlaybackSpeed() },
+        {/*please add your custom parameters here or keep empty*/ }
+      );
+    }
+    currentPlaybackSpeed = getCurrentPlaybackSpeed();
+  });
+
+  playerInstance.on(bitmovin.player.PlayerEvent.PlaybackFinished, function() {
+    agent.stop();
+  });
+
+  playerInstance.on(bitmovin.player.PlayerEvent.VolumeChanged, function() {
+    agent.volume(getVolume());
+  });
+
+  playerInstance.on(bitmovin.player.PlayerEvent.Muted, function() {
+    agent.volume(getVolume());
+  });
+
+  playerInstance.on(bitmovin.player.PlayerEvent.Unmuted, function() {
+    agent.volume(getVolume());
+  });
+
+  playerInstance.on(bitmovin.player.PlayerEvent.CastStopped, function(castStoppedEvent) {
+    agent.stop();
+  });
+
+  playerInstance.load({
+    hls: 'https://cph-p2p-msl.akamaized.net/hls/live/2000341/test/master.m3u8'
+  });
+</script>
+</body>
+</html>

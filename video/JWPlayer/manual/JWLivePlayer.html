@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset='utf-8' />
+  <title>JWPLayer Live</title>
+  <link rel='shortcut icon' href='../../../images/favicon.png' />
+  <link rel='stylesheet' href='../../../css/s2s-demo.css' />
+  <link rel='stylesheet' href='../../../css/jwplayer.css' />
+  <script src='../../../js/url-polyfill.js'></script>
+  <script type='module' src='../../../js/optin-box.js'></script>
+  <script type='module' src='../../../js/tcf-box.js'></script>
+</head>
+<body>
+<script>
+  // Allow overwriting the used sdk with url param sdkUrl
+  var urlParams = new URLSearchParams(window.location.search);
+  var url = urlParams.get('sdkUrl') || window.env.WEB_SDK_URL;
+
+  // Optin via GET param
+  var optinGetValue = urlParams.get('optin');
+  var optin = typeof optinGetValue === 'string' ? optinGetValue === 'true' : undefined;
+  // In case questions about the optin parameter, please read the documentation: https://confluence-docu.gfk.com/display/SENSIC/Javascript+SDK+Integration
+  // Read more about privacy:https://confluence-docu.gfk.com/pages/viewpage.action?pageId=13043961
+  var gfkS2sConf = {
+    optin: optin,
+    media: 's2s-html5-demo',
+    url: url,
+    type: 'WEB',
+    logLevel: 'debug'
+  };
+
+  (function(w, d, c, s, id, v) {
+    if (d.getElementById(id)) {
+      return;
+    }
+
+    w.gfkS2sConf = c;
+    w[id] = {};
+    w[id].agents = [];
+    var api = [
+      'playStreamLive',
+      'playStreamOnDemand',
+      'stop',
+      'skip',
+      'screen',
+      'volume',
+      'impression'
+    ];
+    w.gfks = (function() {
+      function f(sA, e, cb) {
+        return function() {
+          sA.p = cb();
+          sA.queue.push({ f: e, a: arguments });
+        };
+      }
+
+      function s(c, pId, cb) {
+        var sA = { queue: [], config: c, cb: cb, pId: pId };
+        for (var i = 0; i < api.length; i++) {
+          var e = api[i];
+          sA[e] = f(sA, e, cb);
+        }
+        return sA;
+      }
+
+      return s;
+    })();
+    w[id].getAgent = function(cb, pId) {
+      var a = {
+        a: new w.gfks(
+          c,
+          pId || '',
+          cb ||
+          function() {
+            return 0;
+          }
+        )
+      };
+
+      function g(a, e) {
+        return function() {
+          return a.a[e].apply(a.a, arguments);
+        };
+      }
+
+      for (var i = 0; i < api.length; i++) {
+        var e = api[i];
+        a[e] = g(a, e);
+      }
+      w[id].agents.push(a);
+      return a;
+    };
+
+    var lJS = function(eId, url) {
+      var tag = d.createElement(s);
+      var el = d.getElementsByTagName(s)[0];
+      tag.id = eId;
+      tag.async = true;
+      tag.type = 'text/javascript';
+      tag.src = url;
+      el.parentNode.insertBefore(tag, el);
+    };
+
+    if (c.hasOwnProperty(v)) {
+      lJS(id + v, c[v]);
+    }
+    lJS(id, c.url);
+  })(window, document, gfkS2sConf, 'script', 'gfkS2s', 'visUrl');
+
+</script>
+<!--JW Player Script-->
+<script src='https://jwpsrv.com/library/FfMxTl3oEeSEiiIACxmInQ.js'></script>
+<div class='header'>
+  <div id='title'>JW Live Demo</div>
+</div>
+<optin-box></optin-box>
+<tcf-box></tcf-box>
+<div id='my_video_id'></div>
+<script>
+  var video = document.getElementById('my_video_id');
+  var jwPlayer = jwplayer('my_video_id').setup({
+    file: 'https://cph-p2p-msl.akamaized.net/hls/live/2000341/test/master.m3u8'
+  });
+
+  var agent = gfkS2s.getAgent('my_video_id');
+
+  // Fires when a stream has been started or is playing after having been paused or stopped
+  jwPlayer.on('play', function() {
+    agent.playStreamLive(
+      'default',
+      '',
+      0,
+      jwPlayer.getPlaylistItem().file,
+      { volume: getVolume(), speed: jwPlayer.getPlaybackRate() },
+      { /*please add your custom parameters here or keep empty*/ }
+    );
+  });
+
+  // Fires when a stream has been paused
+  jwPlayer.on('pause', function() {
+    agent.stop();
+  });
+
+  // Fires when a stream is idling
+  jwPlayer.on('idle', function() {
+    agent.stop();
+  });
+
+  // Fires when the user starts moving/skipping to a new position in a stream
+  jwPlayer.on('seek', function() {
+    if (jwPlayer.getState() === 'playing') {
+      agent.stop();
+    }
+  });
+
+  // Fires when the mute button has been changed
+  jwPlayer.on('mute', function() {
+    if (jwPlayer.getState() === 'playing') {
+      agent.volume(getVolume());
+    }
+  });
+
+  // Fires when the volume has been changed
+  jwPlayer.on('volume', function() {
+    if (jwPlayer.getState() === 'playing') {
+      agent.volume(getVolume());
+    }
+  });
+
+  function getVolume() {
+    return jwPlayer.getMute() ? '0' : Math.round(jwPlayer.getVolume()).toString();
+  }
+
+</script>
+<div class='known-issues'>
+  Known issues with this player
+  <ul>
+    <li>The agent's stop() function may get invoked twice during seeking. However, this doesn't harm the measurement
+      since the agent will discard the second stop()-attempt.
+    </li>
+    <li>..</li>
+  </ul>
+</div>
+</body>
+</html>

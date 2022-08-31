@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html xmlns='http://www.w3.org/1999/html'>
+<head>
+  <meta charset='utf-8' />
+  <title>S2S HTML5 Video Live Demo</title>
+  <link rel='shortcut icon' href='../../../images/favicon.png' />
+  <link rel='stylesheet' href='../../../css/s2s-demo.css' />
+  <script src='../../../js/url-polyfill.js'></script>
+  <script type='module' src='../../../js/optin-box.js'></script>
+  <script type='module' src='../../../js/tcf-box.js'></script>
+  <script src='//cdn.jsdelivr.net/hls.js/latest/hls.min.js'></script>
+</head>
+<body>
+<script>
+  // Allow overwriting the used sdk with url param sdkUrl
+  var urlParams = new URLSearchParams(window.location.search);
+  var url = urlParams.get('sdkUrl') || window.env.WEB_SDK_URL;
+
+  // Optin via GET param
+  var optinGetValue = urlParams.get('optin');
+  var optin = typeof optinGetValue === 'string' ? optinGetValue === 'true' : undefined;
+  // In case questions about the optin parameter, please read the documentation: https://confluence-docu.gfk.com/display/SENSIC/Javascript+SDK+Integration
+  // Read more about privacy:https://confluence-docu.gfk.com/pages/viewpage.action?pageId=13043961
+  var gfkS2sConf = {
+    optin: optin,
+    media: 's2s-html5-demo',
+    url: url,
+    type: 'WEB',
+    logLevel: 'debug'
+  };
+
+  (function(w, d, c, s, id, v) {
+    if (d.getElementById(id)) {
+      return;
+    }
+
+    w.gfkS2sConf = c;
+    w[id] = {};
+    w[id].agents = [];
+    var api = [
+      'playStreamLive',
+      'playStreamOnDemand',
+      'stop',
+      'skip',
+      'screen',
+      'volume',
+      'impression'
+    ];
+    w.gfks = (function() {
+      function f(sA, e, cb) {
+        return function() {
+          sA.p = cb();
+          sA.queue.push({ f: e, a: arguments });
+        };
+      }
+
+      function s(c, pId, cb) {
+        var sA = { queue: [], config: c, cb: cb, pId: pId };
+        for (var i = 0; i < api.length; i++) {
+          var e = api[i];
+          sA[e] = f(sA, e, cb);
+        }
+        return sA;
+      }
+
+      return s;
+    })();
+    w[id].getAgent = function(cb, pId) {
+      var a = {
+        a: new w.gfks(
+          c,
+          pId || '',
+          cb ||
+          function() {
+            return 0;
+          }
+        )
+      };
+
+      function g(a, e) {
+        return function() {
+          return a.a[e].apply(a.a, arguments);
+        };
+      }
+
+      for (var i = 0; i < api.length; i++) {
+        var e = api[i];
+        a[e] = g(a, e);
+      }
+      w[id].agents.push(a);
+      return a;
+    };
+
+    var lJS = function(eId, url) {
+      var tag = d.createElement(s);
+      var el = d.getElementsByTagName(s)[0];
+      tag.id = eId;
+      tag.async = true;
+      tag.type = 'text/javascript';
+      tag.src = url;
+      el.parentNode.insertBefore(tag, el);
+    };
+
+    if (c.hasOwnProperty(v)) {
+      lJS(id + v, c[v]);
+    }
+    lJS(id, c.url);
+  })(window, document, window.gfkS2sConf, 'script', 'gfkS2s', 'visUrl');
+
+</script>
+<div class='header'>
+  <div id='title'>S2S HTML5 Live Video Demo</div>
+</div>
+<optin-box></optin-box>
+<tcf-box></tcf-box>
+<video id='my_video_id' controls preload='metadata'></video>
+<script>
+  var LIVE_STREAM = 'https://cph-p2p-msl.akamaized.net/hls/live/2000341/test/master.m3u8';
+  var video = document.getElementById('my_video_id');
+
+  if (Hls.isSupported()) {
+    var hls = new Hls();
+    // bind them together
+    hls.attachMedia(video);
+    hls.on(Hls.Events.MEDIA_ATTACHED, function() {
+      console.log('video and hls.js are now bound together!');
+      hls.loadSource(LIVE_STREAM);
+      hls.on(Hls.Events.MANIFEST_PARSED, function(event, data) {
+        console.log('manifest loaded, found ' + data.levels.length + ' quality level');
+      });
+    });
+  }
+</script>
+<script>
+  var agent = window.gfkS2s.getAgent(null);
+  var currentPlaybackSpeed = video.playbackRate;
+  var seeked = false;
+
+  video.addEventListener('playing', () => {
+    if (!seeked) {
+      agent.playStreamLive(
+        'default',
+        '',
+        0,
+        video.currentSrc,
+        { volume: getVolume(), speed: currentPlaybackSpeed },
+        { /** add your custom parameter here as comma-seperated <key>: "<value>" pairs */ }
+      );
+    } else {
+      seeked = false;
+    }
+  });
+
+  video.addEventListener('pause', () => {
+    if (!video.seeking) {
+      agent.stop();
+    }
+  });
+
+  video.addEventListener('seeked', () => {
+    if (!video.paused) {
+      agent.stop();
+      seeked = true;
+      agent.playStreamLive(
+        'default',
+        '',
+        0,
+        video.currentSrc,
+        { volume: getVolume(), speed: currentPlaybackSpeed },
+        { /** add your custom parameter here as comma-seperated <key>: "<value>" pairs */ }
+      );
+    }
+  });
+
+  video.addEventListener('ratechange', () => {
+    if (!currentPlaybackSpeed || currentPlaybackSpeed !== video.playbackRate) {
+      currentPlaybackSpeed = video.playbackRate;
+      if (!video.paused) {
+        agent.stop();
+        agent.playStreamLive(
+          'default',
+          '',
+          0,
+          video.currentSrc,
+          { volume: getVolume(), speed: currentPlaybackSpeed },
+          {/** add your custom parameter here as comma-seperated <key>: "<value>" pairs */ }
+        );
+      }
+    }
+  });
+
+  video.addEventListener('volumechange', () => {
+    if (!video.paused) {
+      agent.volume(getVolume());
+    }
+  });
+
+  function getVolume() {
+    return video.muted ? '0' : Math.round(video.volume * 100).toString();
+  }
+</script>
+</body>
+</html>

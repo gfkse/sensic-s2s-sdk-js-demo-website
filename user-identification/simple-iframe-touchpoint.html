@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset='utf-8' />
+  <title>Touchpoint Test</title>
+  <link rel='shortcut icon' href='../images/favicon.png' />
+  <link rel='stylesheet' href='../css/simple-iframe-touchpoint.css' />
+  <script src='../js/url-polyfill.js'></script>
+</head>
+<body>
+<h1>Touchpoint Test</h1>
+Executes the touchpoint in an iframe with the following parameters:
+<ul>
+  <li>origin=demo</li>
+  <li>pid=mypid</li>
+  <li>hhid=myhhid</li>
+  <li>uid=myuid</li>
+  <li>paneluserid=mypaneluserid</li>
+</ul>
+<script>
+  var tpsrc = window.env.TOUCHPOINT_URL;
+  tpsrc += '?origin=demo';
+  tpsrc += '&pid=mypid';
+  tpsrc += '&hhid=myhhid';
+  tpsrc += '&uid=myuid';
+  tpsrc += '&paneluserid=mypaneluserid';
+  var iframe = document.createElement('iframe');
+  iframe.setAttribute('id', 'suitp-iframe');
+  iframe.setAttribute('src', tpsrc);
+  document.body.appendChild(iframe);
+</script>
+</body>
+</html>

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset='utf-8' />
+  <title>S2S HTML5 Video Live + Google IMA</title>
+  <link rel='shortcut icon' href='../../../images/favicon.png' />
+  <link rel='stylesheet' href='../../../css/s2s-demo.css' />
+  <link rel='stylesheet' href='../../../css/google-ima.css' />
+  <script src='../../../js/url-polyfill.js'></script>
+  <script type='module' src='../../../js/optin-box.js'></script>
+  <script type='module' src='../../../js/tcf-box.js'></script>
+  <script src='//cdn.jsdelivr.net/hls.js/latest/hls.min.js'></script>
+  <script src='//imasdk.googleapis.com/js/sdkloader/ima3.js'></script>
+</head>
+<body>
+<script>
+  // Allow overwriting the used sdk with url param sdkUrl
+  var urlParams = new URLSearchParams(window.location.search);
+  var url = urlParams.get('sdkUrl') || window.env.WEB_SDK_URL;
+
+  // Optin via GET param
+  var optinGetValue = urlParams.get('optin');
+  var optin = typeof optinGetValue === 'string' ? optinGetValue === 'true' : undefined;
+  // In case questions about the optin parameter, please read the documentation: https://confluence-docu.gfk.com/display/SENSIC/Javascript+SDK+Integration
+  // Read more about privacy:https://confluence-docu.gfk.com/pages/viewpage.action?pageId=13043961
+
+  var gfkS2sConf = {
+    optin: optin,
+    media: 's2s-html5-demo',
+    url: url,
+    type: 'WEB',
+    logLevel: 'debug'
+  };
+
+</script>
+<div class='header'>
+  <div id='title'>S2S HTML5 Live Video + Google IMA Demo</div>
+</div>
+<optin-box></optin-box>
+<tcf-box></tcf-box>
+<div id='video_container'>
+  <video id='my_video_id' controls preload='metadata' playsinline></video>
+  <div id='ad-container'></div>
+</div>
+<script src='../../../js/google-ima.js'></script>
+<script>
+  var LIVE_STREAM = '//cph-p2p-msl.akamaized.net/hls/live/2000341/test/master.m3u8';
+  var video = document.getElementById('my_video_id');
+
+  function initializeIma() {
+    initGoogleIma(video);
+    adsLoader.addEventListener(google.ima.AdsManagerLoadedEvent.Type.ADS_MANAGER_LOADED, function(adsManagerLoadedEvent) {
+      // adsManager = adsManagerLoadedEvent.getAdsManager(video);
+      extension.activateGoogleIMASupport(adsManager);
+    }, false);
+  }
+
+  if (Hls.isSupported()) {
+    var hls = new Hls();
+    // bind them together
+    hls.attachMedia(video);
+    hls.on(Hls.Events.MEDIA_ATTACHED, function() {
+      console.log('video and hls.js are now bound together!');
+      hls.loadSource(LIVE_STREAM);
+      hls.on(Hls.Events.MANIFEST_PARSED, function(event, data) {
+        initializeIma();
+        console.log('manifest loaded, found ' + data.levels.length + ' quality level');
+      });
+    });
+  } else {
+    video.src = LIVE_STREAM;
+    initializeIma();
+  }
+</script>
+<script>
+  var script = document.createElement('script');
+  script.src = `${window.env.EXTENSION_BASE_URL}/html5liveextension.js`;
+  document.head.appendChild(script);
+  var extension;
+
+  script.onload = function() {
+    /**
+     * Initializing the extension
+     * @param {HTMLVideoElement} playerInstance the instance of the player
+     * @param {gfkS2sConf} gfkS2sConf configuration
+     * @param {string} contentUrl live content url, example: 'https://cph-p2p-msl.akamaized.net/hls/live/2000341/test/master.m3u8'
+     * @param {string} contentId
+     * @param {object} customParams example: { cp1: '<your new cp1 value here>', cp2: '<your new cp2 value here>', ... }
+     * @returns {extension}
+     */
+    extension = new window.gfkS2sExtension.HTML5LiveExtension(document.getElementById('my_video_id'), gfkS2sConf, 'default', {});
+
+    // call setParameter() as soon as your player is switching over to different content. Otherwise, new content will be
+    // reported with parameters of the video played before.
+    // extension.setParameter('news', { cp1: '<your new cp1 value here>', cp2: '<your new cp2 value here>', ... });
+  };
+</script>
+</body>
+</html>

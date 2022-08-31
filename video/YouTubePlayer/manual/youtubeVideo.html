@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset='utf-8' />
+  <title>YouTube VOD Demo</title>
+  <link rel='shortcut icon' href='../../../images/favicon.png' />
+  <link rel='stylesheet' href='../../../css/s2s-demo.css' />
+  <link rel='stylesheet' href='../../../css/youtubeVideo.css'>
+  <script src='../../../js/url-polyfill.js'></script>
+  <script type='module' src='../../../js/optin-box.js'></script>
+  <script type='module' src='../../../js/tcf-box.js'></script>
+</head>
+<body>
+<script>
+  // Allow overwriting the used sdk with url param sdkUrl
+  var urlParams = new URLSearchParams(window.location.search);
+  var url = urlParams.get('sdkUrl') || window.env.WEB_SDK_URL;
+
+  // Optin via GET param
+  var optinGetValue = urlParams.get('optin');
+  var optin = typeof optinGetValue === 'string' ? optinGetValue === 'true' : undefined;
+  // In case questions about the optin parameter, please read the documentation: https://confluence-docu.gfk.com/display/SENSIC/Javascript+SDK+Integration
+  // Read more about privacy:https://confluence-docu.gfk.com/pages/viewpage.action?pageId=13043961
+  var gfkS2sConf = {
+    optin: optin,
+    media: 's2s-youtube-demo',
+    url: url,
+    type: 'WEB',
+    logLevel: 'debug'
+  };
+
+  (function(w, d, c, s, id, v) {
+    if (d.getElementById(id)) {
+      return;
+    }
+
+    w.gfkS2sConf = c;
+    w[id] = {};
+    w[id].agents = [];
+    var api = [
+      'playStreamLive',
+      'playStreamOnDemand',
+      'stop',
+      'skip',
+      'screen',
+      'volume',
+      'impression'
+    ];
+    w.gfks = (function() {
+      function f(sA, e, cb) {
+        return function() {
+          sA.p = cb();
+          sA.queue.push({ f: e, a: arguments });
+        };
+      }
+
+      function s(c, pId, cb) {
+        var sA = { queue: [], config: c, cb: cb, pId: pId };
+        for (var i = 0; i < api.length; i++) {
+          var e = api[i];
+          sA[e] = f(sA, e, cb);
+        }
+        return sA;
+      }
+
+      return s;
+    })();
+    w[id].getAgent = function(cb, pId) {
+      var a = {
+        a: new w.gfks(
+          c,
+          pId || '',
+          cb ||
+          function() {
+            return 0;
+          }
+        )
+      };
+
+      function g(a, e) {
+        return function() {
+          return a.a[e].apply(a.a, arguments);
+        };
+      }
+
+      for (var i = 0; i < api.length; i++) {
+        var e = api[i];
+        a[e] = g(a, e);
+      }
+      w[id].agents.push(a);
+      return a;
+    };
+
+    var lJS = function(eId, url) {
+      var tag = d.createElement(s);
+      var el = d.getElementsByTagName(s)[0];
+      tag.id = eId;
+      tag.async = true;
+      tag.type = 'text/javascript';
+      tag.src = url;
+      el.parentNode.insertBefore(tag, el);
+    };
+
+    if (c.hasOwnProperty(v)) {
+      lJS(id + v, c[v]);
+    }
+    lJS(id, c.url);
+  })(window, document, gfkS2sConf, 'script', 'gfkS2s', 'visUrl');
+
+</script>
+<div class='header'>
+  <div id='title'>
+    <a href='../../../index.html'><img id='icon' src='../../../images/favicon.png' /></a>YouTube VOD Demo
+  </div>
+</div>
+<optin-box></optin-box>
+<tcf-box></tcf-box>
+<!-- The following <div> tag will be replaced by an <iframe> tag with same id and youtube.com URL. -->
+<div id='my_player_id'></div>
+
+<script>
+  var youtubeVideoId = '4TFKZFg5ko4';
+  var tag = document.createElement('script');
+  tag.src = 'https://www.youtube.com/iframe_api';
+  var firstScriptTag = document.getElementsByTagName('script')[0];
+  firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+  var video = document.getElementById('my_player_id');
+  var agent = gfkS2s.getAgent(getVideoPosition, 'my_player_id');
+  var currentPosition;
+  var isSegmentPlaying = false;
+  var player;
+  var currentPlaybackSpeed;
+  var currentVolume;
+
+  function onYouTubeIframeAPIReady() {
+    player = new YT.Player('my_player_id', {
+      videoId: youtubeVideoId,
+      events: {
+        onReady: onPlayerReady,
+        onStateChange: onPlayerStateChange,
+        onPlaybackRateChange: onPlaybackRateChange
+      }
+    });
+  }
+
+  function onPlayerReady(event) {
+    updateVideoPosition();
+    currentPlaybackSpeed = player.getPlaybackRate();
+    currentVolume = getVolume();
+  }
+
+  function onPlaybackRateChange(event) {
+    if (event.data !== currentPlaybackSpeed) {
+      currentPlaybackSpeed = event.data;
+      if (isSegmentPlaying) {
+        paused();
+        playing();
+      }
+    }
+  }
+
+  function onPlayerStateChange(event) {
+    switch (event.data) {
+      case YT.PlayerState.PLAYING:
+        playing();
+        break;
+      default: //paused, ended, buffering
+        paused();
+        break;
+    }
+  }
+
+  function playing() {
+    if (!isSegmentPlaying) {
+      updateVideoPosition();
+      agent.playStreamOnDemand(
+        video.id,
+        youtubeVideoId,
+        { volume: getVolume(), speed: currentPlaybackSpeed },
+        { /*please add your custom parameters here or keep empty*/ }
+      );
+      isSegmentPlaying = true;
+    }
+  }
+
+  function paused() {
+    if (isSegmentPlaying) {
+      agent.stop();
+      isSegmentPlaying = false;
+    }
+  }
+
+  function getVideoPosition() {
+    return currentPosition;
+  }
+
+  function updateVideoPosition() {
+    currentPosition = player && player.getCurrentTime ? Math.floor(player.getCurrentTime() * 1000) : 0;
+  }
+
+  function getVolume() {
+    return player.isMuted() ? '0' : player.getVolume().toString();
+  }
+
+  function interval() {
+    if (isSegmentPlaying) {
+      if (Math.floor(player.getCurrentTime() * 1000) > currentPosition) {
+        updateVideoPosition();
+      }
+      if (currentVolume !== getVolume()) {
+        currentVolume = getVolume();
+        agent.volume(currentVolume);
+      }
+    }
+  }
+
+  setInterval(interval, 500);
+</script>
+</body>
+</html>
