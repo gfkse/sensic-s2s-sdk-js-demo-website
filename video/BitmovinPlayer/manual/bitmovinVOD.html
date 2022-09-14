@@ -140,58 +140,6 @@ var gfkS2sConf = {
   </div>
 </div>
 <script>
-var currentAdTime = 0;
-var adAgent = window.gfkS2s.getAgent(getAdCurrentPosition);
-var adRunning = false;
-
-function getAdCurrentPosition() {
-  return currentAdTime;
-}
-
-/** we don't send stream position 0 manually here, because we want to continue from the position that we stopped the ad */
-function onResumed() {
-  adAgent.playStreamOnDemand(
-    'ad',
-    video.currentSrc + 'ads',
-    {},
-    {}
-  );
-}
-
-function onPaused() {
-  adAgent.stop(currentAdTime);
-}
-
-/**
- * if it is the beginning of the video we don't want to stop the agent
- * (ex. When we have pre-rolls in the beginning of the video before the video starts)
- * if the video has ended we don't want to send stop, because we handle this stop in the pause event listener
- * in playStreamOnDemand we manually set the stream position to 0, because we want the ad to start from 0 every time
- * and not continue from the previous last position where the previous ad stopped (ex. 10th second).
- * That will give an error like "current position 9th second is lower than the last position - 10th second".
- */
-function onContentPauseRequested() {
-  adRunning = true;
-  adAgent.playStreamOnDemand(
-    'ad',
-    video.currentSrc + 'ads',
-    0,
-    {},
-    {}
-  );
-}
-
-function onContentResumeRequested() {
-  adRunning = false;
-  adAgent.stop(currentAdTime);
-}
-
-function onAdProgress(event) {
-  currentAdTime = Math.floor(event.getAdData().currentTime * 1000);
-}
-</script>
-
-<script>
 var playerConfig = {
   key: '7C60F446-6054-446D-B829-816AF360D7F3',
   playback: {
@@ -199,26 +147,6 @@ var playerConfig = {
   },
   style: {
     width: '40%'
-  },
-  advertising: {
-    adBreaks: [
-      {
-        tag: {
-          url: '//pubads.g.doubleclick.net/gampad/ads?iu=/21775744923/external/vmap_ad_samples&sz=640x480&cust_params=sample_ar%3Dpremidpost&ciu_szs=300x250&gdfp_req=1&ad_rule=1&output=vmap&unviewed_position_start=1&env=vp&impl=s&cmsid=496&vid=short_onecue&correlator=',
-          type: 'vast'
-        },
-        id: 'Ad',
-        position: '00:00:03'
-      }
-    ],
-    onAdsManagerAvailable: (adsManager) => {
-      // adsManager = adsManagerLoadedEvent.getAdsManager(video);
-      adsManager.addEventListener(google.ima.AdEvent.Type.CONTENT_RESUME_REQUESTED, onContentResumeRequested);
-      adsManager.addEventListener(google.ima.AdEvent.Type.CONTENT_PAUSE_REQUESTED, onContentPauseRequested);
-      adsManager.addEventListener(google.ima.AdEvent.Type.RESUMED, onResumed);
-      adsManager.addEventListener(google.ima.AdEvent.Type.PAUSED, onPaused);
-      adsManager.addEventListener(google.ima.AdEvent.Type.AD_PROGRESS, onAdProgress, false);
-    }
   }
 };
 var containerElement = document.getElementById('video');
@@ -232,10 +160,7 @@ var seeked = false;
 var paused = false;
 
 function getCurrentPosition() {
-  if (!adRunning) {
-    currentPosition = Math.round(playerInstance.getCurrentTime() * 1000);
-  }
-  return currentPosition;
+  return Math.round(playerInstance.getCurrentTime() * 1000);
 }
 
 function getVolume() {
@@ -247,25 +172,9 @@ function getCurrentPlaybackSpeed() {
 }
 
 playerInstance.on(bitmovin.player.PlayerEvent.Play, function() {
-  if (!adRunning) {
-    paused = false;
-    if (!seeked) {
-      agent.playStreamOnDemand(
-        'default',
-        JSON.stringify(playerInstance.getSource()),
-        {
-          volume: getVolume(),
-          speed: getCurrentPlaybackSpeed()
-        },
-        {/*please add your custom parameters here or keep empty*/ }
-      );
-    } else {
-      seeked = false;
-    }
-  }
-});
-playerInstance.on(bitmovin.player.PlayerEvent.AdBreakFinished, function() {
-  if (!playerInstance.hasEnded()) {
+  paused = false;
+  if (!seeked) {
+    console.log('event play');
     agent.playStreamOnDemand(
       'default',
       JSON.stringify(playerInstance.getSource()),
@@ -275,16 +184,14 @@ playerInstance.on(bitmovin.player.PlayerEvent.AdBreakFinished, function() {
       },
       {/*please add your custom parameters here or keep empty*/ }
     );
+  } else {
+    seeked = false;
   }
 });
-playerInstance.on(bitmovin.player.PlayerEvent.AdBreakStarted, function() {
-  agent.stop(currentPosition);
-});
+
 playerInstance.on(bitmovin.player.PlayerEvent.Paused, function() {
-  if (!adRunning) {
-    paused = true;
-    agent.stop(currentPosition);
-  }
+  paused = true;
+  agent.stop(currentPosition);
 });
 
 playerInstance.on(bitmovin.player.PlayerEvent.PlaybackSpeedChanged, function() {
@@ -301,6 +208,10 @@ playerInstance.on(bitmovin.player.PlayerEvent.PlaybackSpeedChanged, function() {
     );
   }
   currentPlaybackSpeed = getCurrentPlaybackSpeed();
+});
+
+playerInstance.on(bitmovin.player.PlayerEvent.PlaybackFinished, function() {
+  agent.stop();
 });
 
 playerInstance.on(bitmovin.player.PlayerEvent.VolumeChanged, function() {

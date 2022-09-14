@@ -204,21 +204,13 @@ var playerConfig = {
     adBreaks: [
       {
         tag: {
-          url: '//pubads.g.doubleclick.net/gampad/ads?iu=/21775744923/external/vmap_ad_samples&sz=640x480&cust_params=sample_ar%3Dpremidpost&ciu_szs=300x250&gdfp_req=1&ad_rule=1&output=vmap&unviewed_position_start=1&env=vp&impl=s&cmsid=496&vid=short_onecue&correlator=',
+          url: '//pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dskippablelinear&correlator=',
           type: 'vast'
         },
         id: 'Ad',
         position: '00:00:03'
       }
-    ],
-    onAdsManagerAvailable: (adsManager) => {
-      // adsManager = adsManagerLoadedEvent.getAdsManager(video);
-      adsManager.addEventListener(google.ima.AdEvent.Type.CONTENT_RESUME_REQUESTED, onContentResumeRequested);
-      adsManager.addEventListener(google.ima.AdEvent.Type.CONTENT_PAUSE_REQUESTED, onContentPauseRequested);
-      adsManager.addEventListener(google.ima.AdEvent.Type.RESUMED, onResumed);
-      adsManager.addEventListener(google.ima.AdEvent.Type.PAUSED, onPaused);
-      adsManager.addEventListener(google.ima.AdEvent.Type.AD_PROGRESS, onAdProgress, false);
-    }
+    ]
   }
 };
 var containerElement = document.getElementById('video');
@@ -232,10 +224,7 @@ var seeked = false;
 var paused = false;
 
 function getCurrentPosition() {
-  if (!adRunning) {
-    currentPosition = Math.round(playerInstance.getCurrentTime() * 1000);
-  }
-  return currentPosition;
+  return Math.round(playerInstance.getCurrentTime() * 1000);
 }
 
 function getVolume() {
@@ -250,8 +239,10 @@ playerInstance.on(bitmovin.player.PlayerEvent.Play, function() {
   if (!adRunning) {
     paused = false;
     if (!seeked) {
-      agent.playStreamOnDemand(
+      agent.playStreamLive(
         'default',
+        '',
+        0,
         JSON.stringify(playerInstance.getSource()),
         {
           volume: getVolume(),
@@ -278,20 +269,21 @@ playerInstance.on(bitmovin.player.PlayerEvent.AdBreakFinished, function() {
   }
 });
 playerInstance.on(bitmovin.player.PlayerEvent.AdBreakStarted, function() {
-  agent.stop(currentPosition);
+  agent.stop();
 });
 playerInstance.on(bitmovin.player.PlayerEvent.Paused, function() {
   if (!adRunning) {
     paused = true;
-    agent.stop(currentPosition);
+    agent.stop();
   }
 });
-
 playerInstance.on(bitmovin.player.PlayerEvent.PlaybackSpeedChanged, function() {
   if (playerInstance.isPlaying()) {
     agent.stop();
-    agent.playStreamOnDemand(
+    agent.playStreamLive(
       'default',
+      '',
+      0,
       JSON.stringify(playerInstance.getSource()),
       {
         volume: getVolume(),
@@ -303,6 +295,11 @@ playerInstance.on(bitmovin.player.PlayerEvent.PlaybackSpeedChanged, function() {
   currentPlaybackSpeed = getCurrentPlaybackSpeed();
 });
 
+// playerInstance.on(bitmovin.player.PlayerEvent.PlaybackFinished, function() {
+//   console.log('PlaybackFinished');
+//   agent.stop();
+// });
+
 playerInstance.on(bitmovin.player.PlayerEvent.VolumeChanged, function() {
   if (playerInstance.isPlaying()) {
     agent.volume(getVolume());
@@ -311,12 +308,15 @@ playerInstance.on(bitmovin.player.PlayerEvent.VolumeChanged, function() {
 
 playerInstance.on(bitmovin.player.PlayerEvent.TimeChanged, function() {
   currentPosition = getCurrentPosition();
+  currentAdTime = currentPosition;
 });
 
 playerInstance.on(bitmovin.player.PlayerEvent.Seeked, function() {
   if (!playerInstance.isPaused()) {
-    agent.playStreamOnDemand(
+    agent.playStreamLive(
       'default',
+      '',
+      0,
       JSON.stringify(playerInstance.getSource()),
       {
         volume: getVolume(),
@@ -332,7 +332,7 @@ playerInstance.on(bitmovin.player.PlayerEvent.Seek, function() {
   if (playerInstance.isPlaying()) {
     seeked = true;
     if (!paused) {
-      agent.stop(currentPosition);
+      agent.stop();
     }
   }
 });
@@ -348,7 +348,38 @@ playerInstance.on(bitmovin.player.PlayerEvent.Unmuted, function() {
     agent.volume(getVolume());
   }
 });
-playerInstance.load({ progressive: `${window.location.origin}/res/understanding_mobile_consumer.mp4` });
+
+playerInstance.on(bitmovin.player.PlayerEvent.AdFinished, function() {
+  adRunning = false;
+  adAgent.stop(currentPosition);
+
+});
+playerInstance.on(bitmovin.player.PlayerEvent.AdBreakFinished, function() {
+  adRunning = false;
+});
+playerInstance.on(bitmovin.player.PlayerEvent.AdStarted, function() {
+  adRunning = true;
+  adAgent.playStreamOnDemand(
+    'ad',
+    JSON.stringify(playerInstance.getSource()),
+    0,
+    {
+      volume: getVolume(),
+      speed: getCurrentPlaybackSpeed()
+    },
+    {/*please add your custom parameters here or keep empty*/ }
+  );
+});
+playerInstance.on(bitmovin.player.PlayerEvent.AdBreakStarted, function() {
+  adRunning = true;
+});
+playerInstance.on(bitmovin.player.PlayerEvent.AdSkipped, function() {
+  adRunning = false;
+  adAgent.stop(currentPosition);
+});
+
+playerInstance.load({ hls: 'https://cph-p2p-msl.akamaized.net/hls/live/2000341/test/master.m3u8' });
+
 </script>
 </body>
 </html>
