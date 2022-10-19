@@ -2,10 +2,10 @@
 <html>
 <head>
   <meta charset='utf-8' />
-  <title>YouTube VOD Demo</title>
+  <title>JWPLayer VOD</title>
   <link rel='shortcut icon' href='../../../images/favicon.png' />
   <link rel='stylesheet' href='../../../css/s2s-demo.css' />
-  <link rel='stylesheet' href='../../../css/youtubeVideo.css'>
+  <link rel='stylesheet' href='../../../css/jwplayer.css' />
   <script src='../../../js/url-polyfill.js'></script>
   <script type='module' src='../../../js/optin-box.js'></script>
   <script type='module' src='../../../js/tcf-box.js'></script>
@@ -23,7 +23,7 @@
   // Read more about privacy:https://confluence-docu.gfk.com/pages/viewpage.action?pageId=13043961
   var gfkS2sConf = {
     optin: optin,
-    media: 's2s-youtube-demo',
+    media: 's2s-html5-demo',
     url: url,
     type: 'WEB',
     logLevel: 'debug'
@@ -57,7 +57,7 @@
       function s(c, pId, cb) {
         var sA = { queue: [], config: c, cb: cb, pId: pId };
         for (var i = 0; i < api.length; i++) {
-          var e = api[i];
+          e = api[i];
           sA[e] = f(sA, e, cb);
         }
         return sA;
@@ -84,7 +84,7 @@
       }
 
       for (var i = 0; i < api.length; i++) {
-        var e = api[i];
+        e = api[i];
         a[e] = g(a, e);
       }
       w[id].agents.push(a);
@@ -108,87 +108,77 @@
   })(window, document, gfkS2sConf, 'script', 'gfkS2s', 'visUrl');
 
 </script>
+<!--JW Player Script-->
+<script src='https://jwpsrv.com/library/FfMxTl3oEeSEiiIACxmInQ.js'></script>
 <div class='header'>
-  <div id='title'>
-    <a href='../../../index.html'><img id='icon' src='../../../images/favicon.png' /></a>YouTube VOD Demo
-  </div>
+  <div id='title'>JW VOD Demo</div>
 </div>
 <optin-box></optin-box>
 <tcf-box></tcf-box>
-<!-- The following <div> tag will be replaced by an <iframe> tag with same id and youtube.com URL. -->
-<div id='my_player_id'></div>
-
+<div id='my_video_id'></div>
 <script>
-  var youtubeVideoId = '36YnV9STBqc';
-  var tag = document.createElement('script');
-  tag.src = 'https://www.youtube.com/iframe_api';
-  var firstScriptTag = document.getElementsByTagName('script')[0];
-  firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+  var video = document.getElementById('my_video_id');
+  var jwPlayer = jwplayer('my_video_id').setup({
+    file: '../../../res/big_buck_bunny.mp4'
+  });
+  var agent = gfkS2s.getAgent(getVideoPosition, 'my_video_id');
+  var currentPosition = getVideoPosition();
 
-  var video = document.getElementById('my_player_id');
-  var agent = gfkS2s.getAgent(getVideoPosition, 'my_player_id');
-  var currentPosition;
-  var isSegmentPlaying = false;
-  var player;
-  var currentPlaybackSpeed;
-  var currentVolume;
-
-  function onYouTubeIframeAPIReady() {
-    player = new YT.Player('my_player_id', {
-      videoId: youtubeVideoId,
-      events: {
-        onReady: onPlayerReady,
-        onStateChange: onPlayerStateChange,
-        onPlaybackRateChange: onPlaybackRateChange
-      }
-    });
-  }
-
-  function onPlayerReady(event) {
+  // Fires when a stream has been started or is playing after having been paused or stopped
+  jwPlayer.on('play', function() {
     updateVideoPosition();
-    currentPlaybackSpeed = player.getPlaybackRate();
-    currentVolume = getVolume();
-  }
+    agent.playStreamOnDemand(
+      'default',
+      jwPlayer.getPlaylistItem().file,
+      { volume: getVolume(), speed: jwPlayer.getPlaybackRate() },
+      { /*please add your custom parameters here or keep empty*/ }
+    );
+  });
 
-  function onPlaybackRateChange(event) {
-    if (event.data !== currentPlaybackSpeed) {
-      currentPlaybackSpeed = event.data;
-      if (isSegmentPlaying) {
-        paused();
-        playing();
+
+  // Event needed fot seeking; refreshing the current position 10 times every second; checking if we are in seeking mode
+  jwPlayer.on('time', function() {
+    if (jwPlayer.getState() === 'playing') {
+      if (Math.floor(jwPlayer.getPosition() * 1000) > currentPosition && Math.abs(Math.floor(jwPlayer.getPosition() * 1000) - currentPosition) < 1000) {
+        updateVideoPosition();
       }
     }
-  }
+  });
 
-  function onPlayerStateChange(event) {
-    switch (event.data) {
-      case YT.PlayerState.PLAYING:
-        playing();
-        break;
-      default: //paused, ended, buffering
-        paused();
-        break;
-    }
-  }
+  // Fires when a stream has been paused
+  jwPlayer.on('pause', function() {
+    agent.stop();
+  });
 
-  function playing() {
-    if (!isSegmentPlaying) {
-      updateVideoPosition();
-      agent.playStreamOnDemand(
-        video.id,
-        youtubeVideoId,
-        { volume: getVolume(), speed: currentPlaybackSpeed },
-        { /*please add your custom parameters here or keep empty*/ }
-      );
-      isSegmentPlaying = true;
-    }
-  }
 
-  function paused() {
-    if (isSegmentPlaying) {
+  // Fires when a stream is idling
+  jwPlayer.on('idle', function() {
+    agent.stop();
+  });
+
+  // Fires when the user starts moving/skipping to a new position in a stream
+  jwPlayer.on('seek', function() {
+    if (jwPlayer.getState() === 'playing') {
       agent.stop();
-      isSegmentPlaying = false;
     }
+  });
+
+  // Fires when the mute button has been changed
+  jwPlayer.on('mute', function() {
+    if (jwPlayer.getState() === 'playing') {
+      agent.volume(getVolume());
+    }
+  });
+
+  // Fires when the volume has been changed
+  jwPlayer.on('volume', function() {
+    if (jwPlayer.getState() === 'playing') {
+      agent.volume(getVolume());
+    }
+  });
+
+  function getVolume() {
+    return jwPlayer.getMute() ? '0' : Math.round(jwPlayer.getVolume()).toString();
   }
 
   function getVideoPosition() {
@@ -196,26 +186,9 @@
   }
 
   function updateVideoPosition() {
-    currentPosition = player && player.getCurrentTime ? Math.floor(player.getCurrentTime() * 1000) : 0;
+    currentPosition = Math.floor(jwPlayer.getPosition() * 1000);
   }
 
-  function getVolume() {
-    return player.isMuted() ? '0' : player.getVolume().toString();
-  }
-
-  function interval() {
-    if (isSegmentPlaying) {
-      if (Math.floor(player.getCurrentTime() * 1000) > currentPosition) {
-        updateVideoPosition();
-      }
-      if (currentVolume !== getVolume()) {
-        currentVolume = getVolume();
-        agent.volume(currentVolume);
-      }
-    }
-  }
-
-  setInterval(interval, 500);
 </script>
 </body>
 </html>

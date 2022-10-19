@@ -11,100 +11,108 @@
 </head>
 <body>
 <script>
-  // Allow overwriting the used sdk with url param sdkUrl
-  var urlParams = new URLSearchParams(window.location.search);
-  var url = urlParams.get('sdkUrl') || window.env.WEB_SDK_URL;
+// Allow overwriting the used sdk with url param sdkUrl
+var urlParams = new URLSearchParams(window.location.search);
+var url = urlParams.get('sdkUrl') || window.env.WEB_SDK_URL;
 
-  // Optin via GET param
-  var optinGetValue = urlParams.get('optin');
-  var optin = typeof optinGetValue === 'string' ? optinGetValue === 'true' : undefined;
-  // In case questions about the optin parameter, please read the documentation: https://confluence-docu.gfk.com/display/SENSIC/Javascript+SDK+Integration
-  // Read more about privacy:https://confluence-docu.gfk.com/pages/viewpage.action?pageId=13043961
-  var gfkS2sConf = {
-    optin: optin,
-    media: 's2s-html5-demo',
-    url: url,
-    type: 'WEB',
-    logLevel: 'debug'
-  };
+// Optin via GET param
+var optinGetValue = urlParams.get('optin');
+var optin = typeof optinGetValue === 'string' ? optinGetValue === 'true' : undefined;
+// In case questions about the optin parameter, please read the documentation: https://confluence-docu.gfk.com/display/SENSIC/Javascript+SDK+Integration
+// Read more about privacy:https://confluence-docu.gfk.com/pages/viewpage.action?pageId=13043961
+var gfkS2sConf = {
+  optin: optin,
+  media: 's2s-html5-demo',
+  url: url,
+  type: 'WEB',
+  logLevel: 'debug'
+};
 
-  (function(w, d, c, s, id, v) {
-    if (d.getElementById(id)) {
-      return;
+(function(w, d, c, s, id, v) {
+  if (d.getElementById(id)) {
+    return;
+  }
+
+  w.gfkS2sConf = c;
+  w[id] = {};
+  w[id].agents = [];
+  var api = [
+    'playStreamLive',
+    'playStreamOnDemand',
+    'stop',
+    'skip',
+    'screen',
+    'volume',
+    'impression'
+  ];
+  w.gfks = (function() {
+    function f(sA, e, cb) {
+      return function() {
+        sA.p = cb();
+        sA.queue.push({
+          f: e,
+          a: arguments
+        });
+      };
     }
 
-    w.gfkS2sConf = c;
-    w[id] = {};
-    w[id].agents = [];
-    var api = [
-      'playStreamLive',
-      'playStreamOnDemand',
-      'stop',
-      'skip',
-      'screen',
-      'volume',
-      'impression'
-    ];
-    w.gfks = (function() {
-      function f(sA, e, cb) {
-        return function() {
-          sA.p = cb();
-          sA.queue.push({ f: e, a: arguments });
-        };
-      }
-
-      function s(c, pId, cb) {
-        var sA = { queue: [], config: c, cb: cb, pId: pId };
-        for (var i = 0; i < api.length; i++) {
-          var e = api[i];
-          sA[e] = f(sA, e, cb);
-        }
-        return sA;
-      }
-
-      return s;
-    })();
-    w[id].getAgent = function(cb, pId) {
-      var a = {
-        a: new w.gfks(
-          c,
-          pId || '',
-          cb ||
-          function() {
-            return 0;
-          }
-        )
+    function s(c, pId, cb) {
+      var sA = {
+        queue: [],
+        config: c,
+        cb: cb,
+        pId: pId
       };
-
-      function g(a, e) {
-        return function() {
-          return a.a[e].apply(a.a, arguments);
-        };
-      }
-
       for (var i = 0; i < api.length; i++) {
         var e = api[i];
-        a[e] = g(a, e);
+        sA[e] = f(sA, e, cb);
       }
-      w[id].agents.push(a);
-      return a;
-    };
-
-    var lJS = function(eId, url) {
-      var tag = d.createElement(s);
-      var el = d.getElementsByTagName(s)[0];
-      tag.id = eId;
-      tag.async = true;
-      tag.type = 'text/javascript';
-      tag.src = url;
-      el.parentNode.insertBefore(tag, el);
-    };
-
-    if (c.hasOwnProperty(v)) {
-      lJS(id + v, c[v]);
+      return sA;
     }
-    lJS(id, c.url);
-  })(window, document, window.gfkS2sConf, 'script', 'gfkS2s', 'visUrl');
+
+    return s;
+  })();
+  w[id].getAgent = function(cb, pId) {
+    var a = {
+      a: new w.gfks(
+        c,
+        pId || '',
+        cb ||
+        function() {
+          return 0;
+        }
+      )
+    };
+
+    function g(a, e) {
+      return function() {
+        return a.a[e].apply(a.a, arguments);
+      };
+    }
+
+    for (var i = 0; i < api.length; i++) {
+      var e = api[i];
+      a[e] = g(a, e);
+    }
+    w[id].agents.push(a);
+    return a;
+  };
+
+  var lJS = function(eId, url) {
+    var tag = d.createElement(s);
+    var el = d.getElementsByTagName(s)[0];
+    tag.id = eId;
+    tag.async = true;
+    tag.type = 'text/javascript';
+    tag.src = url;
+    el.parentNode.insertBefore(tag, el);
+  };
+
+  if (c.hasOwnProperty(v)) {
+    lJS(id + v, c[v]);
+  }
+  lJS(id, c.url);
+})(window, document, window.gfkS2sConf, 'script', 'gfkS2s', 'visUrl');
 
 </script>
 <div class='header'>
@@ -117,86 +125,95 @@
 </video>
 
 <script>
-  var video = document.getElementById('my_video_id');
-  var agent = window.gfkS2s.getAgent(getVideoPosition, 'my_video_id');
-  var currentPosition = getVideoPosition();
-  var currentPlaybackSpeed = video.playbackRate;
-  var seeked = false;
+var video = document.getElementById('my_video_id');
+var agent = window.gfkS2s.getAgent(getVideoPosition, 'my_video_id');
+var currentPosition = getVideoPosition();
+var currentPlaybackSpeed = video.playbackRate;
+var seeked = false;
 
-  video.addEventListener('playing', () => {
-    if (!seeked) {
-      agent.playStreamOnDemand(
-        'default',
-        video.currentSrc,
-        { volume: getVolume(), speed: currentPlaybackSpeed },
-        { /** add your custom parameter here as comma-seperated <key>: "<value>" pairs */ }
-      );
-    } else {
-      seeked = false;
-    }
-  });
+video.addEventListener('playing', () => {
+  if (!seeked) {
+    agent.playStreamOnDemand(
+      'default',
+      video.currentSrc,
+      {
+        volume: getVolume(),
+        speed: currentPlaybackSpeed
+      },
+      { /** add your custom parameter here as comma-seperated <key>: "<value>" pairs */ }
+    );
+  } else {
+    seeked = false;
+  }
+});
 
-  video.addEventListener('timeupdate', (time) => {
+video.addEventListener('timeupdate', (time) => {
+  if (!video.paused) {
+    currentPosition = getVideoPosition();
+  }
+});
+
+video.addEventListener('pause', () => {
+  if (video.seeking) {
+    agent.stop(currentPosition);
+  } else {
+    agent.stop();
+  }
+});
+
+video.addEventListener('seeking', () => {
+  if (!video.paused) {
+    agent.stop(currentPosition);
+  }
+});
+
+video.addEventListener('seeked', () => {
+  if (!video.paused) {
+    seeked = true;
+    agent.playStreamOnDemand(
+      'default',
+      video.currentSrc,
+      {
+        volume: getVolume(),
+        speed: currentPlaybackSpeed
+      },
+      { /** add your custom parameter here as comma-seperated <key>: "<value>" pairs */ }
+    );
+  }
+});
+
+video.addEventListener('ratechange', () => {
+  if (!currentPlaybackSpeed || currentPlaybackSpeed !== video.playbackRate) {
+    currentPlaybackSpeed = video.playbackRate;
     if (!video.paused) {
-      currentPosition = getVideoPosition();
-    }
-  });
-
-  video.addEventListener('pause', () => {
-    if (video.seeking) {
-      agent.stop(currentPosition);
-    } else {
       agent.stop();
-    }
-  });
-
-  video.addEventListener('seeking', () => {
-    if (!video.paused) {
-      agent.stop(currentPosition);
-    }
-  });
-
-  video.addEventListener('seeked', () => {
-    if (!video.paused) {
-      seeked = true;
       agent.playStreamOnDemand(
         'default',
         video.currentSrc,
-        { volume: getVolume(), speed: currentPlaybackSpeed },
-        { /** add your custom parameter here as comma-seperated <key>: "<value>" pairs */ }
+        {
+          volume: getVolume(),
+          speed: currentPlaybackSpeed
+        },
+        {/** add your custom parameter here as comma-seperated <key>: "<value>" pairs */ }
       );
     }
-  });
-
-  video.addEventListener('ratechange', () => {
-    if (!currentPlaybackSpeed || currentPlaybackSpeed !== video.playbackRate) {
-      currentPlaybackSpeed = video.playbackRate;
-      if (!video.paused) {
-        agent.stop();
-        agent.playStreamOnDemand(
-          'default',
-          video.currentSrc,
-          { volume: getVolume(), speed: currentPlaybackSpeed },
-          {/** add your custom parameter here as comma-seperated <key>: "<value>" pairs */ }
-        );
-      }
-    }
-  });
-
-  video.addEventListener('volumechange', () => {
-    if (!video.paused) {
-      agent.volume(getVolume());
-    }
-  });
-
-  function getVolume() {
-    return video.muted ? '0' : Math.round(video.volume * 100).toString();
   }
+});
 
-  function getVideoPosition() {
-    currentPosition = Math.floor(video.currentTime * 1000);
-    return currentPosition;
+video.addEventListener('volumechange', () => {
+  if (!video.paused) {
+    agent.volume(getVolume());
   }
+});
+
+function getVolume() {
+  return video.muted ? '0' : Math.round(video.volume * 100).toString();
+}
+
+function getVideoPosition() {
+  currentPosition = Math.floor(video.currentTime * 1000);
+  return currentPosition;
+}
 </script>
 </body>
 </html>

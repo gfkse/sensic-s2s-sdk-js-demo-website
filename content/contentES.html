@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <meta charset='utf-8' />
+  <meta http-equiv='X-UA-Compatible' content='IE=edge' />
+  <title>Second by Second - DemoSite</title>
+  <meta name='viewport' content='width=device-width, initial-scale=1' />
+
+  <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+  <link rel='shortcut icon' href='../images/favicon.png' />
+  <link rel='stylesheet' href='../css/style.css' />
+  <script src='../js/url-polyfill.js'></script>
+</head>
+<body>
+<script>
+// Allow overwriting the used sdk with url param sdkUrl
+var urlParams = new URLSearchParams(window.location.search);
+var url = urlParams.get('sdkUrl') || window.env.WEB_SDK_URL;
+var optin = urlParams.get('optin');
+
+var gfkS2sConf = {
+  optin: typeof optin === 'string' ? optin === 'true' : undefined,
+  media: 's2sdemomediaid_sst_web',
+  url,
+  type: 'WEB'
+};
+
+(function(w, d, c, s, id, v) {
+  if (d.getElementById(id)) {
+    return;
+  }
+
+  w[id] = {};
+  w[id].agents = [];
+  var api = ['play', 'stop', 'skip', 'screen', 'volume', 'impression'];
+  w.gfks = (function() {
+    function f(sA, e, cb) {
+      return function() {
+        sA.p = cb();
+        sA.queue.push({
+          f: e,
+          a: arguments
+        });
+      };
+    }
+
+    function s(c, pId, cb) {
+      var sA = {
+        queue: [],
+        config: c,
+        cb: cb,
+        pId: pId
+      };
+      for (var i = 0; i < api.length; i++) {
+        e = api[i];
+        sA[e] = f(sA, e, cb);
+      }
+      return sA;
+    }
+
+    return s;
+  })();
+  w[id].getAgent = function(cb, pId) {
+    var a = {
+      a: new w.gfks(
+        c,
+        pId || '',
+        cb ||
+        function() {
+          return 0;
+        }
+      )
+    };
+
+    function g(a, e) {
+      return function() {
+        return a.a[e].apply(a.a, arguments);
+      };
+    }
+
+    for (var i = 0; i < api.length; i++) {
+      e = api[i];
+      a[e] = g(a, e);
+    }
+    w[id].agents.push(a);
+
+    return a;
+  };
+
+  var lJS = function(eId, url) {
+    var tag = d.createElement(s);
+    var el = d.getElementsByTagName(s)[0];
+    tag.id = eId;
+    tag.async = true;
+    tag.type = 'text/javascript';
+    tag.src = url;
+    el.parentNode.insertBefore(tag, el);
+  };
+
+  if (c.hasOwnProperty(v)) {
+    lJS(id + v, c[v]);
+  }
+  lJS(id, c.url);
+})(window, document, gfkS2sConf, 'script', 'gfkS2s', 'visUrl');
+
+</script>
+<div id='fh5co-page'>
+  <div id='fh5co-work-section' class='fh5co-light-grey-section'>
+    <div>
+      <div>
+        <div>
+          <h2>Content Tracking</h2>
+          <p>MediaId = s2sdemomediaid_sst_web<br /></p>
+          <p>ContentId = default<br /></p>
+          <h3>Custom parameters for SST</h3>
+          <p>
+            <label>cp1:</label>
+            <input type='text' value='' id='cp1' />
+          </p>
+          <p>
+            <label>cp2:</label>
+            <input type='text' value='' id='cp2' />
+          </p>
+          <button onclick='sendImpression()'>Track content</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+function getDomainFromUrl() {
+  var domain = window.location.href.match(/^(https?:\/\/)?(www\.)?([^\/]+)/)[3].split('.').slice(0, -1).join('.');
+  document.getElementById('cp1').value = domain;
+}
+
+function getPartsFromUrl() {
+  var firstParamAfterDomain = window.location.pathname.split('/')[1].split('.')[0];
+  document.getElementById('cp2').value = firstParamAfterDomain;
+}
+
+getDomainFromUrl();
+getPartsFromUrl();
+
+function sendImpression() {
+  var c1 = document.getElementById('cp1').value;
+  var c2 = document.getElementById('cp2').value;
+  var cp = {};
+  if (c1 !== '') {
+    cp.c1 = c1;
+  }
+  if (c2 !== '') {
+    cp.c2 = c2;
+  }
+  if (cp.hasOwnProperty('c1') || cp.hasOwnProperty('c2')) {
+    gfkS2s.getAgent().impression('default', cp);
+  } else {
+    gfkS2s.getAgent().impression('default', {});
+  }
+}
+
+sendImpression();
+
+</script>
+</body>
+</html>

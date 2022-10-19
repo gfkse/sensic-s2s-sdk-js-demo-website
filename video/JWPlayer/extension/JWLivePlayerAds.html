@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset='utf-8' />
-  <title>JWPlayer VOD</title>
+  <title>JWPLayer Live</title>
   <link rel='shortcut icon' href='../../../images/favicon.png' />
   <link rel='stylesheet' href='../../../css/s2s-demo.css' />
   <link rel='stylesheet' href='../../../css/jwplayer.css' />
@@ -31,29 +31,35 @@ var gfkS2sConf = {
 };
 </script>
 <!--JW Player Script-->
-<script src='https://jwpsrv.com/library/FfMxTl3oEeSEiiIACxmInQ.js'></script>
+<!--<script src='https://jwpsrv.com/library/FfMxTl3oEeSEiiIACxmInQ.js'></script>-->
 <div class='header'>
-  <div id='title'>JWPLayer VOD</div>
+  <div id='title'>JWPLayer Live</div>
 </div>
 <optin-box></optin-box>
 <tcf-box></tcf-box>
+<script src='https://cdn.jwplayer.com/libraries/6cHFTFjm.js'></script>
 <div id='my_video_id'></div>
 <script>
-  var jwPlayer;
-  jwPlayer = jwplayer('my_video_id').setup({
-    file: '../../../res/big_buck_bunny.mp4'
-  });
-  jwPlayer.on('ready', () => initExtension());
+var jwPlayer;
+jwPlayer = jwplayer('my_video_id').setup({
+  file: 'https://cph-p2p-msl.akamaized.net/hls/live/2000341/test/master.m3u8',
+  advertising: {
+    client: 'vast',
+    tag: 'https://playertest.longtailvideo.com/vast-30s-ad.xml'
+  }
+});
+jwPlayer.on('ready', () => initExtension());
+
 </script>
 <script>
 var extension;
 var script = document.createElement('script');
-script.src = `${window.env.EXTENSION_BASE_URL}/jwvodextension.js`;
+script.src = `${window.env.EXTENSION_BASE_URL}/jwliveextension.js`;
 
 function initExtension() {
   document.head.appendChild(script);
-
   script.onload = function() {
+
     /**
      * Initializing the extension
      * @param {JWPlayer} playerInstance instance of the player
@@ -62,7 +68,9 @@ function initExtension() {
      * @param {object} customParams example: { cp1: '<your new cp1 value here>', cp2: '<your new cp2 value here>', ... }
      * @returns {extension}
      */
-    extension = new window.gfkS2sExtension.JWVODExtension(jwPlayer, gfkS2sConf, 'default', {});
+    extension = new window.gfkS2sExtension.JWLiveExtension(jwPlayer, gfkS2sConf, 'default', {});
+    extension.activateJWAdSupport();
+
     // call setParameter() as soon as your player is switching over to different content. Otherwise, new content will be
     // reported with parameters of the video played before.
     // extension.setParameter('news', { cp1: '<your new cp1 value here>', cp2: '<your new cp2 value here>', ... });

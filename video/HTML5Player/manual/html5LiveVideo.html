@@ -157,9 +157,14 @@
     }
   });
 
+  video.addEventListener('seeking', () => {
+    if (!video.paused) {
+      agent.stop(currentPosition);
+    }
+  });
+
   video.addEventListener('seeked', () => {
     if (!video.paused) {
-      agent.stop();
       seeked = true;
       agent.playStreamLive(
         'default',

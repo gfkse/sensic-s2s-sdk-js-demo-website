@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset='utf-8' />
-  <title>JWPlayer VOD</title>
+  <title>JWPlayer VOD + Ads</title>
   <link rel='shortcut icon' href='../../../images/favicon.png' />
   <link rel='stylesheet' href='../../../css/s2s-demo.css' />
   <link rel='stylesheet' href='../../../css/jwplayer.css' />
@@ -31,19 +31,33 @@ var gfkS2sConf = {
 };
 </script>
 <!--JW Player Script-->
-<script src='https://jwpsrv.com/library/FfMxTl3oEeSEiiIACxmInQ.js'></script>
+<!--<script src='//cdn.jwplayer.com/libraries/mEXy2bzZ.js'></script>-->
 <div class='header'>
-  <div id='title'>JWPLayer VOD</div>
+  <div id='title'>JWPLayer VOD + Ads</div>
 </div>
 <optin-box></optin-box>
 <tcf-box></tcf-box>
+<!--<script src="https://cdn.jwplayer.com/players/yXB3uLUh-mEXy2bzZ.js"></script>-->
+<script src="https://cdn.jwplayer.com/players/yXB3uLUh-OMARawZA.js"></script>
 <div id='my_video_id'></div>
 <script>
-  var jwPlayer;
-  jwPlayer = jwplayer('my_video_id').setup({
-    file: '../../../res/big_buck_bunny.mp4'
-  });
-  jwPlayer.on('ready', () => initExtension());
+var jwPlayer = jwplayer();
+// jwPlayer = jwplayer('my_video_id').setup(
+//   {
+//     file: '../../../res/big_buck_bunny.mp4',
+//     advertising: {
+//       "client": "vast",
+//       'adscheduleid': 'RGg2kX31',
+//       "schedule": [
+//         {
+//           "tag": "//pubads.g.doubleclick.net/gampad/ads?iu=/21775744923/external/vmap_ad_samples&sz=640x480&cust_params=sample_ar%3Dpremidpost&ciu_szs=300x250&gdfp_req=1&ad_rule=1&output=vmap&unviewed_position_start=1&env=vp&impl=s&cmsid=496&vid=short_onecue&correlator="
+//         }
+//       ],
+//       'vpaidcontrols': true
+//     }
+//   }
+// );
+jwPlayer.on('ready', () => initExtension());
 </script>
 <script>
 var extension;
@@ -63,6 +77,7 @@ function initExtension() {
      * @returns {extension}
      */
     extension = new window.gfkS2sExtension.JWVODExtension(jwPlayer, gfkS2sConf, 'default', {});
+    extension.activateJWAdSupport();
     // call setParameter() as soon as your player is switching over to different content. Otherwise, new content will be
     // reported with parameters of the video played before.
     // extension.setParameter('news', { cp1: '<your new cp1 value here>', cp2: '<your new cp2 value here>', ... });
