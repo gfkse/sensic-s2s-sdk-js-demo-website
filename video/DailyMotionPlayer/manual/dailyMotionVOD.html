@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html xmlns='http://www.w3.org/1999/html'>
+<head>
+  <meta charset='utf-8' />
+  <title>S2S DailyMotion Video Demo</title>
+  <link rel='shortcut icon' href='../../../images/favicon.png' />
+  <link rel='stylesheet' href='../../../css/s2s-demo.css' />
+  <script src='../../../js/url-polyfill.js'></script>
+  <script type='module' src='../../../js/optin-box.js'></script>
+  <script type='module' src='../../../js/tcf-box.js'></script>
+</head>
+<body>
+<script>
+// Allow overwriting the used sdk with url param sdkUrl
+var urlParams = new URLSearchParams(window.location.search);
+var url = urlParams.get('sdkUrl') || window.env.WEB_SDK_URL;
+
+// Optin via GET param
+var optinGetValue = urlParams.get('optin');
+var optin = typeof optinGetValue === 'string' ? optinGetValue === 'true' : undefined;
+// In case questions about the optin parameter, please read the documentation: https://confluence-docu.gfk.com/display/SENSIC/Javascript+SDK+Integration
+// Read more about privacy:https://confluence-docu.gfk.com/pages/viewpage.action?pageId=13043961
+var gfkS2sConf = {
+  optin: optin,
+  media: 's2s-html5-demo',
+  url: url,
+  type: 'WEB',
+  logLevel: 'debug'
+};
+
+(function(w, d, c, s, id, v) {
+  if (d.getElementById(id)) {
+    return;
+  }
+
+  w.gfkS2sConf = c;
+  w[id] = {};
+  w[id].agents = [];
+  var api = [
+    'playStreamLive',
+    'playStreamOnDemand',
+    'stop',
+    'skip',
+    'screen',
+    'volume',
+    'impression'
+  ];
+  w.gfks = (function() {
+    function f(sA, e, cb) {
+      return function() {
+        sA.p = cb();
+        sA.queue.push({
+          f: e,
+          a: arguments
+        });
+      };
+    }
+
+    function s(c, pId, cb) {
+      var sA = {
+        queue: [],
+        config: c,
+        cb: cb,
+        pId: pId
+      };
+      for (var i = 0; i < api.length; i++) {
+        var e = api[i];
+        sA[e] = f(sA, e, cb);
+      }
+      return sA;
+    }
+
+    return s;
+  })();
+  w[id].getAgent = function(cb, pId) {
+    var a = {
+      a: new w.gfks(
+        c,
+        pId || '',
+        cb ||
+        function() {
+          return 0;
+        }
+      )
+    };
+
+    function g(a, e) {
+      return function() {
+        return a.a[e].apply(a.a, arguments);
+      };
+    }
+
+    for (var i = 0; i < api.length; i++) {
+      var e = api[i];
+      a[e] = g(a, e);
+    }
+    w[id].agents.push(a);
+    return a;
+  };
+
+  var lJS = function(eId, url) {
+    var tag = d.createElement(s);
+    var el = d.getElementsByTagName(s)[0];
+    tag.id = eId;
+    tag.async = true;
+    tag.type = 'text/javascript';
+    tag.src = url;
+    el.parentNode.insertBefore(tag, el);
+  };
+
+  if (c.hasOwnProperty(v)) {
+    lJS(id + v, c[v]);
+  }
+  lJS(id, c.url);
+})(window, document, window.gfkS2sConf, 'script', 'gfkS2s', 'visUrl');
+
+</script>
+<div class='header'>
+  <div id='title'>S2S DailyMotion VOD Demo</div>
+</div>
+<optin-box></optin-box>
+<tcf-box></tcf-box>
+<script src='https://geo.dailymotion.com/libs/player/xade3.js'></script>
+<div class='dailymotion-video-wrapper'>
+  <div id='my-dailymotion-player'>My Player placeholder</div>
+</div>
+<script>
+var video;
+var agent = window.gfkS2s.getAgent(getVideoPosition);
+var currentPosition = 0;
+var currentPlaybackSpeed = 1;
+// var seeked = false;
+
+dailymotion
+  .createPlayer('my-dailymotion-player', {
+    video: 'x8eo22r'
+  })
+  .then((player) => {
+    video = player;
+    initPlayerEvents();
+  })
+  .catch((e) => console.error(e));
+
+function initPlayerEvents() {
+  video.on('play', async () => {
+    const state = await video.getState();
+    agent.playStreamOnDemand(
+      'default',
+      state.videoTitle,
+      {
+        volume: await getVolume(),
+        speed: state.playerPlaybackSpeed
+      },
+      { /** add your custom parameter here as comma-seperated <key>: "<value>" pairs */ }
+    );
+  });
+  video.on('timeupdate', async (player) => {
+    const state = await video.getState();
+    if (state.playerIsPlaying) {
+      currentPosition = Math.floor(player.videoTime * 1000);
+    }
+  });
+  video.on('pause', (player) => {
+    agent.stop(currentPosition);
+  });
+  video.on('video_end', (player) => {
+    agent.stop(currentPosition);
+  });
+
+  let bugfixForSafari = false;
+  video.on('seeking', async () => {
+    const state = await video.getState();
+    if (state.playerIsPlaying) {
+      agent.stop(currentPosition);
+    } else {
+      bugfixForSafari = true;
+    }
+  });
+  video.on('seeked', async () => {
+    if (!bugfixForSafari) {
+      const state = await video.getState();
+      currentPosition = Math.floor(state.videoTime * 1000);
+      if (state.playerIsPlaying) {
+        agent.playStreamOnDemand(
+          'default',
+          state.videoTitle,
+          {
+            volume: await getVolume(),
+            speed: state.playerPlaybackSpeed
+          },
+          { /** add your custom parameter here as comma-seperated <key>: "<value>" pairs */ }
+        );
+      }
+    } else {
+      bugfixForSafari = false;
+    }
+  });
+  video.on('playbackspeedchange', async () => {
+    const state = await video.getState();
+    if (!currentPlaybackSpeed || currentPlaybackSpeed !== state.playerPlaybackSpeed) {
+      currentPlaybackSpeed = state.playerPlaybackSpeed;
+      if (state.playerIsPlaying) {
+        agent.stop();
+        agent.playStreamOnDemand(
+          'default',
+          state.videoTitle,
+          {
+            volume: await getVolume(),
+            speed: state.playerPlaybackSpeed
+          },
+          { /** add your custom parameter here as comma-seperated <key>: "<value>" pairs */ }
+        );
+      }
+    }
+  });
+  video.on('volumechange', async () => {
+    agent.volume(await getVolume());
+  });
+}
+
+async function getVolume() {
+  const state = await video.getState();
+  return state.playerIsMuted ? '0' : Math.round(state.playerVolume * 100).toString();
+}
+
+function getVideoPosition() {
+  return currentPosition;
+}
+</script>
+</body>
+</html>

@@ -37,8 +37,10 @@ var gfkS2sConf = {
 </div>
 <optin-box></optin-box>
 <tcf-box></tcf-box>
-<script src='https://cdn.jwplayer.com/libraries/6cHFTFjm.js'></script>
-<div id='my_video_id'></div>
+<div class='jw-video-wrapper'>
+  <script src='https://cdn.jwplayer.com/libraries/6cHFTFjm.js'></script>
+  <div id='my_video_id'></div>
+</div>
 <script>
 var jwPlayer;
 jwPlayer = jwplayer('my_video_id').setup({

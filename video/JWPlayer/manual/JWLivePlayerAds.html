@@ -119,11 +119,13 @@ var gfkS2sConf = {
 <!--JW Player Script-->
 <script src='https://cdn.jwplayer.com/libraries/6cHFTFjm.js'></script>
 <div class='header'>
-  <div id='title'>JW Live + Ads Demo </div>
+  <div id='title'>JW Live + Ads Demo</div>
 </div>
 <optin-box></optin-box>
 <tcf-box></tcf-box>
-<div id='my_video_id'></div>
+<div class='jw-video-wrapper'>
+  <div id='my_video_id'></div>
+</div>
 <script>
 var currentAdPosition = 0;
 var adAgent = window.gfkS2s.getAgent(getAdCurrentPosition);
@@ -182,28 +184,28 @@ jwPlayer.on('adPlay', adPlay);
 jwPlayer.on('adSkipped', adSkipped);
 jwPlayer.on('adPause', adPause);
 
-jwPlayer.on('adBreakStart', function (){
+jwPlayer.on('adBreakStart', function() {
   if (jwPlayer.getPosition() > 0) {
     agent.stop();
   }
-})
+});
 let lastPlayTime;
 
 // Fires when a stream has been started or is playing after having been paused or stopped
 jwPlayer.on('play', function() {
   const currentPlayTime = new Date().getTime();
-  if(!lastPlayTime || currentPlayTime - lastPlayTime > 1000) {
+  if (!lastPlayTime || currentPlayTime - lastPlayTime > 1000) {
     lastPlayTime = new Date().getTime();
     agent.playStreamLive(
-            'default',
-            '',
-            0,
-            jwPlayer.getPlaylistItem().file,
-            {
-              volume: getVolume(),
-              speed: jwPlayer.getPlaybackRate()
-            },
-            { /*please add your custom parameters here or keep empty*/}
+      'default',
+      '',
+      0,
+      jwPlayer.getPlaylistItem().file,
+      {
+        volume: getVolume(),
+        speed: jwPlayer.getPlaybackRate()
+      },
+      { /*please add your custom parameters here or keep empty*/ }
     );
   }
 });

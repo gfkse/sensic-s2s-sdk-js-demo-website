@@ -5,7 +5,9 @@ body {
     font-size: 14px;
     color: #e0a000;
 }
-
+.dailymotion-video-wrapper,.jw-video-wrapper{
+    max-width: 40%;
+}
 .header {
     background-color: #202020;
     color: #a0a0a0;

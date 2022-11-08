@@ -2,11 +2,9 @@
 <html>
 <head>
   <meta charset='utf-8' />
-  <title>JWPlayer VOD + Ads</title>
+  <title>S2S DailyMotion Video Demo</title>
   <link rel='shortcut icon' href='../../../images/favicon.png' />
   <link rel='stylesheet' href='../../../css/s2s-demo.css' />
-  <link rel='stylesheet' href='../../../css/jwplayer.css' />
-
   <script src='../../../js/url-polyfill.js'></script>
   <script type='module' src='../../../js/optin-box.js'></script>
   <script type='module' src='../../../js/tcf-box.js'></script>
@@ -22,6 +20,7 @@ var optinGetValue = urlParams.get('optin');
 var optin = typeof optinGetValue === 'string' ? optinGetValue === 'true' : undefined;
 // In case questions about the optin parameter, please read the documentation: https://confluence-docu.gfk.com/display/SENSIC/Javascript+SDK+Integration
 // Read more about privacy:https://confluence-docu.gfk.com/pages/viewpage.action?pageId=13043961
+
 var gfkS2sConf = {
   optin: optin,
   media: 's2s-html5-demo',
@@ -29,57 +28,45 @@ var gfkS2sConf = {
   type: 'WEB',
   logLevel: 'debug'
 };
+
 </script>
-<!--JW Player Script-->
-<!--<script src='//cdn.jwplayer.com/libraries/mEXy2bzZ.js'></script>-->
 <div class='header'>
-  <div id='title'>JWPLayer VOD + Ads</div>
+  <div id='title'>S2S DailyMotion VOD Demo</div>
 </div>
 <optin-box></optin-box>
 <tcf-box></tcf-box>
-<div class='jw-video-wrapper'>
-<!--<script src="https://cdn.jwplayer.com/players/yXB3uLUh-mEXy2bzZ.js"></script>-->
-<script src='https://cdn.jwplayer.com/players/yXB3uLUh-OMARawZA.js'></script>
-  <div id='my_video_id'></div>
+<script src='https://geo.dailymotion.com/libs/player/xade3.js'></script>
+<div class='dailymotion-video-wrapper'>
+  <div id='my-dailymotion-player'>My Player placeholder</div>
 </div>
 <script>
-var jwPlayer = jwplayer();
-// jwPlayer = jwplayer('my_video_id').setup(
-//   {
-//     file: '../../../res/big_buck_bunny.mp4',
-//     advertising: {
-//       "client": "vast",
-//       'adscheduleid': 'RGg2kX31',
-//       "schedule": [
-//         {
-//           "tag": "//pubads.g.doubleclick.net/gampad/ads?iu=/21775744923/external/vmap_ad_samples&sz=640x480&cust_params=sample_ar%3Dpremidpost&ciu_szs=300x250&gdfp_req=1&ad_rule=1&output=vmap&unviewed_position_start=1&env=vp&impl=s&cmsid=496&vid=short_onecue&correlator="
-//         }
-//       ],
-//       'vpaidcontrols': true
-//     }
-//   }
-// );
-jwPlayer.on('ready', () => initExtension());
-</script>
-<script>
-var extension;
+var video;
 var script = document.createElement('script');
-script.src = `${window.env.EXTENSION_BASE_URL}/jwvodextension.js`;
+var extension;
+dailymotion
+  .createPlayer('my-dailymotion-player', {
+    video: 'x8eo22r'
+  })
+  .then((player) => {
+    video = player;
+    initExtension();
+  })
+  .catch((e) => console.error(e));
 
 function initExtension() {
+  script.src = `${window.env.EXTENSION_BASE_URL}/dailymotionvodextension.js`;
   document.head.appendChild(script);
-
-  script.onload = function() {
+  script.onload = async function() {
     /**
      * Initializing the extension
-     * @param {JWPlayer} playerInstance instance of the player
+     * @param {DailymotionInstance} playerInstance the instance of the player
      * @param {gfkS2sConf} gfkS2sConf configuration
      * @param {string} contentId
      * @param {object} customParams example: { cp1: '<your new cp1 value here>', cp2: '<your new cp2 value here>', ... }
      * @returns {extension}
      */
-    extension = new window.gfkS2sExtension.JWVODExtension(jwPlayer, gfkS2sConf, 'default', {});
-    extension.activateJWAdSupport();
+    extension = new window.gfkS2sExtension.DailyMotionVODExtension(video, await video.getState(), gfkS2sConf, 'default', {});
+
     // call setParameter() as soon as your player is switching over to different content. Otherwise, new content will be
     // reported with parameters of the video played before.
     // extension.setParameter('news', { cp1: '<your new cp1 value here>', cp2: '<your new cp2 value here>', ... });
