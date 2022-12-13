@@ -7,43 +7,44 @@
   <link rel='stylesheet' href='../css/campaign-img-ai-param.css' />
   <script src='../js/url-polyfill.js'></script>
   <script>
-    function onload() {
-      // Allow overwriting the used tp with url param pixelUrl
-      var urlParams = new URLSearchParams(window.location.search);
-      var tpUrl = urlParams.get('pixelUrl') || window.env.TP_URL;
-      if (!/[?&]ty=/.test(tpUrl)) {
-        tpUrl += (tpUrl.indexOf('?') === -1 ? '?' : '&') + 'ty=IM';
-      }
-      if (!/[?&]m=/.test(tpUrl)) {
-        tpUrl += '&m=campaign_demosite';
-      }
-      if (!/[?&]c=/.test(tpUrl)) {
-        tpUrl += '&c=demosite';
-      }
-      if (!/[?&]cp_cp1=/.test(tpUrl)) {
-        tpUrl += '&cp_cp1=1553256932919';
-      }
-      if (!/[?&]tp-type=/.test(tpUrl)) {
-        tpUrl += '&tp-type=html';
-      }
-      var ai = urlParams.get('ai') || 'MyAdvertisingId-4711';
-      tpUrl += '&ai=' + encodeURIComponent(ai);
-      document.getElementById('ai').innerText = ai;
-      var tpUrlElem = document.createElement('a');
-      tpUrlElem.setAttribute('href', tpUrl);
-      tpUrlElem.setAttribute('target', '_blank');
-      tpUrlElem.innerText = tpUrl;
-      document.getElementById('tpurl').appendChild(tpUrlElem);
-      var mainHeight = document.getElementById('main').offsetHeight;
-      mainHeight += 16;
-
-      var ifrm = document.createElement('iframe');
-      ifrm.setAttribute('src', tpUrl);
-      ifrm.style.width = '100%';
-      ifrm.style.height = 'calc(100vh - ' + mainHeight + 'px)';
-      ifrm.style.border = 'none';
-      document.body.appendChild(ifrm);
+  function onload() {
+    // Allow overwriting the used tp with url param pixelUrl
+    var urlParams = new URLSearchParams(window.location.search);
+    var tpUrl = urlParams.get('pixelUrl') || window.env.TP_URL;
+    if (!/[?&]ty=/.test(tpUrl)) {
+      tpUrl += (tpUrl.indexOf('?') === -1 ? '?' : '&') + 'ty=IM';
     }
+    if (!/[?&]m=/.test(tpUrl)) {
+      tpUrl += '&m=campaign_demosite';
+    }
+    if (!/[?&]c=/.test(tpUrl)) {
+      tpUrl += '&c=demosite';
+    }
+    if (!/[?&]cp_cp1=/.test(tpUrl)) {
+      tpUrl += '&cp_cp1=1553256932919';
+    }
+    if (!/[?&]tp-type=/.test(tpUrl)) {
+      tpUrl += '&tp-type=html';
+    }
+    tpUrl += `&pr=${Math.floor(1e9 * Math.random())}`;
+    var ai = urlParams.get('ai') || 'MyAdvertisingId-4711';
+    tpUrl += '&ai=' + encodeURIComponent(ai);
+    document.getElementById('ai').innerText = ai;
+    var tpUrlElem = document.createElement('a');
+    tpUrlElem.setAttribute('href', tpUrl);
+    tpUrlElem.setAttribute('target', '_blank');
+    tpUrlElem.innerText = tpUrl;
+    document.getElementById('tpurl').appendChild(tpUrlElem);
+    var mainHeight = document.getElementById('main').offsetHeight;
+    mainHeight += 16;
+
+    var ifrm = document.createElement('iframe');
+    ifrm.setAttribute('src', tpUrl);
+    ifrm.style.width = '100%';
+    ifrm.style.height = 'calc(100vh - ' + mainHeight + 'px)';
+    ifrm.style.border = 'none';
+    document.body.appendChild(ifrm);
+  }
   </script>
 </head>
 <body onload='onload()'>

@@ -12,29 +12,30 @@
 </head>
 <body>
 <script>
-  // Allow overwriting the used tp with url param pixelUrl
-  var urlParams = new URLSearchParams(window.location.search);
-  var tpUrl = urlParams.get('pixelUrl') || window.env.TP_URL;
-  if (!/[?&]ty=/.test(tpUrl)) {
-    tpUrl += (tpUrl.indexOf('?') === -1 ? '?' : '&') + 'ty=IM';
-  }
-  if (!/[?&]m=/.test(tpUrl)) {
-    tpUrl += '&m=campaign_demosite';
-  }
-  if (!/[?&]c=/.test(tpUrl)) {
-    tpUrl += '&c=demosite';
-  }
-  if (!/[?&]cp_cp1=/.test(tpUrl)) {
-    tpUrl += '&cp_cp1=1553256932919';
-  }
-  if (!/[?&]tp-type=/.test(tpUrl)) {
-    tpUrl += '&tp-type=html';
-  }
-  var pixelFrame = document.createElement('iframe');
-  pixelFrame.src = tpUrl;
-  pixelFrame.width = '100%';
-  pixelFrame.height = '100%';
-  document.body.appendChild(pixelFrame);
+// Allow overwriting the used tp with url param pixelUrl
+var urlParams = new URLSearchParams(window.location.search);
+var tpUrl = urlParams.get('pixelUrl') || window.env.TP_URL;
+if (!/[?&]ty=/.test(tpUrl)) {
+  tpUrl += (tpUrl.indexOf('?') === -1 ? '?' : '&') + 'ty=IM';
+}
+if (!/[?&]m=/.test(tpUrl)) {
+  tpUrl += '&m=campaign_demosite';
+}
+if (!/[?&]c=/.test(tpUrl)) {
+  tpUrl += '&c=demosite';
+}
+if (!/[?&]cp_cp1=/.test(tpUrl)) {
+  tpUrl += '&cp_cp1=1553256932919';
+}
+if (!/[?&]tp-type=/.test(tpUrl)) {
+  tpUrl += '&tp-type=html';
+}
+tpUrl += `&pr=${Math.floor(1e9 * Math.random())}`;
+var pixelFrame = document.createElement('iframe');
+pixelFrame.src = tpUrl;
+pixelFrame.width = '100%';
+pixelFrame.height = '100%';
+document.body.appendChild(pixelFrame);
 </script>
 <div>
   <div>
@@ -57,10 +58,10 @@
     <div>
       <div></div>
       <div>
-        <div >
+        <div>
           <h3>Top</h3>
           <p>
-            <a href='#' >Get started now!</a>
+            <a href='#'>Get started now!</a>
           </p>
         </div>
       </div>

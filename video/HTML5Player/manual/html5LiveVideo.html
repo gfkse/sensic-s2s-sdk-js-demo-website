@@ -159,7 +159,7 @@
 
   video.addEventListener('seeking', () => {
     if (!video.paused) {
-      agent.stop(currentPosition);
+      agent.stop();
     }
   });
 

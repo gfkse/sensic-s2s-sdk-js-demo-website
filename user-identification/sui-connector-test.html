@@ -132,7 +132,7 @@
       document.getElementById('duration1').innerHTML = ts1 - ts0 + '&thinsp;ms';
       document.getElementById('duration2').innerHTML = ts2 - ts1 + '&thinsp;ms';
       gfkConnector.init(function(suiObj) {
-        document.getElementById('suiobj').innerText = JSON.stringify(suiObj, null, 4);
+        document.getElementById('suiobj').innerText = suiObj;
         showCookies();
         showLS();
         document.getElementById('additional').style.opacity = '1';
