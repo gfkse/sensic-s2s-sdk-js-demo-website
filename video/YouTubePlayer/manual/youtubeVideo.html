@@ -29,7 +29,7 @@
     logLevel: 'debug'
   };
 
-  (function(w, d, c, s, id, v) {
+  (function(w, d, c, s, id) {
     if (d.getElementById(id)) {
       return;
     }
@@ -100,12 +100,8 @@
       tag.src = url;
       el.parentNode.insertBefore(tag, el);
     };
-
-    if (c.hasOwnProperty(v)) {
-      lJS(id + v, c[v]);
-    }
     lJS(id, c.url);
-  })(window, document, gfkS2sConf, 'script', 'gfkS2s', 'visUrl');
+  })(window, document, gfkS2sConf, 'script', 'gfkS2s');
 
 </script>
 <div class='header'>
@@ -126,7 +122,7 @@
   firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
   var video = document.getElementById('my_player_id');
-  var agent = gfkS2s.getAgent(getVideoPosition, 'my_player_id');
+  var agent = gfkS2s.getAgent(getVideoPosition);
   var currentPosition;
   var isSegmentPlaying = false;
   var player;

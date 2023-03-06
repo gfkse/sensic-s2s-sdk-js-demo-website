@@ -31,7 +31,7 @@
     logLevel: 'debug'
   };
 
-  (function(w, d, c, s, id, v) {
+  (function(w, d, c, s, id) {
     if (d.getElementById(id)) {
       return;
     }
@@ -120,7 +120,7 @@
       }
       lJS(id, c.url);
     }
-  })(window, document, gfkS2sConf, 'script', 'gfkS2s', 'visUrl');
+  })(window, document, gfkS2sConf, 'script', 'gfkS2s');
 </script>
 <div class='header'>
   <div id='title'>Bitmovin Live Timeshifted Video</div>
@@ -145,7 +145,7 @@
   var containerElement = document.getElementById('video');
   var playerInstance = new bitmovin.player.Player(containerElement, playerConfig);
   var currentPlaybackSpeed = getCurrentPlaybackSpeed();
-  var agent = gfkS2s.getAgent('my_video_id');
+  var agent = gfkS2s.getAgent();
 
   function getVolume() {
     return (playerInstance.isMuted() ? 0 : playerInstance.getVolume()).toString();
@@ -206,7 +206,7 @@
   });
 
   playerInstance.load({
-    hls: 'https://cph-p2p-msl.akamaized.net/hls/live/2000341/test/master.m3u8'
+    hls: '//moctobpltc-i.akamaihd.net/hls/live/571329/eight/playlist.m3u8'
   });
 </script>
 </body>

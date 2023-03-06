@@ -5,9 +5,11 @@ body {
     font-size: 14px;
     color: #e0a000;
 }
-.dailymotion-video-wrapper,.jw-video-wrapper{
+
+.dailymotion-video-wrapper, .jw-video-wrapper {
     max-width: 40%;
 }
+
 .header {
     background-color: #202020;
     color: #a0a0a0;
@@ -134,11 +136,20 @@ body {
 #next_video {
     position: absolute;
     z-index: 111;
-    right:0;
+    right: 0;
     font-size: 2rem;
     cursor: pointer;
 }
-
-#my_video_id {
+#skip_ad {
+    position: absolute;
+    border:1mm ridge #e0a000;
+    background: #1a1a1a;
+    z-index: 111;
+    right: 0;
+    top: 0;
+    font-size: 1.3rem;
+    cursor: pointer;
+}
+#my_video_id, #my_ad_id {
     width: 600px;
 }

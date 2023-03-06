@@ -12,24 +12,24 @@
 </head>
 <body>
 <script>
-  // Allow overwriting the used sdk with url param sdkUrl
-  var urlParams = new URLSearchParams(window.location.search);
-  var url = urlParams.get('sdkUrl') || window.env.WEB_SDK_URL;
+// Allow overwriting the used sdk with url param sdkUrl
+var urlParams = new URLSearchParams(window.location.search);
+var url = urlParams.get('sdkUrl') || window.env.WEB_SDK_URL;
 
-  // Optin via GET param
-  var optinGetValue = urlParams.get('optin');
-  var optin = typeof optinGetValue === 'string' ? optinGetValue === 'true' : undefined;
-  // In case questions about the optin parameter, please read the documentation: https://confluence-docu.gfk.com/display/SENSIC/Javascript+SDK+Integration
-  // Read more about privacy:https://confluence-docu.gfk.com/pages/viewpage.action?pageId=13043961
-  var gfkS2sConf = {
-    optin: optin,
-    media: 's2s-youtube-demo',
-    url: url,
-    type: 'WEB',
-    logLevel: 'debug'
-  };
+// Optin via GET param
+var optinGetValue = urlParams.get('optin');
+var optin = typeof optinGetValue === 'string' ? optinGetValue === 'true' : undefined;
+// In case questions about the optin parameter, please read the documentation: https://confluence-docu.gfk.com/display/SENSIC/Javascript+SDK+Integration
+// Read more about privacy:https://confluence-docu.gfk.com/pages/viewpage.action?pageId=13043961
+var gfkS2sConf = {
+  optin: optin,
+  media: 's2s-youtube-demo',
+  url: url,
+  type: 'WEB',
+  logLevel: 'debug'
+};
 
-  (function(w, d, c, s, id, v) {
+  (function(w, d, c, s, id) {
     if (d.getElementById(id)) {
       return;
     }
@@ -63,19 +63,19 @@
         return sA;
       }
 
-      return s;
-    })();
-    w[id].getAgent = function(cb, pId) {
-      var a = {
-        a: new w.gfks(
-          c,
-          pId || '',
-          cb ||
-          function() {
-            return 0;
-          }
-        )
-      };
+    return s;
+  })();
+  w[id].getAgent = function(cb, pId) {
+    var a = {
+      a: new w.gfks(
+        c,
+        pId || '',
+        cb ||
+        function() {
+          return 0;
+        }
+      )
+    };
 
       function g(a, e) {
         return function() {
@@ -100,12 +100,8 @@
       tag.src = url;
       el.parentNode.insertBefore(tag, el);
     };
-
-    if (c.hasOwnProperty(v)) {
-      lJS(id + v, c[v]);
-    }
     lJS(id, c.url);
-  })(window, document, gfkS2sConf, 'script', 'gfkS2s', 'visUrl');
+  })(window, document, gfkS2sConf, 'script', 'gfkS2s');
 
 </script>
 <div class='header'>
@@ -119,103 +115,106 @@
 <div id='my_player_id'></div>
 
 <script>
-  var youtubeVideoId = '36YnV9STBqc';
-  var tag = document.createElement('script');
-  tag.src = 'https://www.youtube.com/iframe_api';
-  var firstScriptTag = document.getElementsByTagName('script')[0];
-  firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+var youtubeVideoId = '36YnV9STBqc';
+var tag = document.createElement('script');
+tag.src = 'https://www.youtube.com/iframe_api';
+var firstScriptTag = document.getElementsByTagName('script')[0];
+firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
-  var video = document.getElementById('my_player_id');
-  var agent = gfkS2s.getAgent(getVideoPosition, 'my_player_id');
-  var currentPosition;
-  var isSegmentPlaying = false;
-  var player;
-  var currentPlaybackSpeed;
-  var currentVolume;
+var video = document.getElementById('my_player_id');
+var agent = gfkS2s.getAgent(getVideoPosition);
+var currentPosition;
+var isSegmentPlaying = false;
+var player;
+var currentPlaybackSpeed;
+var currentVolume;
 
-  function onYouTubeIframeAPIReady() {
-    player = new YT.Player('my_player_id', {
-      videoId: youtubeVideoId,
-      events: {
-        onReady: onPlayerReady,
-        onStateChange: onPlayerStateChange,
-        onPlaybackRateChange: onPlaybackRateChange
-      }
-    });
+function onYouTubeIframeAPIReady() {
+  player = new YT.Player('my_player_id', {
+    videoId: youtubeVideoId,
+    events: {
+      onReady: onPlayerReady,
+      onStateChange: onPlayerStateChange,
+      onPlaybackRateChange: onPlaybackRateChange
+    }
+  });
+}
+
+function onPlayerReady(event) {
+  updateVideoPosition();
+  currentPlaybackSpeed = player.getPlaybackRate();
+  currentVolume = getVolume();
+}
+
+function onPlaybackRateChange(event) {
+  if (event.data !== currentPlaybackSpeed) {
+    currentPlaybackSpeed = event.data;
+    if (isSegmentPlaying) {
+      paused();
+      playing();
+    }
   }
+}
 
-  function onPlayerReady(event) {
+function onPlayerStateChange(event) {
+  switch (event.data) {
+    case YT.PlayerState.PLAYING:
+      playing();
+      break;
+    default: //paused, ended, buffering
+      paused();
+      break;
+  }
+}
+
+function playing() {
+  if (!isSegmentPlaying) {
     updateVideoPosition();
-    currentPlaybackSpeed = player.getPlaybackRate();
-    currentVolume = getVolume();
+    agent.playStreamOnDemand(
+      video.id,
+      youtubeVideoId,
+      {
+        volume: getVolume(),
+        speed: currentPlaybackSpeed
+      },
+      { /*please add your custom parameters here or keep empty*/ }
+    );
+    isSegmentPlaying = true;
   }
+}
 
-  function onPlaybackRateChange(event) {
-    if (event.data !== currentPlaybackSpeed) {
-      currentPlaybackSpeed = event.data;
-      if (isSegmentPlaying) {
-        paused();
-        playing();
-      }
-    }
+function paused() {
+  if (isSegmentPlaying) {
+    agent.stop();
+    isSegmentPlaying = false;
   }
+}
 
-  function onPlayerStateChange(event) {
-    switch (event.data) {
-      case YT.PlayerState.PLAYING:
-        playing();
-        break;
-      default: //paused, ended, buffering
-        paused();
-        break;
-    }
-  }
+function getVideoPosition() {
+  return currentPosition;
+}
 
-  function playing() {
-    if (!isSegmentPlaying) {
+function updateVideoPosition() {
+  currentPosition = player && player.getCurrentTime ? Math.floor(player.getCurrentTime() * 1000) : 0;
+}
+
+function getVolume() {
+  return player.isMuted() ? '0' : player.getVolume().toString();
+}
+
+function interval() {
+  if (isSegmentPlaying) {
+    if (Math.floor(player.getCurrentTime() * 1000) > currentPosition) {
       updateVideoPosition();
-      agent.playStreamOnDemand(
-        video.id,
-        youtubeVideoId,
-        { volume: getVolume(), speed: currentPlaybackSpeed },
-        { /*please add your custom parameters here or keep empty*/ }
-      );
-      isSegmentPlaying = true;
+    }
+    if (currentVolume !== getVolume()) {
+      currentVolume = getVolume();
+      agent.volume(currentVolume);
     }
   }
+}
 
-  function paused() {
-    if (isSegmentPlaying) {
-      agent.stop();
-      isSegmentPlaying = false;
-    }
-  }
-
-  function getVideoPosition() {
-    return currentPosition;
-  }
-
-  function updateVideoPosition() {
-    currentPosition = player && player.getCurrentTime ? Math.floor(player.getCurrentTime() * 1000) : 0;
-  }
-
-  function getVolume() {
-    return player.isMuted() ? '0' : player.getVolume().toString();
-  }
-
-  function interval() {
-    if (isSegmentPlaying) {
-      if (Math.floor(player.getCurrentTime() * 1000) > currentPosition) {
-        updateVideoPosition();
-      }
-      if (currentVolume !== getVolume()) {
-        currentVolume = getVolume();
-        agent.volume(currentVolume);
-      }
-    }
-  }
-
-  setInterval(interval, 500);
+setInterval(interval, 500);
 </script>
 </body>
 </html>

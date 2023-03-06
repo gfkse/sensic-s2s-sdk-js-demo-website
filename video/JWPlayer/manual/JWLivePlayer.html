@@ -29,7 +29,7 @@
     logLevel: 'debug'
   };
 
-  (function(w, d, c, s, id, v) {
+  (function(w, d, c, s, id) {
     if (d.getElementById(id)) {
       return;
     }
@@ -101,11 +101,8 @@
       el.parentNode.insertBefore(tag, el);
     };
 
-    if (c.hasOwnProperty(v)) {
-      lJS(id + v, c[v]);
-    }
     lJS(id, c.url);
-  })(window, document, gfkS2sConf, 'script', 'gfkS2s', 'visUrl');
+  })(window, document, gfkS2sConf, 'script', 'gfkS2s');
 
 </script>
 <!--JW Player Script-->
@@ -119,10 +116,10 @@
 <script>
   var video = document.getElementById('my_video_id');
   var jwPlayer = jwplayer('my_video_id').setup({
-    file: 'https://cph-p2p-msl.akamaized.net/hls/live/2000341/test/master.m3u8'
+    file: '//moctobpltc-i.akamaihd.net/hls/live/571329/eight/playlist.m3u8'
   });
 
-  var agent = gfkS2s.getAgent('my_video_id');
+  var agent = gfkS2s.getAgent();
 
   // Fires when a stream has been started or is playing after having been paused or stopped
   jwPlayer.on('play', function() {

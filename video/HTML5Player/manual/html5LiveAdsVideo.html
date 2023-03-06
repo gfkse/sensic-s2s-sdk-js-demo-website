@@ -31,7 +31,7 @@
     logLevel: 'debug'
   };
 
-  (function(w, d, c, s, id, v) {
+  (function(w, d, c, s, id) {
     if (d.getElementById(id)) {
       return;
     }
@@ -103,11 +103,8 @@
       el.parentNode.insertBefore(tag, el);
     };
 
-    if (c.hasOwnProperty(v)) {
-      lJS(id + v, c[v]);
-    }
     lJS(id, c.url);
-  })(window, document, window.gfkS2sConf, 'script', 'gfkS2s', 'visUrl');
+  })(window, document, window.gfkS2sConf, 'script', 'gfkS2s');
 
 </script>
 <div class='header'>
@@ -121,7 +118,7 @@
 </div>
 <script src='../../../js/google-ima.js'></script>
 <script>
-  var LIVE_STREAM = '//cph-p2p-msl.akamaized.net/hls/live/2000341/test/master.m3u8';
+  var LIVE_STREAM = '//moctobpltc-i.akamaihd.net/hls/live/571329/eight/playlist.m3u8';
   var video = document.getElementById('my_video_id');
 
   function initializeIma() {
@@ -207,7 +204,7 @@
 
 </script>
 <script>
-  var agent = window.gfkS2s.getAgent(null);
+  var agent = window.gfkS2s.getAgent();
   var currentPlaybackSpeed = video.playbackRate;
   var seeked = false;
 

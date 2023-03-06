@@ -2,12 +2,13 @@
 <html xmlns='http://www.w3.org/1999/html'>
 <head>
   <meta charset='utf-8' />
-  <title>S2S HTML5 Video Demo</title>
+  <title>Dash.js Live Demo</title>
   <link rel='shortcut icon' href='../../../images/favicon.png' />
   <link rel='stylesheet' href='../../../css/s2s-demo.css' />
   <script src='../../../js/url-polyfill.js'></script>
   <script type='module' src='../../../js/optin-box.js'></script>
   <script type='module' src='../../../js/tcf-box.js'></script>
+  <script src='//cdn.dashjs.org/latest/dash.all.min.js'></script>
 </head>
 <body>
 <script>
@@ -28,7 +29,7 @@ var gfkS2sConf = {
   logLevel: 'debug'
 };
 
-(function(w, d, c, s, id) {
+(function(w, d, c, s, id, v) {
   if (d.getElementById(id)) {
     return;
   }
@@ -107,31 +108,38 @@ var gfkS2sConf = {
     tag.src = url;
     el.parentNode.insertBefore(tag, el);
   };
+
+  if (c.hasOwnProperty(v)) {
+    lJS(id + v, c[v]);
+  }
   lJS(id, c.url);
-})(window, document, window.gfkS2sConf, 'script', 'gfkS2s');
+})(window, document, window.gfkS2sConf, 'script', 'gfkS2s', 'visUrl');
 
 </script>
 <div class='header'>
-  <div id='title'>S2S HTML5 VOD Demo</div>
+  <div id='title'>Dash.js Live Demo</div>
 </div>
 <optin-box></optin-box>
 <tcf-box></tcf-box>
-<video id='my_video_id' controls preload='metadata'>
-  <source src='../../../res/big_buck_bunny.mp4' type='video/mp4' />
-</video>
-
+<video id='my_video_id' controls='true'></video>
 <script>
+var url = '//livesim.dashif.org/livesim/ato_10/testpic_2s/Manifest.mpd';
 var video = document.getElementById('my_video_id');
-var agent = window.gfkS2s.getAgent(getVideoPosition);
-var currentPosition = getVideoPosition();
-var currentPlaybackSpeed = video.playbackRate;
+var player = dashjs.MediaPlayer().create();
+player.initialize(video, url, false);
+</script>
+<script>
+var agent = window.gfkS2s.getAgent();
+var currentPlaybackSpeed = player.getPlaybackRate();
 var seeked = false;
 
-video.addEventListener('playing', () => {
+player.on('playbackPlaying', () => {
   if (!seeked) {
-    agent.playStreamOnDemand(
+    agent.playStreamLive(
       'default',
-      video.currentSrc,
+      '',
+      0,
+      player.getSource(),
       {
         volume: getVolume(),
         speed: currentPlaybackSpeed
@@ -143,32 +151,26 @@ video.addEventListener('playing', () => {
   }
 });
 
-video.addEventListener('timeupdate', (time) => {
-  if (!video.paused) {
-    currentPosition = getVideoPosition();
-  }
-});
-
-video.addEventListener('pause', () => {
-  if (video.seeking) {
-    agent.stop(currentPosition);
-  } else {
+player.on('playbackPaused', () => {
+  if (!video.seeking) {
     agent.stop();
   }
 });
 
-video.addEventListener('seeking', () => {
-  if (!video.paused) {
-    agent.stop(currentPosition);
+player.on('playbackSeeking', () => {
+  if (!player.isPaused()) {
+    agent.stop();
   }
 });
 
-video.addEventListener('seeked', () => {
-  if (!video.paused) {
+player.on('playbackSeeked', () => {
+  if (!player.isPaused()) {
     seeked = true;
-    agent.playStreamOnDemand(
+    agent.playStreamLive(
       'default',
-      video.currentSrc,
+      '',
+      0,
+      player.getSource(),
       {
         volume: getVolume(),
         speed: currentPlaybackSpeed
@@ -178,14 +180,16 @@ video.addEventListener('seeked', () => {
   }
 });
 
-video.addEventListener('ratechange', () => {
-  if (!currentPlaybackSpeed || currentPlaybackSpeed !== video.playbackRate) {
-    currentPlaybackSpeed = video.playbackRate;
-    if (!video.paused) {
+player.on('playbackRateChanged', () => {
+  if (!currentPlaybackSpeed || currentPlaybackSpeed !== player.getPlaybackRate()) {
+    currentPlaybackSpeed = player.getPlaybackRate();
+    if (!player.isPaused()) {
       agent.stop();
-      agent.playStreamOnDemand(
+      agent.playStreamLive(
         'default',
-        video.currentSrc,
+        '',
+        0,
+        player.getSource(),
         {
           volume: getVolume(),
           speed: currentPlaybackSpeed
@@ -196,19 +200,14 @@ video.addEventListener('ratechange', () => {
   }
 });
 
-video.addEventListener('volumechange', () => {
-  if (!video.paused) {
+player.on('playbackVolumeChanged', () => {
+  if (!player.isPaused()) {
     agent.volume(getVolume());
   }
 });
 
 function getVolume() {
-  return video.muted ? '0' : Math.round(video.volume * 100).toString();
-}
-
-function getVideoPosition() {
-  currentPosition = Math.floor(video.currentTime * 1000);
-  return currentPosition;
+  return player.isMuted() ? '0' : Math.round(player.getVolume() * 100).toString();
 }
 </script>
 </body>

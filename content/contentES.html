@@ -26,7 +26,7 @@ var gfkS2sConf = {
   type: 'WEB'
 };
 
-(function(w, d, c, s, id, v) {
+(function(w, d, c, s, id) {
   if (d.getElementById(id)) {
     return;
   }
@@ -98,11 +98,9 @@ var gfkS2sConf = {
     el.parentNode.insertBefore(tag, el);
   };
 
-  if (c.hasOwnProperty(v)) {
-    lJS(id + v, c[v]);
-  }
+
   lJS(id, c.url);
-})(window, document, gfkS2sConf, 'script', 'gfkS2s', 'visUrl');
+})(window, document, gfkS2sConf, 'script', 'gfkS2s');
 
 </script>
 <div id='fh5co-page'>

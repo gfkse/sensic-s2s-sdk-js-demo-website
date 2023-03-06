@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset='utf-8' />
+  <title>Dash.js Player VOD with Ads </title>
+  <link rel='shortcut icon' href='../../../images/favicon.png' />
+  <link rel='stylesheet' href='../../../css/s2s-demo.css' />
+  <script src='../../../js/url-polyfill.js'></script>
+  <script type='module' src='../../../js/optin-box.js'></script>
+  <script type='module' src='../../../js/tcf-box.js'></script>
+  <script src='//cdn.dashjs.org/latest/dash.all.min.js'></script>
+</head>
+<body>
+<script>
+// Allow overwriting the used sdk with url param sdkUrl
+var urlParams = new URLSearchParams(window.location.search);
+var url = urlParams.get('sdkUrl') || window.env.WEB_SDK_URL;
+
+// Optin via GET param
+var optinGetValue = urlParams.get('optin');
+var optin = typeof optinGetValue === 'string' ? optinGetValue === 'true' : undefined;
+// In case questions about the optin parameter, please read the documentation: https://confluence-docu.gfk.com/display/SENSIC/Javascript+SDK+Integration
+// Read more about privacy:https://confluence-docu.gfk.com/pages/viewpage.action?pageId=13043961
+var gfkS2sConf = {
+  optin: optin,
+  media: 's2s-html5-demo',
+  url: url,
+  type: 'WEB',
+  logLevel: 'debug'
+};
+
+(function(w, d, c, s, id, v) {
+  if (d.getElementById(id)) {
+    return;
+  }
+
+  w.gfkS2sConf = c;
+  w[id] = {};
+  w[id].agents = [];
+  var api = [
+    'playStreamLive',
+    'playStreamOnDemand',
+    'stop',
+    'skip',
+    'screen',
+    'volume',
+    'impression'
+  ];
+  w.gfks = (function() {
+    function f(sA, e, cb) {
+      return function() {
+        sA.p = cb();
+        sA.queue.push({
+          f: e,
+          a: arguments
+        });
+      };
+    }
+
+    function s(c, pId, cb) {
+      var sA = {
+        queue: [],
+        config: c,
+        cb: cb,
+        pId: pId
+      };
+      for (var i = 0; i < api.length; i++) {
+        var e = api[i];
+        sA[e] = f(sA, e, cb);
+      }
+      return sA;
+    }
+
+    return s;
+  })();
+  w[id].getAgent = function(cb, pId) {
+    var a = {
+      a: new w.gfks(
+        c,
+        pId || '',
+        cb ||
+        function() {
+          return 0;
+        }
+      )
+    };
+
+    function g(a, e) {
+      return function() {
+        return a.a[e].apply(a.a, arguments);
+      };
+    }
+
+    for (var i = 0; i < api.length; i++) {
+      var e = api[i];
+      a[e] = g(a, e);
+    }
+    w[id].agents.push(a);
+    return a;
+  };
+
+  var lJS = function(eId, url) {
+    var tag = d.createElement(s);
+    var el = d.getElementsByTagName(s)[0];
+    tag.id = eId;
+    tag.async = true;
+    tag.type = 'text/javascript';
+    tag.src = url;
+    el.parentNode.insertBefore(tag, el);
+  };
+
+  if (c.hasOwnProperty(v)) {
+    lJS(id + v, c[v]);
+  }
+  lJS(id, c.url);
+})(window, document, gfkS2sConf, 'script', 'gfkS2s', 'visUrl');
+
+</script>
+<div class='header'>
+  <div id='title'>Dash.js Player VOD with Ads Demo</div>
+</div>
+<optin-box></optin-box>
+<tcf-box></tcf-box>
+<div id='video_container'>
+  <video id='my_video_id' controls style='display:none;'></video>
+  <video id='my_ad_id'
+         controls
+         src='//secure-ds.serving-sys.com/resources/PROD/asset/2/VIDEO/20230202/ESES_FLDD_VIDEO_169AR_30s_YXIVS_ACTMD_ORANGE_BM_AMXB0200931H_TVO_76991411970387358.MP4'
+  ></video>
+  <a id='skip_ad' style='display:none;' onclick='removeAd()'>Skip Ad⏭️</a>
+</div>
+<script>
+var videoAd = document.querySelector('#my_ad_id');
+var adPlayed = false;
+var adEnded = false;
+var currentAdPosition = 0;
+var adAgent = window.gfkS2s.getAgent(getAdPosition);
+var skipAdBtn = document.getElementById('skip_ad');
+
+var player;
+var currentPlaybackSpeed;
+
+function startAd() {
+  video.style.display = 'none';
+  video.setAttribute('muted', 'true');
+  videoAd.style.display = 'block';
+
+  videoAd.setAttribute('muted', 'false');
+
+  skipAdBtn.addEventListener('click', function() {
+    removeAd();
+  });
+
+  skipAdBtn.style.display = 'block';
+  videoAd.play();
+  adPlayed = true;
+}
+
+function removeAd() {
+  adAgent.stop(currentAdPosition);
+
+
+  videoAd.removeAttribute('src');
+  videoAd.load();
+
+  adEnded = true;
+  video.style.display = 'block';
+
+  video.setAttribute('muted', 'false');
+  videoAd.style.display = 'none';
+  videoAd.setAttribute('muted', 'true');
+  skipAdBtn.style.display = 'none';
+  initialize();
+
+}
+
+
+videoAd.addEventListener('playing', () => {
+// when ad started, we are removing the controls, and showing the skip button after 3 seconds
+  videoAd.removeAttribute('controls');
+  setTimeout(() => {
+    skipAdBtn.style.display = 'block';
+  }, 3000);
+  adAgent.playStreamOnDemand(
+    'ad',
+    videoAd.currentSrc,
+    {
+      volume: getAdVolume(),
+      speed: 1
+    },
+    { /** add your custom parameter here as comma-seperated <key>: "<value>" pairs */ }
+  );
+});
+videoAd.addEventListener('pause', () => {
+  adAgent.stop(currentAdPosition);
+});
+
+videoAd.addEventListener('timeupdate', (time) => {
+  if (!videoAd.paused && !isNaN(videoAd.duration)) {
+    currentAdPosition = getAdPosition();
+  }
+});
+
+videoAd.addEventListener('ended', () => {
+  removeAd();
+});
+
+function getAdVolume() {
+  return videoAd.muted ? '0' : Math.round(videoAd.volume * 100).toString();
+}
+
+function getAdPosition() {
+  currentAdPosition = Math.floor(videoAd.currentTime * 1000);
+  return currentAdPosition;
+}
+</script>
+<script>
+var video = document.getElementById('my_video_id');
+var agent = window.gfkS2s.getAgent(getVideoPosition);
+var currentPosition = 0;
+var seeked = false;
+var currentPlaybackSpeed;
+
+function initialize() {
+  // create dash.js player
+  player = dashjs.MediaPlayer().create();
+  player.initialize(video, '//dash.akamaized.net/akamai/bbb_30fps/bbb_30fps.mpd', true); /* initialize the MediaPlayer instance */
+  currentPlaybackSpeed = player.getPlaybackRate();
+
+
+  player.on('playbackPlaying', () => {
+    if (!seeked) {
+      agent.playStreamOnDemand(
+        'default',
+        player.getSource(),
+        {
+          volume: getVolume(),
+          speed: currentPlaybackSpeed
+        },
+        { /** add your custom parameter here as comma-seperated <key>: "<value>" pairs */ }
+      );
+    } else {
+      seeked = false;
+    }
+  });
+
+  player.on('playbackTimeUpdated', (time) => {
+    if (!player.isPaused()) {
+      currentPosition = getVideoPosition();
+    }
+  });
+
+  player.on('playbackPaused', () => {
+    if (adEnded) {
+      if (video.seeking) {
+        agent.stop(currentPosition);
+      } else {
+        agent.stop();
+      }
+    }
+  });
+
+  player.on('playbackSeeking', () => {
+    if (!player.isPaused()) {
+      agent.stop(currentPosition);
+    }
+  });
+
+  player.on('playbackSeeked', () => {
+    if (!player.isPaused()) {
+      seeked = true;
+      agent.playStreamOnDemand(
+        'default',
+        player.getSource(),
+        {
+          volume: getVolume(),
+          speed: currentPlaybackSpeed
+        },
+        { /** add your custom parameter here as comma-seperated <key>: "<value>" pairs */ }
+      );
+    }
+  });
+
+  player.on('playbackRateChanged', () => {
+    if (!currentPlaybackSpeed || currentPlaybackSpeed !== player.getPlaybackRate()) {
+      currentPlaybackSpeed = player.getPlaybackRate();
+      if (!player.isPaused()) {
+        agent.stop();
+        agent.playStreamOnDemand(
+          'default',
+          player.getSource(),
+          {
+            volume: getVolume(),
+            speed: currentPlaybackSpeed
+          },
+          {/** add your custom parameter here as comma-seperated <key>: "<value>" pairs */ }
+        );
+      }
+    }
+  });
+
+  player.on('playbackVolumeChanged', () => {
+    if (!player.isPaused()) {
+      agent.volume(getVolume());
+    }
+  });
+}
+
+function getVolume() {
+  return player.isMuted() ? '0' : Math.round(player.getVolume() * 100).toString();
+}
+
+function getVideoPosition() {
+  currentPosition = Math.floor(player.time() * 1000);
+  return currentPosition;
+}
+
+</script>
+</body>
+</html>

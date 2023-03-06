@@ -48,7 +48,7 @@ var gfkS2sConf = {
 <script>
 var extension;
 var script = document.createElement('script');
-script.src = `${window.env.EXTENSION_BASE_URL}/jwvodextension.js`;
+script.src = `${window.env.EXTENSION_BASE_URL}/playerextension.js`;
 
 function initExtension() {
   document.head.appendChild(script);
@@ -56,16 +56,20 @@ function initExtension() {
   script.onload = function() {
     /**
      * Initializing the extension
-     * @param {JWPlayer} playerInstance instance of the player
+     * @param {
+     *   instance: JWPlayer,
+     *   vendor: 'jw',
+     *   type: 'live' | 'vod'
+     * } playerConfig configuration of the player
      * @param {gfkS2sConf} gfkS2sConf configuration
-     * @param {string} contentId
      * @param {object} customParams example: { cp1: '<your new cp1 value here>', cp2: '<your new cp2 value here>', ... }
+     * @param {string} contentId
      * @returns {extension}
      */
-    extension = new window.gfkS2sExtension.JWVODExtension(jwPlayer, gfkS2sConf, 'default', {});
+    extension = new window.gfkS2sExtension.PlayerExtension({instance: jwPlayer, vendor: 'jw'}, gfkS2sConf,{});
     // call setParameter() as soon as your player is switching over to different content. Otherwise, new content will be
     // reported with parameters of the video played before.
-    // extension.setParameter('news', { cp1: '<your new cp1 value here>', cp2: '<your new cp2 value here>', ... });
+    // extension.setParameter({ cp1: '<your new cp1 value here>', cp2: '<your new cp2 value here>', ... },'news');
   };
 }
 </script>

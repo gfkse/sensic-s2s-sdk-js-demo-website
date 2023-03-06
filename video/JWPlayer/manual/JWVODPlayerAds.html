@@ -29,7 +29,7 @@ var gfkS2sConf = {
   logLevel: 'debug'
 };
 
-(function(w, d, c, s, id, v) {
+(function(w, d, c, s, id) {
   if (d.getElementById(id)) {
     return;
   }
@@ -108,12 +108,8 @@ var gfkS2sConf = {
     tag.src = url;
     el.parentNode.insertBefore(tag, el);
   };
-
-  if (c.hasOwnProperty(v)) {
-    lJS(id + v, c[v]);
-  }
   lJS(id, c.url);
-})(window, document, gfkS2sConf, 'script', 'gfkS2s', 'visUrl');
+})(window, document, gfkS2sConf, 'script', 'gfkS2s');
 
 </script>
 <!--JW Player Script-->
@@ -167,7 +163,7 @@ function adPause() {
 </script>
 <script>
 var jwPlayer = jwplayer();
-var agent = gfkS2s.getAgent(getVideoPosition, 'my_video_id');
+var agent = gfkS2s.getAgent(getVideoPosition);
 var currentPosition = getVideoPosition();
 
 jwPlayer.on('adComplete', adComplete);

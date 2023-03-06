@@ -2,12 +2,13 @@
 <html>
 <head>
   <meta charset='utf-8' />
-  <title>S2S HTML5 Video Demo</title>
+  <title>Dash.js VOD</title>
   <link rel='shortcut icon' href='../../../images/favicon.png' />
   <link rel='stylesheet' href='../../../css/s2s-demo.css' />
   <script src='../../../js/url-polyfill.js'></script>
   <script type='module' src='../../../js/optin-box.js'></script>
   <script type='module' src='../../../js/tcf-box.js'></script>
+  <script src='//cdn.dashjs.org/latest/dash.all.min.js'></script>
 </head>
 <body>
 <script>
@@ -31,29 +32,31 @@ var gfkS2sConf = {
 
 </script>
 <div class='header'>
-  <div id='title'>S2S HTML5 VOD Demo</div>
+  <div id='title'>Dash.js VOD Demo</div>
 </div>
 <optin-box></optin-box>
 <tcf-box></tcf-box>
-<div id='video_container'>
-  <video id='my_video_id' controls preload='metadata'>
-    <source id='source' src='../../../res/understanding_mobile_consumer.mp4' type='video/mp4' />
-  </video>
-  <a id='next_video'>⏭️</a>
-</div>
+<video id='my_video_id' controls='true'></video>
 
 <script>
+var video = document.getElementById('my_video_id');
+var player = dashjs.MediaPlayer().create();
+player.initialize(video, '//dash.akamaized.net/akamai/bbb_30fps/bbb_30fps.mpd', false); /* initialize the MediaPlayer instance */
+
+// setInterval(() => {
+  // console.log(video.paused, player.isPaused());
+// }, 1000);
+
 var script = document.createElement('script');
 script.src = `${window.env.EXTENSION_BASE_URL}/playerextension.js`;
 document.head.appendChild(script);
 var extension;
-
 script.onload = function() {
   /**
    * Initializing the extension
    * @param {
-   *   instance: HTMLVideoElement,
-   *   vendor: 'html5',
+   *   instance: DashJsInstance,
+   *   vendor: 'dashjs',
    *   type: 'live' | 'vod'
    * } playerConfig configuration of the player
    * @param {gfkS2sConf} gfkS2sConf configuration
@@ -61,18 +64,7 @@ script.onload = function() {
    * @param {string} contentId
    * @returns {extension}
    */
-  extension = new window.gfkS2sExtension.PlayerExtension({instance: document.getElementById('my_video_id'), vendor: 'html5'}, gfkS2sConf,{});
-
-  document.getElementById('next_video').addEventListener('click', function() {
-    document.getElementById('my_video_id').pause();
-    document.getElementById('source').src = '../../../res/big_buck_bunny.mp4';
-    document.getElementById('my_video_id').load();
-    document.getElementById('my_video_id').onloadeddata = function() {
-      document.getElementById('my_video_id').play();
-      extension.setParameter({});
-      document.getElementById('next_video').remove();
-    };
-  });
+  extension = new window.gfkS2sExtension.PlayerExtension({ instance: player, vendor: 'dashjs' }, gfkS2sConf,{});
 
   // call setParameter() as soon as your player is switching over to different content. Otherwise, new content will be
   // reported with parameters of the video played before.
