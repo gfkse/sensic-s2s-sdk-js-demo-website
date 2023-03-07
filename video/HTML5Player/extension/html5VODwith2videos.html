@@ -61,7 +61,10 @@ script.onload = function() {
    * @param {string} contentId
    * @returns {extension}
    */
-  extension = new window.gfkS2sExtension.PlayerExtension({instance: document.getElementById('my_video_id'), vendor: 'html5'}, gfkS2sConf,{});
+  extension = new window.gfkS2sExtension.PlayerExtension({
+    instance: document.getElementById('my_video_id'),
+    vendor: 'html5'
+  }, gfkS2sConf, {});
 
   document.getElementById('next_video').addEventListener('click', function() {
     document.getElementById('my_video_id').pause();
@@ -69,7 +72,7 @@ script.onload = function() {
     document.getElementById('my_video_id').load();
     document.getElementById('my_video_id').onloadeddata = function() {
       document.getElementById('my_video_id').play();
-      extension.setParameter({});
+      extension.setParameter({}, 'test');
       document.getElementById('next_video').remove();
     };
   });
