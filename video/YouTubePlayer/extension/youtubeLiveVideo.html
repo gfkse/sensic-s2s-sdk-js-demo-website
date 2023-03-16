@@ -39,7 +39,7 @@ firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
 var video = document.getElementById('my_player_id');
 var player;
-
+var playerConf;
 function onYouTubeIframeAPIReady() {
   player = new YT.Player('my_player_id', {
     videoId: youtubeVideoId,
@@ -47,17 +47,17 @@ function onYouTubeIframeAPIReady() {
       'onReady': initExtension
     }
   });
+  playerConf = {
+    instance: player,
+    vendor: 'youtube',
+    type: 'live'
+  };
 }
 
 </script>
 
 <script>
 var extension;
-var playerConf = {
-  instance: player,
-  vendor: 'youtube',
-  type: 'live'
-};
 var customParams = {};
 var script = document.createElement('script');
 

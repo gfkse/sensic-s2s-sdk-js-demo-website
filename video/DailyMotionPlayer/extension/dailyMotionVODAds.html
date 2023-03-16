@@ -32,21 +32,20 @@ var gfkS2sConf = {
   <div id='my-dailymotion-player'>My Player placeholder</div>
 </div>
 <script>
-var video;
 var script = document.createElement('script');
 var extension;
-var playerConf = {
-  instance: video,
-  vendor: 'dailymotion',
-  dailyMotionState: await video.getState()
-};
+var playerConf;
 var customParams = {};
 dailymotion
   .createPlayer('my-dailymotion-player', {
     video: 'x8eo22r'
   })
-  .then((player) => {
-    video = player;
+  .then(async (player) => {
+    playerConf = {
+      instance: player,
+      vendor: 'dailymotion',
+      dailyMotionState: await player.getState()
+    };
     initExtension();
   })
   .catch((e) => console.error(e));
