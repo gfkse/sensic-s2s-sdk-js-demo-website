@@ -11,105 +11,95 @@
   <script type='module' src='../../../js/tcf-box.js'></script>
 </head>
 <body>
+<script src='../../../js/optin-params.js'></script>
 <script>
-  // Allow overwriting the used sdk with url param sdkUrl
-  var urlParams = new URLSearchParams(window.location.search);
-  var url = urlParams.get('sdkUrl') || window.env.WEB_SDK_URL;
+// In case questions about the optin parameter, please read the documentation: https://confluence-docu.gfk.com/display/SENSIC/Javascript+SDK+Integration
+// Read more about privacy:https://confluence-docu.gfk.com/pages/viewpage.action?pageId=13043961
+var gfkS2sConf = {
+  optin: optin,
+  media: 's2s-html5-demo',
+  url: window.env.WEB_SDK_URL,
+  type: 'WEB',
+  logLevel: 'debug'
+};
 
-  // Optin via GET param
-  var optinGetValue = urlParams.get('optin');
-  var optin = typeof optinGetValue === 'string' ? optinGetValue === 'true' : undefined;
-  // In case questions about the optin parameter, please read the documentation: https://confluence-docu.gfk.com/display/SENSIC/Javascript+SDK+Integration
-  // Read more about privacy:https://confluence-docu.gfk.com/pages/viewpage.action?pageId=13043961
-  var gfkS2sConf = {
-    optin: optin,
-    media: 's2s-html5-demo',
-    url: url,
-    type: 'WEB',
-    logLevel: 'debug'
-  };
+(function(w, d, c, s, id) {
+  if (d.getElementById(id)) {
+    return;
+  }
 
-  (function(w, d, c, s, id) {
-    if (d.getElementById(id)) {
-      return;
+  w.gfkS2sConf = c;
+  w[id] = {};
+  w[id].agents = [];
+  var api = [
+    'playStreamLive',
+    'playStreamOnDemand',
+    'stop',
+    'skip',
+    'screen',
+    'volume',
+    'impression'
+  ];
+  w.gfks = (function() {
+    function f(sA, e, cb) {
+      return function() {
+        sA.p = cb();
+        sA.queue.push({ f: e, a: arguments });
+      };
     }
 
-    w.gfkS2sConf = c;
-    w[id] = {};
-    w[id].agents = [];
-    var api = [
-      'playStreamLive',
-      'playStreamOnDemand',
-      'stop',
-      'skip',
-      'screen',
-      'volume',
-      'impression'
-    ];
-    w.gfks = (function() {
-      function f(sA, e, cb) {
-        return function() {
-          sA.p = cb();
-          sA.queue.push({ f: e, a: arguments });
-        };
-      }
-
-      function s(c, pId, cb) {
-        var sA = { queue: [], config: c, cb: cb, pId: pId };
-        for (var i = 0; i < api.length; i++) {
-          var e = api[i];
-          sA[e] = f(sA, e, cb);
-        }
-        return sA;
-      }
-
-      return s;
-    })();
-    w[id].getAgent = function(cb, pId) {
-      var a = {
-        a: new w.gfks(
-          c,
-          pId || '',
-          cb ||
-          function() {
-            return 0;
-          }
-        )
-      };
-
-      function g(a, e) {
-        return function() {
-          return a.a[e].apply(a.a, arguments);
-        };
-      }
-
+    function s(c, pId, cb) {
+      var sA = { queue: [], config: c, cb: cb, pId: pId };
       for (var i = 0; i < api.length; i++) {
         var e = api[i];
-        a[e] = g(a, e);
+        sA[e] = f(sA, e, cb);
       }
-      w[id].agents.push(a);
-      return a;
+      return sA;
+    }
+
+    return s;
+  })();
+  w[id].getAgent = function(cb, pId) {
+    var a = {
+      a: new w.gfks(
+        c,
+        pId || '',
+        cb ||
+        function() {
+          return 0;
+        }
+      )
     };
 
-    var lJS = function(eId, url) {
-      var tag = d.createElement(s);
-      var el = d.getElementsByTagName(s)[0];
-      tag.id = eId;
-      tag.async = true;
-      tag.type = 'text/javascript';
-      tag.src = url;
-      el.parentNode.insertBefore(tag, el);
-    };
+    function g(a, e) {
+      return function() {
+        return a.a[e].apply(a.a, arguments);
+      };
+    }
 
-    lJS(id, c.url);
-  })(window, document, gfkS2sConf, 'script', 'gfkS2s');
+    for (var i = 0; i < api.length; i++) {
+      var e = api[i];
+      a[e] = g(a, e);
+    }
+    w[id].agents.push(a);
+    return a;
+  };
 
+  var lJS = function(eId, url) {
+    var tag = d.createElement(s);
+    var el = d.getElementsByTagName(s)[0];
+    tag.id = eId;
+    tag.async = true;
+    tag.type = 'text/javascript';
+    tag.src = url;
+    el.parentNode.insertBefore(tag, el);
+  };
+
+  lJS(id, c.url);
+})(window, document, gfkS2sConf, 'script', 'gfkS2s');
 </script>
 <!--JW Player Script-->
 <script src='https://jwpsrv.com/library/FfMxTl3oEeSEiiIACxmInQ.js'></script>
-<div class='header'>
-  <div id='title'>JW Live Demo</div>
-</div>
 <optin-box></optin-box>
 <tcf-box></tcf-box>
 <div id='my_video_id'></div>

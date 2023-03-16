@@ -8,84 +8,61 @@
   <script src='../../../js/url-polyfill.js'></script>
   <script type='module' src='../../../js/optin-box.js'></script>
   <script type='module' src='../../../js/tcf-box.js'></script>
-  <script src="//cdn.jsdelivr.net/hls.js/latest/hls.min.js"></script>
+  <script src='//cdn.jsdelivr.net/hls.js/latest/hls.min.js'></script>
 </head>
 <body>
+<script src='../../../js/optin-params.js'></script>
 <script>
-  // Allow overwriting the used sdk with url param sdkUrl
-  var urlParams = new URLSearchParams(window.location.search);
-  var url = urlParams.get('sdkUrl') || window.env.WEB_SDK_URL;
 
-  // Optin via GET param
-  var optinGetValue = urlParams.get('optin');
-  var optin = typeof optinGetValue === 'string' ? optinGetValue === 'true' : undefined;
-  // In case questions about the optin parameter, please read the documentation: https://confluence-docu.gfk.com/display/SENSIC/Javascript+SDK+Integration
-  // Read more about privacy:https://confluence-docu.gfk.com/pages/viewpage.action?pageId=13043961
+// In case questions about the optin parameter, please read the documentation: https://confluence-docu.gfk.com/display/SENSIC/Javascript+SDK+Integration
+// Read more about privacy:https://confluence-docu.gfk.com/pages/viewpage.action?pageId=13043961
 
-  var gfkS2sConf = {
-    optin: optin,
-    media: 's2s-html5-demo',
-    url: url,
-    type: 'WEB',
-    logLevel: 'debug'
-  };
+var gfkS2sConf = {
+  optin: optin,
+  media: 's2s-html5-demo',
+  url: window.env.WEB_SDK_URL,
+  type: 'WEB',
+  logLevel: 'debug'
+};
 
 </script>
-<div class='header'>
-  <div id='title'>S2S HTML5 Live Video Demo</div>
-</div>
 <optin-box></optin-box>
 <tcf-box></tcf-box>
 <video id='my_video_id' controls preload='metadata'></video>
 <script>
-  var LIVE_CONTENT = '//moctobpltc-i.akamaihd.net/hls/live/571329/eight/playlist.m3u8'
-  if (Hls.isSupported()) {
-    var hls = new Hls();
-    // bind them together
-    hls.attachMedia(document.getElementById('my_video_id'));
-    hls.on(Hls.Events.MEDIA_ATTACHED, function () {
-      console.log('video and hls.js are now bound together!');
-      hls.loadSource(LIVE_CONTENT);
-      hls.on(Hls.Events.MANIFEST_PARSED, function (event, data) {
-        console.log('manifest loaded, found ' + data.levels.length + ' quality level');
-      });
+var LIVE_CONTENT = '//moctobpltc-i.akamaihd.net/hls/live/571329/eight/playlist.m3u8';
+if (Hls.isSupported()) {
+  var hls = new Hls();
+  // bind them together
+  hls.attachMedia(document.getElementById('my_video_id'));
+  hls.on(Hls.Events.MEDIA_ATTACHED, function() {
+    console.log('video and hls.js are now bound together!');
+    hls.loadSource(LIVE_CONTENT);
+    hls.on(Hls.Events.MANIFEST_PARSED, function(event, data) {
+      console.log('manifest loaded, found ' + data.levels.length + ' quality level');
     });
-  }
+  });
+}
 </script>
 <script>
-  var script = document.createElement('script');
-  script.src = `${window.env.EXTENSION_BASE_URL}/playerextension.js`;
-  document.head.appendChild(script);
-  var extension;
+var script = document.createElement('script');
+script.src = `${window.env.EXTENSION_BASE_URL}/playerextension.js`;
+document.head.appendChild(script);
+var extension;
+var playerConf = {
+  instance: document.getElementById('my_video_id'),
+  vendor: 'html5',
+  type: 'live'
+};
+var customParams = {};
+script.onload = function() {
+  // for more information, see: https://confluence-docu.gfk.com/pages/viewpage.action?pageId=102334502
+  extension = new window.gfkS2sExtension.PlayerExtension(playerConf, gfkS2sConf, customParams);
 
-  script.onload = function() {
-    /**
-     * Initializing the extension
-     * @param {
-     *   instance: HTMLVideoElement,
-     *   vendor: 'html5',
-     *   type: 'live' | 'vod'
-     * } playerConfig configuration of the player
-     * @param {gfkS2sConf} gfkS2sConf configuration
-     * @param {string} contentUrl live content url, example: '//moctobpltc-i.akamaihd.net/hls/live/571329/eight/playlist.m3u8'
-     * @param {object} customParams example: { cp1: '<your new cp1 value here>', cp2: '<your new cp2 value here>', ... }
-     * @param {string} contentId
-     * @returns {extension}
-     */
-    extension = new window.gfkS2sExtension.PlayerExtension(
-      {
-        instance: document.getElementById('my_video_id'),
-        vendor: 'html5',
-        type: 'live'
-      },
-      gfkS2sConf,
-      {}
-    );
-
-    // call setParameter() as soon as your player is switching over to different content. Otherwise, new content will be
-    // reported with parameters of the video played before.
-    // extension.setParameter({ cp1: '<your new cp1 value here>', cp2: '<your new cp2 value here>', ... },'news');
-  };
+  // call setParameter() as soon as your player is switching over to different content. Otherwise, new content will be
+  // reported with parameters of the video played before.
+  // extension.setParameter({ cp1: '<your new cp1 value here>', cp2: '<your new cp2 value here>', ... },'news');
+};
 </script>
 </body>
 </html>

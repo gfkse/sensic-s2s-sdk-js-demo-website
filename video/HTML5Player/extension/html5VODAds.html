@@ -12,29 +12,21 @@
   <script src='//imasdk.googleapis.com/js/sdkloader/ima3.js'></script>
 </head>
 <body>
+<script src='../../../js/optin-params.js'></script>
 <script>
-  // Allow overwriting the used sdk with url param sdkUrl
-  var urlParams = new URLSearchParams(window.location.search);
-  var url = urlParams.get('sdkUrl') || window.env.WEB_SDK_URL;
 
-  // Optin via GET param
-  var optinGetValue = urlParams.get('optin');
-  var optin = typeof optinGetValue === 'string' ? optinGetValue === 'true' : undefined;
-  // In case questions about the optin parameter, please read the documentation: https://confluence-docu.gfk.com/display/SENSIC/Javascript+SDK+Integration
-  // Read more about privacy:https://confluence-docu.gfk.com/pages/viewpage.action?pageId=13043961
+// In case questions about the optin parameter, please read the documentation: https://confluence-docu.gfk.com/display/SENSIC/Javascript+SDK+Integration
+// Read more about privacy:https://confluence-docu.gfk.com/pages/viewpage.action?pageId=13043961
 
-  var gfkS2sConf = {
-    optin: optin,
-    media: 's2s-html5-demo',
-    url: url,
-    type: 'WEB',
-    logLevel: 'debug'
-  };
+var gfkS2sConf = {
+  optin: optin,
+  media: 's2s-html5-demo',
+  url: window.env.WEB_SDK_URL,
+  type: 'WEB',
+  logLevel: 'debug'
+};
 
 </script>
-<div class='header'>
-  <div id='title'>S2S HTML5 VOD + Google IMA Demo</div>
-</div>
 <optin-box></optin-box>
 <tcf-box></tcf-box>
 <div id='video_container'>
@@ -45,48 +37,33 @@
 </div>
 <script src='../../../js/google-ima.js'></script>
 <script>
-  initGoogleIma(document.getElementById('my_video_id'));
+initGoogleIma(document.getElementById('my_video_id'));
 </script>
 <script>
-  var script = document.createElement('script');
-  script.src = `${window.env.EXTENSION_BASE_URL}/playerextension.js`;
-  document.head.appendChild(script);
-  var extension;
+var script = document.createElement('script');
+script.src = `${window.env.EXTENSION_BASE_URL}/playerextension.js`;
+document.head.appendChild(script);
+var extension;
+var playerConf = {
+  instance: document.getElementById('my_video_id'),
+  vendor: 'html5'
+};
+var customParams = {};
+script.onload = function() {
+  // for more information, see: https://confluence-docu.gfk.com/pages/viewpage.action?pageId=102334502
+  extension = new window.gfkS2sExtension.PlayerExtension(playerConf, gfkS2sConf, customParams);
 
-  script.onload = function() {
-    /**
-     * Initializing the extension
-     * @param {
-     *   instance: HTMLVideoElement,
-     *   vendor: 'html5',
-     *   type: 'live' | 'vod'
-     * } playerConfig configuration of the player
-     * @param {gfkS2sConf} gfkS2sConf configuration
-     * @param {object} customParams example: { cp1: '<your new cp1 value here>', cp2: '<your new cp2 value here>', ... }
-     * @param {string} contentId
-     * @returns {extension}
-     */
-    extension = new window.gfkS2sExtension.PlayerExtension(
-      {
-        instance: document.getElementById('my_video_id'),
-        vendor: 'html5',
-      },
-      gfkS2sConf,
-      {}
-    );
-    // call setParameter() as soon as your player is switching over to different content. Otherwise, new content will be
-    // reported with parameters of the video played before.
-    // extension.setParameter({ cp1: '<your new cp1 value here>', cp2: '<your new cp2 value here>', ... },'news');
+  // call setParameter() as soon as your player is switching over to different content. Otherwise, new content will be
+  // reported with parameters of the video played before.
+  // extension.setParameter({ cp1: '<your new cp1 value here>', cp2: '<your new cp2 value here>', ... },'news');
 
-    // =================GOOGLE ADS==============
-
-    adsLoader.addEventListener(google.ima.AdsManagerLoadedEvent.Type.ADS_MANAGER_LOADED, function(adsManagerLoadedEvent) {
-      // adsManager = adsManagerLoadedEvent.getAdsManager(video);
-      extension.activateGoogleIMASupport(adsManager);
-    }, false);
-  };
-
-  // =================GOOGLE ADS END==============
+  // =================GOOGLE ADS==============
+  adsLoader.addEventListener(google.ima.AdsManagerLoadedEvent.Type.ADS_MANAGER_LOADED, function(adsManagerLoadedEvent) {
+    // adsManager = adsManagerLoadedEvent.getAdsManager(video);
+    extension.activateGoogleIMASupport(adsManager);
+  }, false);
+};
+// =================GOOGLE ADS END==============
 </script>
 </body>
 </html>

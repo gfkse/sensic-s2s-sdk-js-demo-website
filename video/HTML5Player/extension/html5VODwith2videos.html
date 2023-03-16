@@ -10,29 +10,22 @@
   <script type='module' src='../../../js/tcf-box.js'></script>
 </head>
 <body>
-<script>
-// Allow overwriting the used sdk with url param sdkUrl
-var urlParams = new URLSearchParams(window.location.search);
-var url = urlParams.get('sdkUrl') || window.env.WEB_SDK_URL;
+<script src='../../../js/optin-params.js'></script>
 
-// Optin via GET param
-var optinGetValue = urlParams.get('optin');
-var optin = typeof optinGetValue === 'string' ? optinGetValue === 'true' : undefined;
+<script>
+
 // In case questions about the optin parameter, please read the documentation: https://confluence-docu.gfk.com/display/SENSIC/Javascript+SDK+Integration
 // Read more about privacy:https://confluence-docu.gfk.com/pages/viewpage.action?pageId=13043961
 
 var gfkS2sConf = {
   optin: optin,
   media: 's2s-html5-demo',
-  url: url,
+  url: window.env.WEB_SDK_URL,
   type: 'WEB',
   logLevel: 'debug'
 };
 
 </script>
-<div class='header'>
-  <div id='title'>S2S HTML5 VOD Demo</div>
-</div>
 <optin-box></optin-box>
 <tcf-box></tcf-box>
 <div id='video_container'>
@@ -43,25 +36,19 @@ var gfkS2sConf = {
 </div>
 
 <script>
+var extension;
+var playerConf = {
+  instance: document.getElementById('my_video_id'),
+  vendor: 'html5'
+};
+var customParams = {};
 var script = document.createElement('script');
 script.src = `${window.env.EXTENSION_BASE_URL}/playerextension.js`;
 document.head.appendChild(script);
-var extension;
 
 script.onload = function() {
-  /**
-   * Initializing the extension
-   * @param {
-   *   instance: HTMLVideoElement,
-   *   vendor: 'html5',
-   *   type: 'live' | 'vod'
-   * } playerConfig configuration of the player
-   * @param {gfkS2sConf} gfkS2sConf configuration
-   * @param {object} customParams example: { cp1: '<your new cp1 value here>', cp2: '<your new cp2 value here>', ... }
-   * @param {string} contentId
-   * @returns {extension}
-   */
-  extension = new window.gfkS2sExtension.PlayerExtension({instance: document.getElementById('my_video_id'), vendor: 'html5'}, gfkS2sConf,{});
+  // for more information, see: https://confluence-docu.gfk.com/pages/viewpage.action?pageId=102334502
+  extension = new window.gfkS2sExtension.PlayerExtension(playerConf, gfkS2sConf, customParams);
 
   document.getElementById('next_video').addEventListener('click', function() {
     document.getElementById('my_video_id').pause();
@@ -69,7 +56,7 @@ script.onload = function() {
     document.getElementById('my_video_id').load();
     document.getElementById('my_video_id').onloadeddata = function() {
       document.getElementById('my_video_id').play();
-      extension.setParameter({},'test');
+      extension.setParameter({}, 'test');
       document.getElementById('next_video').remove();
     };
   });

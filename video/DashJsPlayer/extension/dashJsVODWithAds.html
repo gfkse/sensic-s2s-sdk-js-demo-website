@@ -11,34 +11,28 @@
   <script src='//cdn.dashjs.org/latest/dash.all.min.js'></script>
 </head>
 <body>
-<script>
-// Allow overwriting the used sdk with url param sdkUrl
-var urlParams = new URLSearchParams(window.location.search);
-var url = urlParams.get('sdkUrl') || window.env.WEB_SDK_URL;
+<script src='../../../js/optin-params.js'></script>
 
-// Optin via GET param
-var optinGetValue = urlParams.get('optin');
-var optin = typeof optinGetValue === 'string' ? optinGetValue === 'true' : undefined;
+<script>
+
 // In case questions about the optin parameter, please read the documentation: https://confluence-docu.gfk.com/display/SENSIC/Javascript+SDK+Integration
 // Read more about privacy:https://confluence-docu.gfk.com/pages/viewpage.action?pageId=13043961
 
 var gfkS2sConf = {
   optin: optin,
   media: 's2s-html5-demo',
-  url: url,
+  url: window.env.WEB_SDK_URL,
   type: 'WEB',
   logLevel: 'debug'
 };
 
 </script>
-<div class='header'>
-  <div id='title'>S2S HTML5 VOD Demo</div>
-</div>
 <optin-box></optin-box>
 <tcf-box></tcf-box>
 <div id='video_container'>
   <video id='my_video_id' controls style='display:none;' playsinline></video>
-  <video id='my_ad_id' playsinline controls src='//secure-ds.serving-sys.com/resources/PROD/asset/2/VIDEO/20230202/ESES_FLDD_VIDEO_169AR_30s_YXIVS_ACTMD_ORANGE_BM_AMXB0200931H_TVO_76991411970387358.MP4'></video>
+  <video id='my_ad_id' playsinline controls
+         src='//secure-ds.serving-sys.com/resources/PROD/asset/2/VIDEO/20230202/ESES_FLDD_VIDEO_169AR_30s_YXIVS_ACTMD_ORANGE_BM_AMXB0200931H_TVO_76991411970387358.MP4'></video>
   <a id='skip_ad' style='display:none;' onclick='removeAd()'>Skip Ad⏭️</a>
 </div>
 <script>
@@ -60,7 +54,7 @@ function removeAd() {
    *   type: 'live' | 'vod'
    * } playerConfig configuration of the player
    */
-  playerExtension.setPlayer({instance: player});
+  playerExtension.setPlayer({ instance: player });
 
   videoAd.removeAttribute('src');
   videoAd.load();
@@ -84,7 +78,7 @@ videoAd.addEventListener('playing', () => {
 });
 // when the ad has finished, showing the content player
 videoAd.addEventListener('ended', () => {
-  if(videoAd.style.display === 'block'){
+  if (videoAd.style.display === 'block') {
     removeAd();
   }
 });
@@ -92,33 +86,20 @@ videoAd.addEventListener('ended', () => {
 
 <script>
 var playerExtension;
+var playerConf = { vendor: 'dashjs' };
+var adPlayerConf = {
+  instance: videoAd,
+  vendor: 'html5'
+};
+var customParams = {};
 var dashJsExtensionScript = document.createElement('script');
 dashJsExtensionScript.src = `${window.env.EXTENSION_BASE_URL}/playerextension.js`;
 document.head.appendChild(dashJsExtensionScript);
 
 dashJsExtensionScript.onload = function() {
-  /**
-   * Initializing the extension
-   * @param {
-   *   instance: DashJsInstance,
-   *   vendor: 'dashjs',
-   *   type: 'live' | 'vod'
-   * } playerConfig configuration of the player
-   * @param {gfkS2sConf} gfkS2sConf configuration
-   * @param {object} customParams example: { cp1: '<your new cp1 value here>', cp2: '<your new cp2 value here>', ... }
-   * @param {string} contentId
-   * @returns {extension}
-   */
-  playerExtension = new window.gfkS2sExtension.PlayerExtension({ vendor: 'dashjs' }, gfkS2sConf,{});
-  /**
-   * Activate custom ad support
-   * @param {
-   *   instance: HTMLVideoElement,
-   *   vendor: 'html5',
-   *   type: 'vod'
-   * } playerConfig configuration of the player
-   */
-  playerExtension.activateCustomAdSupport({instance: videoAd, vendor: 'html5'});
+  // for more information, see: https://confluence-docu.gfk.com/pages/viewpage.action?pageId=102334502
+  playerExtension = new window.gfkS2sExtension.PlayerExtension(playerConf, gfkS2sConf, customParams);
+  playerExtension.activateCustomAdSupport(adPlayerConf);
 
   // call setParameter() as soon as your player is switching over to different content. Otherwise, new content will be
   // reported with parameters of the video played before.

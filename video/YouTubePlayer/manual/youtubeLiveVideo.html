@@ -11,20 +11,14 @@
   <script type='module' src='../../../js/tcf-box.js'></script>
 </head>
 <body>
+<script src='../../../js/optin-params.js'></script>
 <script>
-// Allow overwriting the used sdk with url param sdkUrl
-var urlParams = new URLSearchParams(window.location.search);
-var url = urlParams.get('sdkUrl') || window.env.WEB_SDK_URL;
-
-// Optin via GET param
-var optinGetValue = urlParams.get('optin');
-var optin = typeof optinGetValue === 'string' ? optinGetValue === 'true' : undefined;
 // In case questions about the optin parameter, please read the documentation: https://confluence-docu.gfk.com/display/SENSIC/Javascript+SDK+Integration
 // Read more about privacy:https://confluence-docu.gfk.com/pages/viewpage.action?pageId=13043961
 var gfkS2sConf = {
   optin: optin,
   media: 's2s-youtube-demo',
-  url: url,
+  url: window.env.WEB_SDK_URL,
   type: 'WEB',
   logLevel: 'debug'
 };
@@ -104,11 +98,6 @@ var gfkS2sConf = {
   })(window, document, gfkS2sConf, 'script', 'gfkS2s');
 
 </script>
-<div class='header'>
-  <div id='title'>
-    <a href='../../../index.html'><img id='icon' src='../../../images/favicon.png' /></a>YouTube VOD Demo
-  </div>
-</div>
 <optin-box></optin-box>
 <tcf-box></tcf-box>
 <!-- The following <div> tag will be replaced by an <iframe> tag with same id and youtube.com URL. -->

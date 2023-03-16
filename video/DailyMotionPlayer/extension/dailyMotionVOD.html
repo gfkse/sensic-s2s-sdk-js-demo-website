@@ -10,29 +10,21 @@
   <script type='module' src='../../../js/tcf-box.js'></script>
 </head>
 <body>
+<script src='../../../js/optin-params.js'></script>
 <script>
-// Allow overwriting the used sdk with url param sdkUrl
-var urlParams = new URLSearchParams(window.location.search);
-var url = urlParams.get('sdkUrl') || window.env.WEB_SDK_URL;
 
-// Optin via GET param
-var optinGetValue = urlParams.get('optin');
-var optin = typeof optinGetValue === 'string' ? optinGetValue === 'true' : undefined;
 // In case questions about the optin parameter, please read the documentation: https://confluence-docu.gfk.com/display/SENSIC/Javascript+SDK+Integration
 // Read more about privacy:https://confluence-docu.gfk.com/pages/viewpage.action?pageId=13043961
 
 var gfkS2sConf = {
   optin: optin,
   media: 's2s-html5-demo',
-  url: url,
+  url: window.env.WEB_SDK_URL,
   type: 'WEB',
   logLevel: 'debug'
 };
 
 </script>
-<div class='header'>
-  <div id='title'>S2S DailyMotion VOD Demo</div>
-</div>
 <optin-box></optin-box>
 <tcf-box></tcf-box>
 <script src='https://geo.dailymotion.com/libs/player/xade3.js'></script>
@@ -43,6 +35,12 @@ var gfkS2sConf = {
 var video;
 var script = document.createElement('script');
 var extension;
+var playerConf = {
+  instance: video,
+  vendor: 'dailymotion',
+  dailyMotionState: await video.getState()
+};
+var customParams = {};
 dailymotion
   .createPlayer('my-dailymotion-player', {
     video: 'x8eo22r'
@@ -57,27 +55,8 @@ function initExtension() {
   script.src = `${window.env.EXTENSION_BASE_URL}/playerextension.js`;
   document.head.appendChild(script);
   script.onload = async function() {
-    /**
-     * Initializing the extension
-     * @param {
-     *   instance: DailymotionInstance,
-     *   vendor: 'dailymotion',
-     *   type: 'live' | 'vod',
-     *   dailyMotionState: await dailyMotionInstance.getState()
-     * } playerConfig configuration of the player
-     * @param {gfkS2sConf} gfkS2sConf configuration
-     * @param {object} customParams example: { cp1: '<your new cp1 value here>', cp2: '<your new cp2 value here>', ... }
-     * @param {string} contentId
-     * @returns {extension}
-     */
-    extension = new window.gfkS2sExtension.PlayerExtension(
-      { instance: video,
-        vendor: 'dailymotion',
-        dailyMotionState: await video.getState()
-      },
-      gfkS2sConf,
-      {}
-    );
+    // for more information, see: https://confluence-docu.gfk.com/pages/viewpage.action?pageId=102334502
+    extension = new window.gfkS2sExtension.PlayerExtension(playerConf, gfkS2sConf, customParams);
 
 
     // call setParameter() as soon as your player is switching over to different content. Otherwise, new content will be

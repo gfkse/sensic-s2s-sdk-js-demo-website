@@ -11,29 +11,22 @@
   <script src='//cdn.dashjs.org/latest/dash.all.min.js'></script>
 </head>
 <body>
-<script>
-// Allow overwriting the used sdk with url param sdkUrl
-var urlParams = new URLSearchParams(window.location.search);
-var url = urlParams.get('sdkUrl') || window.env.WEB_SDK_URL;
+<script src='../../../js/optin-params.js'></script>
 
-// Optin via GET param
-var optinGetValue = urlParams.get('optin');
-var optin = typeof optinGetValue === 'string' ? optinGetValue === 'true' : undefined;
+<script>
+
 // In case questions about the optin parameter, please read the documentation: https://confluence-docu.gfk.com/display/SENSIC/Javascript+SDK+Integration
 // Read more about privacy:https://confluence-docu.gfk.com/pages/viewpage.action?pageId=13043961
 
 var gfkS2sConf = {
   optin: optin,
   media: 's2s-html5-demo',
-  url: url,
+  url: window.env.WEB_SDK_URL,
   type: 'WEB',
   logLevel: 'debug'
 };
 
 </script>
-<div class='header'>
-  <div id='title'>Dash.js VOD Demo</div>
-</div>
 <optin-box></optin-box>
 <tcf-box></tcf-box>
 <video id='my_video_id' controls='true' playsinline></video>
@@ -41,30 +34,22 @@ var gfkS2sConf = {
 <script>
 var video = document.getElementById('my_video_id');
 var player = dashjs.MediaPlayer().create();
+var playerConf = {
+  instance: player,
+  vendor: 'dashjs'
+};
+var customParams = {};
+var script = document.createElement('script');
+var extension;
+
 player.initialize(video, '//dash.akamaized.net/akamai/bbb_30fps/bbb_30fps.mpd', false); /* initialize the MediaPlayer instance */
 
-// setInterval(() => {
-  // console.log(video.paused, player.isPaused());
-// }, 1000);
-
-var script = document.createElement('script');
 script.src = `${window.env.EXTENSION_BASE_URL}/playerextension.js`;
 document.head.appendChild(script);
-var extension;
+
 script.onload = function() {
-  /**
-   * Initializing the extension
-   * @param {
-   *   instance: DashJsInstance,
-   *   vendor: 'dashjs',
-   *   type: 'live' | 'vod'
-   * } playerConfig configuration of the player
-   * @param {gfkS2sConf} gfkS2sConf configuration
-   * @param {object} customParams example: { cp1: '<your new cp1 value here>', cp2: '<your new cp2 value here>', ... }
-   * @param {string} contentId
-   * @returns {extension}
-   */
-  extension = new window.gfkS2sExtension.PlayerExtension({ instance: player, vendor: 'dashjs' }, gfkS2sConf,{});
+  // for more information, see: https://confluence-docu.gfk.com/pages/viewpage.action?pageId=102334502
+  extension = new window.gfkS2sExtension.PlayerExtension(playerConf, gfkS2sConf, customParams);
 
   // call setParameter() as soon as your player is switching over to different content. Otherwise, new content will be
   // reported with parameters of the video played before.

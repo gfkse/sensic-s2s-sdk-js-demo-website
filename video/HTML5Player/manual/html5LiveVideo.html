@@ -11,20 +11,15 @@
   <script src='//cdn.jsdelivr.net/hls.js/latest/hls.min.js'></script>
 </head>
 <body>
-<script>
-  // Allow overwriting the used sdk with url param sdkUrl
-  var urlParams = new URLSearchParams(window.location.search);
-  var url = urlParams.get('sdkUrl') || window.env.WEB_SDK_URL;
+<script src='../../../js/optin-params.js'></script>
 
-  // Optin via GET param
-  var optinGetValue = urlParams.get('optin');
-  var optin = typeof optinGetValue === 'string' ? optinGetValue === 'true' : undefined;
+<script>
   // In case questions about the optin parameter, please read the documentation: https://confluence-docu.gfk.com/display/SENSIC/Javascript+SDK+Integration
   // Read more about privacy:https://confluence-docu.gfk.com/pages/viewpage.action?pageId=13043961
   var gfkS2sConf = {
     optin: optin,
     media: 's2s-html5-demo',
-    url: url,
+    url: window.env.WEB_SDK_URL,
     type: 'WEB',
     logLevel: 'debug'
   };
@@ -105,9 +100,6 @@
   })(window, document, window.gfkS2sConf, 'script', 'gfkS2s');
 
 </script>
-<div class='header'>
-  <div id='title'>S2S HTML5 Live Video Demo</div>
-</div>
 <optin-box></optin-box>
 <tcf-box></tcf-box>
 <video id='my_video_id' controls preload='metadata'></video>
