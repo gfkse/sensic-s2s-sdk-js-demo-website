@@ -32,6 +32,7 @@ var gfkS2sConf = {
   <div id='my-dailymotion-player'>My Player placeholder</div>
 </div>
 <script>
+var video;
 var script = document.createElement('script');
 var extension;
 var playerConf;
@@ -41,6 +42,7 @@ dailymotion
     video: 'x8eo22r'
   })
   .then(async (player) => {
+    video = player;
     playerConf = {
       instance: player,
       vendor: 'dailymotion',
