@@ -86,7 +86,7 @@ var playerConf = {
   vendor: 'dashjs',
   type: 'live'
 };
-var customParams = {};
+var contentMetadata = {customParams : {}};
 var adPlayerConf = {
   instance: videoAd,
   vendor: 'html5'
@@ -97,11 +97,11 @@ document.head.appendChild(dashJsExtensionScript);
 
 dashJsExtensionScript.onload = function() {
   // for more information, see: https://confluence-docu.gfk.com/pages/viewpage.action?pageId=102334502
-  playerExtension = new window.gfkS2sExtension.PlayerExtension(playerConf, gfkS2sConf, customParams);
+  playerExtension = new window.gfkS2sExtension.PlayerExtension(playerConf, gfkS2sConf, contentMetadata);
   playerExtension.activateCustomAdSupport(adPlayerConf);
   // call setParameter() as soon as your player is switching over to different content. Otherwise, new content will be
   // reported with parameters of the video played before.
-  // extension.setParameter( { cp1: '<your new cp1 value here>', cp2: '<your new cp2 value here>', ... } , 'news');
+  // extension.setParameter({customParams: { cp1: '<your new cp1 value here>', cp2: '<your new cp2 value here>', ... } , contentId: 'news'});
 };
 
 </script>

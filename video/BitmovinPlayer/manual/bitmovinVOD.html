@@ -148,7 +148,6 @@ function getCurrentPlaybackSpeed() {
 playerInstance.on(bitmovin.player.PlayerEvent.Play, function() {
   paused = false;
   if (!seeked) {
-    console.log('event play');
     agent.playStreamOnDemand(
       'default',
       JSON.stringify(playerInstance.getSource()),

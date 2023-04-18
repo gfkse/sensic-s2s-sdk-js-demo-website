@@ -140,9 +140,10 @@ body {
     font-size: 2rem;
     cursor: pointer;
 }
+
 #skip_ad {
     position: absolute;
-    border:1mm ridge #e0a000;
+    border: 1mm ridge #e0a000;
     background: #1a1a1a;
     z-index: 111;
     right: 0;
@@ -150,6 +151,19 @@ body {
     font-size: 1.3rem;
     cursor: pointer;
 }
+
 #my_video_id, #my_ad_id {
     width: 600px;
+}
+
+#stream_inputs .stream_input_label {
+    display: inline-block;
+    width: 150px;
+    padding: 10px 0;
+}
+#stream_inputs input {
+    padding: 5px;
+}
+#stream_inputs #stream_offset{
+    width: 65px;
 }

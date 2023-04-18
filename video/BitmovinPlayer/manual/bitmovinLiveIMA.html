@@ -213,6 +213,10 @@ function getCurrentPlaybackSpeed() {
   return playerInstance.getPlaybackSpeed();
 }
 
+function getStreamOffset() {
+  return Math.abs(Math.floor(playerInstance.getTimeShift())) * 1000;
+}
+
 playerInstance.on(bitmovin.player.PlayerEvent.Play, function() {
   if (!adRunning) {
     paused = false;
@@ -220,7 +224,7 @@ playerInstance.on(bitmovin.player.PlayerEvent.Play, function() {
       agent.playStreamLive(
         'default',
         '',
-        0,
+        getStreamOffset(),
         JSON.stringify(playerInstance.getSource()),
         {
           volume: getVolume(),
@@ -234,12 +238,11 @@ playerInstance.on(bitmovin.player.PlayerEvent.Play, function() {
   }
 });
 playerInstance.on(bitmovin.player.PlayerEvent.AdBreakFinished, function() {
-  console.log(playerInstance.hasEnded());
   if (!playerInstance.hasEnded()) {
     agent.playStreamLive(
       'default',
       '',
-      0,
+      getStreamOffset(),
       JSON.stringify(playerInstance.getSource()),
       {
         volume: getVolume(),
@@ -254,7 +257,6 @@ playerInstance.on(bitmovin.player.PlayerEvent.AdBreakStarted, function() {
 })
 playerInstance.on(bitmovin.player.PlayerEvent.Paused, function() {
   if (!adRunning) {
-    console.log('Paused')
     paused = true;
     agent.stop();
   }
@@ -266,7 +268,7 @@ playerInstance.on(bitmovin.player.PlayerEvent.PlaybackSpeedChanged, function() {
     agent.playStreamLive(
       'default',
       '',
-      0,
+      getStreamOffset(),
       JSON.stringify(playerInstance.getSource()),
       {
         volume: getVolume(),
@@ -279,7 +281,6 @@ playerInstance.on(bitmovin.player.PlayerEvent.PlaybackSpeedChanged, function() {
 });
 
 playerInstance.on(bitmovin.player.PlayerEvent.PlaybackFinished, function() {
-  console.log('PlaybackFinished')
   agent.stop();
 });
 
@@ -294,7 +295,7 @@ playerInstance.on(bitmovin.player.PlayerEvent.Seeked, function() {
     agent.playStreamLive(
       'default',
       '',
-      0,
+      getStreamOffset(),
       JSON.stringify(playerInstance.getSource()),
       {
         volume: getVolume(),

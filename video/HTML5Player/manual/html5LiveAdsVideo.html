@@ -174,7 +174,6 @@
    * That will give an error like "current position 9th second is lower than the last position - 10th second".
    */
   function onContentPauseRequested() {
-    console.log('onContentPauseRequested');
     if (!video.ended) {
       agent.stop();
     }

@@ -47,9 +47,8 @@ function initGoogleIma(videoElement, tagUrl) {
   addEvents();
 }
 
-function onAdError(adErrorEvent) {
+function onAdError() {
   // Handle the error logging.
-  console.log(adErrorEvent.getError());
   if (adsManager) {
     adsManager.destroy();
   }

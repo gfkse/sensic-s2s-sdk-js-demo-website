@@ -208,7 +208,6 @@ jwPlayer.on('pause', function() {
 
 // Fires when the user starts moving/skipping to a new position in a stream
 jwPlayer.on('seek', function() {
-  console.log('seek', jwPlayer.getState());
   if (jwPlayer.getState() === 'playing') {
     agent.stop();
   }
@@ -217,8 +216,6 @@ jwPlayer.on('seek', function() {
 // In safari, we have to add seeked event, because the play event is not firing after seek
 if (/^((?!chrome|android).)*safari/i.test(navigator.userAgent)) {
   jwPlayer.on('seeked', function() {
-    console.log('seeked', window.safari);
-    console.log('seeked', jwPlayer.getState());
     updateVideoPosition();
     agent.playStreamOnDemand(
       'default',

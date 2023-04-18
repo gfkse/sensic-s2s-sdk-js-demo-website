@@ -242,7 +242,6 @@ function initialize() {
   player.on('playbackPaused', () => {
     if (adEnded) {
       if (!video.seeking && player.isReady()) {
-        console.log('playbackPaused');
         agent.stop();
       }
     }

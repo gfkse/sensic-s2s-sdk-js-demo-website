@@ -108,7 +108,7 @@
   var video = document.getElementById('my_video_id');
 
   if (Hls.isSupported()) {
-    var hls = new Hls();
+    var hls = new Hls({liveDurationInfinity: true});
     // bind them together
     hls.attachMedia(video);
     hls.on(Hls.Events.MEDIA_ATTACHED, function() {

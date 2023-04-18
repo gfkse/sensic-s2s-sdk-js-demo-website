@@ -141,7 +141,6 @@ function initPlayerAdEvents() {
   });
 
   video.on('ad_play', async () => {
-    console.log('AD_PLAY');
     adRunning = true;
     const state = await video.getState();
     adAgent.playStreamOnDemand(

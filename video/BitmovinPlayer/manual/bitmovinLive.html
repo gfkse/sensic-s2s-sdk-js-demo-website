@@ -136,11 +136,15 @@ function getCurrentPlaybackSpeed() {
   return playerInstance.getPlaybackSpeed();
 }
 
+function getStreamOffset() {
+  return Math.abs(Math.floor(playerInstance.getTimeShift())) * 1000;
+}
+
 playerInstance.on(bitmovin.player.PlayerEvent.Play, function() {
   agent.playStreamLive(
     'default',
     '',
-    0,
+    getStreamOffset(),
     JSON.stringify(playerInstance.getSource()),
     {
       volume: getVolume(),
@@ -160,7 +164,7 @@ playerInstance.on(bitmovin.player.PlayerEvent.PlaybackSpeedChanged, function() {
     agent.playStreamLive(
       'default',
       '',
-      0,
+      getStreamOffset(),
       JSON.stringify(playerInstance.getSource()),
       {
         volume: getVolume(),
