@@ -46,8 +46,8 @@ var script = document.createElement('script');
 script.src = `${window.env.EXTENSION_BASE_URL}/playerextension.js`;
 document.head.appendChild(script);
 var extension;
-var playerConf = { vendor: 'html5' }
-var contentMetadata = {customParams : {}}
+var playerConf = { vendor: 'html5' };
+var contentMetadata = { customParams: {} };
 script.onload = function() {
   // for more information, see: https://confluence-docu.gfk.com/pages/viewpage.action?pageId=102334502
   extension = new window.gfkS2sExtension.PlayerExtension(playerConf, gfkS2sConf, contentMetadata);
@@ -76,6 +76,7 @@ function createVideoPlayer(playerId) {
   video.setAttribute('type', 'video/mp4');
   video.setAttribute('controls', '');
   video.setAttribute('src', '../../../res/big_buck_bunny.mp4');
+  video.setAttribute('playsinline', '');
   document.getElementById('video_container').appendChild(video);
   video.play();
 }
