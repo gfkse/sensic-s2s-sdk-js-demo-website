@@ -53,7 +53,7 @@ var playerConfig = {
 var containerElement = document.getElementById('video');
 var playerInstance = new bitmovin.player.Player(containerElement, playerConfig);
 playerInstance
-  .load({ hls: '//moctobpltc-i.akamaihd.net/hls/live/571329/eight/playlist.m3u8' })
+  .load({ hls: 'https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel.ism/.m3u8' })
   .then(function() {
     initExtension();
   });
