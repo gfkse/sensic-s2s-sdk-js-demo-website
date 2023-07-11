@@ -57,8 +57,19 @@ function onYouTubeIframeAPIReady() {
 
 <script>
 var extension;
-var contentMetadata = {customParams : {}};
 var script = document.createElement('script');
+// this part is needed for the YouTube embedded example
+// from here
+var isEmbeddedVideoUrl = (window.location !== window.parent.location) ? document.referrer : document.location.href;
+var channelname = window.location.href.match(/^(https?:\/\/)?(www\.)?([^\/]+)/)[3].split('.').slice(0, -1).join('.');
+var cp1 = isEmbeddedVideoUrl.match(/^(https?:\/\/)?(www\.)?([^\/]+)/)[3].split('.').slice(0, -1).join('.');
+// to here
+var contentMetadata = {
+  customParams: {
+    cp1: cp1,
+    channel: channelname
+  }
+};
 
 function initExtension(event) {
   script.src = `${window.env.EXTENSION_BASE_URL}/playerextension.js`;
