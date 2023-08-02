@@ -10,26 +10,30 @@ export class TimeShiftController extends HTMLElement {
     <br/>
   `;
 
-  shadowRoot= null;
+  shadowRoot = null;
+
   constructor() {
     super();
     const template = document.createElement('template');
     template.innerHTML = this.templateString;
     this.shadowRoot = this.attachShadow({ mode: 'closed' });
     this.shadowRoot.appendChild(template.content.cloneNode(true));
-    this.shadowRoot.querySelector("#stream_start").onchange =() => {
+    this.shadowRoot.querySelector('#stream_start').onchange = () => {
       this.streamStartChanged();
     };
   }
 
-   streamStartChanged() {
-     streamStart = new Date(this.shadowRoot.querySelector("#stream_start").value).toISOString();
-     if(typeof extension !== "undefined"){
-       extension.setParameter({
-         customParams: {},
-         streamStart: streamStart
-       });
-     }
+  streamStartChanged() {
+    streamStart = new Date(this.shadowRoot.querySelector('#stream_start').value).toISOString();
+    if (typeof extension !== 'undefined') {
+      extension.setParameter({
+        customParams: {
+          cp1: 'cp1',
+          cp2: 'cp2'
+        },
+        streamStart: streamStart
+      });
+    }
   }
 }
 

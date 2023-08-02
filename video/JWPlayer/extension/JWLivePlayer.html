@@ -46,7 +46,12 @@ var playerConf = {
   vendor: 'jw',
   type: 'live'
 };
-var contentMetadata = {customParams : {}};
+var contentMetadata = {
+  customParams: {
+    cp1: '<your new cp1 value here>',
+    cp2: '<your new cp2 value here>'
+  }
+};
 var script = document.createElement('script');
 script.src = `${window.env.EXTENSION_BASE_URL}/playerextension.js`;
 

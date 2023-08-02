@@ -1,5 +1,6 @@
-<?xml version='1.0' encoding='utf-8' ?><!DOCTYPE html PUBLIC '-//HbbTV//1.2.1//EN' 'http://www.hbbtv.org/dtd/HbbTV-1.2.1.dtd'>
-<html xmlns="http://www.w3.org/1999/xhtml" lang='en'>
+<?xml version='1.0' encoding='utf-8' ?><!DOCTYPE html PUBLIC '-//HbbTV//1.2.1//EN'
+  'http://www.hbbtv.org/dtd/HbbTV-1.2.1.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml' lang='en'>
 <head>
   <title>Bitmovin VOD</title>
   <link rel='shortcut icon' href='../../../images/favicon.png' />
@@ -9,7 +10,7 @@
   <script type='module' src='../../../js/optin-box.js'></script>
   <script type='module' src='../../../js/tcf-box.js'></script>
   <script type='text/javascript' src='../../../js/oipf/oipf-helpers.js'></script>
-  <meta http-equiv="content-type" content="application/vnd.hbbtv.xhtml+xml; charset=UTF-8"></meta>
+  <meta http-equiv='content-type' content='application/vnd.hbbtv.xhtml+xml; charset=UTF-8'></meta>
 </head>
 <body onload='onload()'>
 <script src='../../../js/optin-params.js'></script>
@@ -29,30 +30,38 @@ var gfkS2sConf = {
   <optin-box></optin-box>
   <tcf-box></tcf-box>
   <div id='videodiv'>
-    <object id='video' type='application/dash+xml' data='https://refapp.hbbtv.org/videos/tears_of_steel_1080p_25f50g8sv5/manifest.mpd' autoplay='false'></object>
-    <div style="visibility:hidden;width:0px;height:0px;">
-      <object id="appmgr" type="application/oipfApplicationManager"></object>
+    <object id='video' type='application/dash+xml'
+            data='https://refapp.hbbtv.org/videos/tears_of_steel_1080p_25f50g8sv5/manifest.mpd'
+            autoplay='false'></object>
+    <div style='visibility:hidden;width:0px;height:0px;'>
+      <object id='appmgr' type='application/oipfApplicationManager'></object>
     </div>
   </div>
 </div>
 <script>
-  var videoObject = document.getElementById("video");
-  var extension;
-  function onload() {
-    var script = document.createElement('script');
-    script.src = `${window.env.EXTENSION_BASE_URL}/playerextension.js`;
-    document.head.appendChild(script);
-    var playerConf = {
-      instance: videoObject,
-      vendor: 'oipf'
-    };
-    var contentMetadata = { customParams: {} };
-    script.onload = function() {
-      // for more information, see: https://confluence-docu.gfk.com/pages/viewpage.action?pageId=102334502
-      extension = new window.gfkS2sExtension.PlayerExtension(playerConf, gfkS2sConf, contentMetadata);
-    };
-    initRemoteController(videoObject); // needed for the remote controller events
-  }
+var videoObject = document.getElementById('video');
+var extension;
+
+function onload() {
+  var script = document.createElement('script');
+  script.src = `${window.env.EXTENSION_BASE_URL}/playerextension.js`;
+  document.head.appendChild(script);
+  var playerConf = {
+    instance: videoObject,
+    vendor: 'oipf'
+  };
+  var contentMetadata = {
+    customParams: {
+      cp1: '<your new cp1 value here>',
+      cp2: '<your new cp2 value here>'
+    }
+  };
+  script.onload = function() {
+    // for more information, see: https://confluence-docu.gfk.com/pages/viewpage.action?pageId=102334502
+    extension = new window.gfkS2sExtension.PlayerExtension(playerConf, gfkS2sConf, contentMetadata);
+  };
+  initRemoteController(videoObject); // needed for the remote controller events
+}
 </script>
 </body>
 </html>

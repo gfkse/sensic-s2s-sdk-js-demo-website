@@ -41,7 +41,12 @@ var playerConf = {
   instance: document.getElementById('my_video_id'),
   vendor: 'html5'
 };
-var contentMetadata = {customParams : {}};
+var contentMetadata = {
+  customParams: {
+    cp1: '<your new cp1 value here>',
+    cp2: '<your new cp2 value here>'
+  }
+};
 var script = document.createElement('script');
 script.src = `${window.env.EXTENSION_BASE_URL}/playerextension.js`;
 document.head.appendChild(script);
@@ -57,7 +62,10 @@ script.onload = function() {
     document.getElementById('my_video_id').onloadeddata = function() {
       document.getElementById('my_video_id').play();
       extension.setParameter({
-        customParams: {},
+        customParams: {
+          cp1: '<your new cp1 value here>',
+          cp2: '<your new cp2 value here>'
+        },
         contentId: 'test'
       });
       document.getElementById('next_video').remove();

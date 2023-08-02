@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset='utf-8' />
+  <title>Kaltura player Live</title>
+  <link rel='shortcut icon' href='../../../images/favicon.png' />
+  <link rel='stylesheet' href='../../../css/s2s-demo.css' />
+  <script src='../../../js/url-polyfill.js'></script>
+  <script type='module' src='../../../js/optin-box.js'></script>
+  <script type='module' src='../../../js/tcf-box.js'></script>
+</head>
+<body>
+<script src='../../../js/optin-params.js'></script>
+<script>
+// In case questions about the optin parameter, please read the documentation: https://confluence-docu.gfk.com/display/SENSIC/Javascript+SDK+Integration
+// Read more about privacy:https://confluence-docu.gfk.com/pages/viewpage.action?pageId=13043961
+var gfkS2sConf = {
+  optin: optin,
+  media: 's2s-html5-demo',
+  url: window.env.WEB_SDK_URL,
+  type: 'WEB',
+  logLevel: 'debug'
+};
+
+(function(w, d, c, s, id) {
+  if (d.getElementById(id)) {
+    return;
+  }
+
+  w.gfkS2sConf = c;
+  w[id] = {};
+  w[id].agents = [];
+  var api = [
+    'playStreamLive',
+    'playStreamOnDemand',
+    'stop',
+    'skip',
+    'screen',
+    'volume',
+    'impression'
+  ];
+  w.gfks = (function() {
+    function f(sA, e, cb) {
+      return function() {
+        sA.p = cb();
+        sA.queue.push({
+          f: e,
+          a: arguments
+        });
+      };
+    }
+
+    function s(c, pId, cb) {
+      var sA = {
+        queue: [],
+        config: c,
+        cb: cb,
+        pId: pId
+      };
+      for (var i = 0; i < api.length; i++) {
+        e = api[i];
+        sA[e] = f(sA, e, cb);
+      }
+      return sA;
+    }
+
+    return s;
+  })();
+  w[id].getAgent = function(cb, pId) {
+    var a = {
+      a: new w.gfks(
+        c,
+        pId || '',
+        cb ||
+        function() {
+          return 0;
+        }
+      )
+    };
+
+    function g(a, e) {
+      return function() {
+        return a.a[e].apply(a.a, arguments);
+      };
+    }
+
+    for (var i = 0; i < api.length; i++) {
+      e = api[i];
+      a[e] = g(a, e);
+    }
+    w[id].agents.push(a);
+    return a;
+  };
+
+  var lJS = function(eId, url) {
+    var tag = d.createElement(s);
+    var el = d.getElementsByTagName(s)[0];
+    tag.id = eId;
+    tag.async = true;
+    tag.type = 'text/javascript';
+    tag.src = url;
+    el.parentNode.insertBefore(tag, el);
+  };
+  lJS(id, c.url);
+})(window, document, gfkS2sConf, 'script', 'gfkS2s');
+
+</script>
+<optin-box></optin-box>
+<tcf-box></tcf-box>
+<div id="my_video_id" style="width: 560px;height: 395px"></div>
+<script type="text/javascript" src="https://cdnapisec.kaltura.com/p/4680452/embedPlaykitJs/uiconf_id/52870882"></script>
+<script type="text/javascript">
+  try {
+    var kalturaPlayer = KalturaPlayer.setup({
+      targetId: "my_video_id",
+      plugins: {
+        ima: {
+          // adsRenderingSettings:{
+          //   loadVideoTimeout: 15000
+          // },
+          companions: {
+            ads:{
+              "Comp_300x250":{
+                width:300,
+                height:250
+              },
+              "Comp_728x90":{
+                width:728,
+                height:90
+              }
+            },
+            sizeCriteria:"SELECT_EXACT_MATCH"
+          },
+          showAdBreakCuePoint:true,
+          adBreakCuePointStyle:{
+            marker:{
+              color:"#ffffff",
+              width:2
+            }
+          }
+        }
+      },
+      advertising: {
+        showAdBreakCuePoint:true,
+        adBreaks: [{
+          position: 0,
+          ads: [{
+            url: ["//pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dskippablelinear&correlator="]
+          }]
+        }]
+      },
+      provider: {
+        partnerId: 4680452,
+        uiConfId: 52870882
+      },
+      flashvars: { dvrPlugin: { plugin: true } }
+    });
+    kalturaPlayer.loadMedia({entryId: '1_lc75nam6'});
+  } catch (e) {
+    console.error(e.message)
+  }
+</script>
+<script>
+  var currentAdPosition = 0;
+  var adAgent = window.gfkS2s.getAgent(getAdCurrentPosition);
+  var adRunning = false;
+
+  function getAdCurrentPosition() {
+    return currentAdPosition;
+  }
+
+  function adComplete() {
+    adRunning = false;
+    adAgent.stop();
+    currentAdPosition = 0;
+  }
+
+  function adTime(event) {
+    currentAdPosition = Math.floor(event.payload.adProgress.currentTime * 1000);
+  }
+
+  function adPlay() {
+    adRunning = true;
+    adAgent.playStreamOnDemand(
+      'ad',
+      kalturaPlayer.getMediaInfo().entryId + 'ads',
+      currentAdPosition,
+      {},
+      {}
+    );
+  }
+
+  function adSkipped() {
+    adRunning = false;
+    adAgent.stop();
+    currentAdPosition = 0;
+  }
+
+  function adPause() {
+    adAgent.stop();
+  }
+
+  kalturaPlayer.addEventListener(kalturaPlayer.Event.AD_COMPLETED, adComplete);
+  kalturaPlayer.addEventListener(kalturaPlayer.Event.AD_PROGRESS, adTime);
+  kalturaPlayer.addEventListener(kalturaPlayer.Event.AD_STARTED, adPlay);
+  kalturaPlayer.addEventListener(kalturaPlayer.Event.AD_RESUMED, adPlay);
+  kalturaPlayer.addEventListener(kalturaPlayer.Event.AD_SKIPPED, adSkipped);
+  kalturaPlayer.addEventListener(kalturaPlayer.Event.AD_PAUSED, adPause);
+</script>
+<script>
+var agent = gfkS2s.getAgent();
+
+// Fires when a stream has been started or is playing after having been paused or stopped
+kalturaPlayer.addEventListener(kalturaPlayer.Event.PLAY, () => {
+  agent.playStreamLive(
+    'default',
+    '',
+    0,
+    kalturaPlayer.getMediaInfo().entryId,
+    {
+      volume: getVolume(),
+      speed: kalturaPlayer.playbackRate
+    },
+    { /*please add your custom parameters here or keep empty*/ }
+  );
+});
+
+// Fires when a stream has been paused
+kalturaPlayer.addEventListener(kalturaPlayer.Event.PAUSE, () => {
+  agent.stop();
+});
+
+// Fires when the volume has been changed
+kalturaPlayer.addEventListener(kalturaPlayer.Event.VOLUME_CHANGE, () => {
+  if (!kalturaPlayer.paused) {
+    agent.volume(getVolume());
+  }
+});
+
+function getVolume() {
+  return kalturaPlayer.muted ? '0' : (kalturaPlayer.volume*100).toString();
+}
+
+</script>
+</body>
+</html>

@@ -2,20 +2,16 @@
 <html>
 <head>
   <meta charset='utf-8' />
-  <title>JWPlayer VOD + Ads</title>
+  <title>Kaltura player VOD</title>
   <link rel='shortcut icon' href='../../../images/favicon.png' />
   <link rel='stylesheet' href='../../../css/s2s-demo.css' />
-  <link rel='stylesheet' href='../../../css/jwplayer.css' />
-
   <script src='../../../js/url-polyfill.js'></script>
   <script type='module' src='../../../js/optin-box.js'></script>
   <script type='module' src='../../../js/tcf-box.js'></script>
 </head>
 <body>
 <script src='../../../js/optin-params.js'></script>
-
 <script>
-
 // In case questions about the optin parameter, please read the documentation: https://confluence-docu.gfk.com/display/SENSIC/Javascript+SDK+Integration
 // Read more about privacy:https://confluence-docu.gfk.com/pages/viewpage.action?pageId=13043961
 var gfkS2sConf = {
@@ -25,60 +21,50 @@ var gfkS2sConf = {
   type: 'WEB',
   logLevel: 'debug'
 };
+
 </script>
 <optin-box></optin-box>
 <tcf-box></tcf-box>
-<div class='jw-video-wrapper'>
-  <!--JW Player Script-->
-  <script src='https://cdn.jwplayer.com/players/yXB3uLUh-OMARawZA.js'></script>
-  <div id='my_video_id'></div>
-</div>
-<script>
-var jwPlayer = jwplayer();
-// jwPlayer = jwplayer('my_video_id').setup(
-//   {
-//     file: '../../../res/big_buck_bunny.mp4',
-//     advertising: {
-//       "client": "vast",
-//       'adscheduleid': 'RGg2kX31',
-//       "schedule": [
-//         {
-//           "tag": "//pubads.g.doubleclick.net/gampad/ads?iu=/21775744923/external/vmap_ad_samples&sz=640x480&cust_params=sample_ar%3Dpremidpost&ciu_szs=300x250&gdfp_req=1&ad_rule=1&output=vmap&unviewed_position_start=1&env=vp&impl=s&cmsid=496&vid=short_onecue&correlator="
-//         }
-//       ],
-//       'vpaidcontrols': true
-//     }
-//   }
-// );
-jwPlayer.on('ready', () => initExtension());
+<div id="my_video_id" style="width: 560px;height: 395px"></div>
+<script type="text/javascript" src="https://cdnapisec.kaltura.com/p/4680452/embedPlaykitJs/uiconf_id/52870882"></script>
+<script type="text/javascript">
+  try {
+    var kalturaPlayer = KalturaPlayer.setup({
+      targetId: "my_video_id",
+      provider: {
+        partnerId: 4680452,
+        uiConfId: 52870882
+      }
+    });
+    kalturaPlayer.loadMedia({entryId: '1_thyhdp7s'});
+  } catch (e) {
+    console.error(e.message)
+  }
 </script>
 <script>
-var extension;
-var playerConf = {
-  instance: jwPlayer,
-  vendor: 'jw'
-};
-var contentMetadata = {
-  customParams: {
-    cp1: '<your new cp1 value here>',
-    cp2: '<your new cp2 value here>'
-  }
-};
-var script = document.createElement('script');
-script.src = `${window.env.EXTENSION_BASE_URL}/playerextension.js`;
+  var extension;
+  var playerConf = {
+    instance: kalturaPlayer,
+    vendor: 'kaltura'
+  };
+  var contentMetadata = {
+    customParams : {
+      cp1: '<your new cp1 value here>',
+      cp2: '<your new cp2 value here>'
+    }
+  };
+  var script = document.createElement('script');
+  script.src = `${window.env.EXTENSION_BASE_URL}/playerextension.js`;
 
-function initExtension() {
   document.head.appendChild(script);
 
   script.onload = function() {
     // for more information, see: https://confluence-docu.gfk.com/pages/viewpage.action?pageId=102334502
     extension = new window.gfkS2sExtension.PlayerExtension(playerConf, gfkS2sConf, contentMetadata);
-    extension.activateNativeAdSupport();
     // call setParameter() as soon as your player is switching over to different content. Otherwise, new content will be
     // reported with parameters of the video played before.
     // extension.setParameter({customParams: { cp1: '<your new cp1 value here>', cp2: '<your new cp2 value here>', ... } , contentId: 'news'});
   };
-}
 </script>
 </body>
 </html>
