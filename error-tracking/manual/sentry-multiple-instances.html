@@ -2,7 +2,7 @@
 <html lang='en'>
 <head>
   <meta charset='UTF-8'>
-  <title>Bitmovin Live without Content-Time</title>
+  <title>Bitmovin VOD</title>
   <link rel='shortcut icon' href='../../../images/favicon.png' />
   <link rel='stylesheet' href='../../../css/s2s-demo.css' />
   <!-- Bitmovin player  -->
@@ -10,6 +10,23 @@
   <script src='../../../js/url-polyfill.js'></script>
   <script type='module' src='../../../js/optin-box.js'></script>
   <script type='module' src='../../../js/tcf-box.js'></script>
+  <script
+    src="https://js.sentry-cdn.com/1848f5f0970b4a8dd40f7dda6ddc3428.min.js"
+    crossorigin="anonymous"
+  ></script>
+  <script>
+    setTimeout(()=>{
+      myUndefinedFunction();
+    }, 3000);
+    Sentry.onLoad(function() {
+      new Sentry.init({
+        dsn: "https://1848f5f0970b4a8dd40f7dda6ddc3428@o4506071144792064.ingest.sentry.io/4506071174610944",
+        enabled: true,
+        release: 'demo',
+        attachStacktrace: true,
+      });
+    });
+  </script>
 </head>
 <body>
 <script src='../../../js/optin-params.js'></script>
@@ -112,10 +129,19 @@ var gfkS2sConf = {
   <optin-box></optin-box>
   <tcf-box></tcf-box>
   <div id='video'>
-    <video id='my_video_id' width='40px'></video>
+    <video id='my_video_id' width='100%' height='100%'></video>
   </div>
+  <input type='button' value='Crash demo website' onclick='crash()'>
+  <input type='button' value='Crash agent' onclick='crashAgent()'>
 </div>
 <script>
+function crash() {
+  throw new Error("Crash from demo website");
+}
+function crashAgent() {
+  agent.impression('asd');
+}
+
 var playerConfig = {
   key: '7C60F446-6054-446D-B829-816AF360D7F3',
   playback: {
@@ -127,8 +153,17 @@ var playerConfig = {
 };
 var containerElement = document.getElementById('video');
 var playerInstance = new bitmovin.player.Player(containerElement, playerConfig);
+
 var currentPlaybackSpeed = getCurrentPlaybackSpeed();
-var agent = gfkS2s.getAgent();
+var agent = gfkS2s.getAgent(getCurrentPosition);
+
+var currentPosition = getCurrentPosition();
+var seeked = false;
+var paused = false;
+
+function getCurrentPosition() {
+  return Math.round(playerInstance.getCurrentTime() * 1000);
+}
 
 function getVolume() {
   return (playerInstance.isMuted() ? 0 : playerInstance.getVolume()).toString();
@@ -138,35 +173,33 @@ function getCurrentPlaybackSpeed() {
   return playerInstance.getPlaybackSpeed();
 }
 
-function getStreamOffset() {
-  return Math.abs(Math.floor(playerInstance.getTimeShift())) * 1000;
-}
-
 playerInstance.on(bitmovin.player.PlayerEvent.Play, function() {
-  agent.playStreamLive(
-    'default',
-    '',
-    getStreamOffset(),
-    JSON.stringify(playerInstance.getSource()),
-    {
-      volume: getVolume(),
-      speed: getCurrentPlaybackSpeed()
-    },
-    {/*please add your custom parameters here or keep empty*/ }
-  );
+  paused = false;
+  if (!seeked) {
+    agent.playStreamOnDemand(
+      'default',
+      JSON.stringify(playerInstance.getSource()),
+      {
+        volume: getVolume(),
+        speed: getCurrentPlaybackSpeed()
+      },
+      {/*please add your custom parameters here or keep empty*/ }
+    );
+  } else {
+    seeked = false;
+  }
 });
 
 playerInstance.on(bitmovin.player.PlayerEvent.Paused, function() {
-  agent.stop();
+  paused = true;
+  agent.stop(currentPosition);
 });
 
 playerInstance.on(bitmovin.player.PlayerEvent.PlaybackSpeedChanged, function() {
   if (playerInstance.isPlaying()) {
     agent.stop();
-    agent.playStreamLive(
+    agent.playStreamOnDemand(
       'default',
-      '',
-      getStreamOffset(),
       JSON.stringify(playerInstance.getSource()),
       {
         volume: getVolume(),
@@ -187,22 +220,47 @@ playerInstance.on(bitmovin.player.PlayerEvent.VolumeChanged, function() {
     agent.volume(getVolume());
   }
 });
+
+playerInstance.on(bitmovin.player.PlayerEvent.TimeChanged, function() {
+  currentPosition = getCurrentPosition();
+});
+
+playerInstance.on(bitmovin.player.PlayerEvent.Seeked, function() {
+  if (!playerInstance.isPaused()) {
+    agent.playStreamOnDemand(
+      'default',
+      JSON.stringify(playerInstance.getSource()),
+      {
+        volume: getVolume(),
+        speed: getCurrentPlaybackSpeed()
+      },
+      {/*please add your custom parameters here or keep empty*/ }
+    );
+    seeked = false;
+  }
+});
+
+playerInstance.on(bitmovin.player.PlayerEvent.Seek, function() {
+  if (playerInstance.isPlaying()) {
+    seeked = true;
+    if (!paused) {
+      agent.stop(currentPosition);
+    }
+  }
+});
+
 playerInstance.on(bitmovin.player.PlayerEvent.Muted, function() {
   if (playerInstance.isPlaying()) {
     agent.volume(getVolume());
   }
 });
+
 playerInstance.on(bitmovin.player.PlayerEvent.Unmuted, function() {
   if (playerInstance.isPlaying()) {
     agent.volume(getVolume());
   }
 });
-playerInstance.on(bitmovin.player.PlayerEvent.CastStopped, function(castStoppedEvent) {
-  agent.stop();
-});
-playerInstance.load({
-  hls: 'https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel.ism/.m3u8'
-});
+playerInstance.load({ progressive: `${window.location.origin}/res/understanding_mobile_consumer.mp4` });
 </script>
 </body>
 </html>

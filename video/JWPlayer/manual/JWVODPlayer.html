@@ -20,7 +20,8 @@ var gfkS2sConf = {
   media: 's2s-html5-demo',
   url: window.env.WEB_SDK_URL,
   type: 'WEB',
-  logLevel: 'debug'
+  logLevel: 'debug',
+  crashReporting: true
 };
 
 (function(w, d, c, s, id) {
@@ -100,6 +101,7 @@ var gfkS2sConf = {
     tag.async = true;
     tag.type = 'text/javascript';
     tag.src = url;
+    tag.setAttribute('crossorigin', 'anonymous');
     el.parentNode.insertBefore(tag, el);
   };
   lJS(id, c.url);

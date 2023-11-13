@@ -20,7 +20,8 @@ var gfkS2sConf = {
   media: 's2s-bitmovin-demo',
   url: window.env.WEB_SDK_URL,
   type: 'WEB',
-  logLevel: 'debug'
+  logLevel: 'debug',
+  crashReporting: true
 };
 </script>
 <optin-box></optin-box>
@@ -64,6 +65,7 @@ var contentMetadata = {
 var script = document.createElement('script');
 
 function initExtension() {
+  script.setAttribute("crossorigin", "anonymous");
   script.src = `${window.env.EXTENSION_BASE_URL}/playerextension.js`;
   document.head.appendChild(script);
 

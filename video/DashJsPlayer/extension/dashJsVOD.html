@@ -23,7 +23,8 @@ var gfkS2sConf = {
   media: 's2s-html5-demo',
   url: window.env.WEB_SDK_URL,
   type: 'WEB',
-  logLevel: 'debug'
+  logLevel: 'debug',
+  crashReporting: true
 };
 
 </script>
@@ -45,6 +46,7 @@ var contentMetadata = {
   }
 };
 var script = document.createElement('script');
+script.setAttribute("crossorigin", "anonymous");
 var extension;
 
 player.initialize(video, '//dash.akamaized.net/akamai/bbb_30fps/bbb_30fps.mpd', false); /* initialize the MediaPlayer instance */

@@ -21,7 +21,8 @@ var gfkS2sConf = {
   media: 's2s-youtube-demo',
   url: window.env.WEB_SDK_URL,
   type: 'WEB',
-  logLevel: 'debug'
+  logLevel: 'debug',
+  crashReporting: true
 };
 </script>
 <optin-box></optin-box>
@@ -71,6 +72,7 @@ var contentMetadata = {
 };
 
 function initExtension(event) {
+  script.setAttribute("crossorigin", "anonymous");
   script.src = `${window.env.EXTENSION_BASE_URL}/playerextension.js`;
   document.head.appendChild(script);
 

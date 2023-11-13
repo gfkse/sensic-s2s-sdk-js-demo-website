@@ -21,7 +21,8 @@ var gfkS2sConf = {
   media: 's2s-html5-demo',
   url: window.env.WEB_SDK_URL,
   type: 'WEB',
-  logLevel: 'debug'
+  logLevel: 'debug',
+  crashReporting: true
 };
 
 </script>
@@ -58,6 +59,7 @@ dailymotion
   .catch((e) => console.error(e));
 
 function initExtension() {
+  script.setAttribute("crossorigin", "anonymous");
   script.src = `${window.env.EXTENSION_BASE_URL}/playerextension.js`;
   document.head.appendChild(script);
   script.onload = async function() {

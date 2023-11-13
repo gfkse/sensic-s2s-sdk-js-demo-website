@@ -23,7 +23,8 @@ var gfkS2sConf = {
   media: 's2s-html5-demo',
   url: window.env.WEB_SDK_URL,
   type: 'WEB',
-  logLevel: 'debug'
+  logLevel: 'debug',
+  crashReporting: true
 };
 
 </script>
@@ -98,6 +99,7 @@ var contentMetadata = {
   }
 };
 var dashJsExtensionScript = document.createElement('script');
+dashJsExtensionScript.setAttribute("crossorigin", "anonymous");
 dashJsExtensionScript.src = `${window.env.EXTENSION_BASE_URL}/playerextension.js`;
 document.head.appendChild(dashJsExtensionScript);
 

@@ -22,7 +22,8 @@ var gfkS2sConf = {
   media: 's2sdemomediaid_ssa_web',
   url: window.env.WEB_SDK_URL,
   type: 'WEB',
-  logLevel: 'debug'
+  logLevel: 'debug',
+  crashReporting: true
 };
 
 </script>
@@ -44,6 +45,7 @@ var extension;
 
 function onload() {
   var script = document.createElement('script');
+  script.setAttribute("crossorigin", "anonymous");
   script.src = `${window.env.EXTENSION_BASE_URL}/playerextension.js`;
   document.head.appendChild(script);
   var playerConf = {

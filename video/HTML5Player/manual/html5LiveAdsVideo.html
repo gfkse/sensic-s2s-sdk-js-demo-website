@@ -24,7 +24,8 @@
     media: 's2s-html5-demo',
     url: window.env.WEB_SDK_URL,
     type: 'WEB',
-    logLevel: 'debug'
+    logLevel: 'debug',
+  crashReporting: true
   };
 
   (function(w, d, c, s, id) {
@@ -96,6 +97,7 @@
       tag.async = true;
       tag.type = 'text/javascript';
       tag.src = url;
+      tag.setAttribute('crossorigin', 'anonymous');
       el.parentNode.insertBefore(tag, el);
     };
 
