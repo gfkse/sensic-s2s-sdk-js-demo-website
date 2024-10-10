@@ -120,6 +120,7 @@ var agent = window.gfkS2s.getAgent(getVideoPosition);
 var currentPosition = 0;
 var currentPlaybackSpeed = 1;
 // var seeked = false;
+var firstSeeked = true;
 
 dailymotion
   .createPlayer('my-dailymotion-player', {
@@ -166,11 +167,12 @@ function initPlayerEvents() {
       bugfixForSafari = true;
     }
   });
+
   video.on('seeked', async () => {
     if (!bugfixForSafari) {
       const state = await video.getState();
       currentPosition = Math.floor(state.videoTime * 1000);
-      if (state.playerIsPlaying) {
+      if (state.playerIsPlaying && !firstSeeked) {
         agent.playStreamOnDemand(
           'default',
           state.videoTitle,
@@ -180,6 +182,8 @@ function initPlayerEvents() {
           },
           { /** add your custom parameter here as comma-seperated <key>: "<value>" pairs */ }
         );
+      } else if(firstSeeked){
+        firstSeeked = false;
       }
     } else {
       bugfixForSafari = false;
