@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset='utf-8' />
+  <title>VJS DASH Live Video Demo</title>
+  <link rel='shortcut icon' href='../../../images/favicon.png' />
+  <link rel='stylesheet' href='../../../css/s2s-demo.css' />
+  <script src='../../../js/url-polyfill.js'></script>
+  <script type='module' src='../../../js/optin-box.js'></script>
+  <script type='module' src='../../../js/tcf-box.js'></script>
+  <!-- Video.js CSS from CDN -->
+  <link href="//vjs.zencdn.net/8.0.4/video-js.css" rel="stylesheet" />
+  <!-- Video.js and contrib-dash JS from CDN -->
+  <script src="//vjs.zencdn.net/8.0.4/video.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/videojs-contrib-dash/dist/videojs-dash.min.js"></script>
+</head>
+<body>
+<script src='../../../js/optin-params.js'></script>
+<script>
+// Configuration for opt-in parameters
+var gfkS2sConf = {
+  optin: optin,
+  media: 's2s-vjs-demo',
+  url: window.env.WEB_SDK_URL,
+  type: 'WEB',
+  logLevel: 'debug',
+  crashReporting: true
+};
+</script>
+<optin-box></optin-box>
+<tcf-box></tcf-box>
+<video
+  id="vjs_live_player"
+  class="video-js vjs-default-skin"
+  controls
+  preload="auto"
+  width="640"
+  height="360"
+  data-setup='{"liveui": true}'
+>
+  <source src="https://rdmedia.bbc.co.uk/testcard/simulcast/manifests/avc-ctv-stereo-en-sfdt-woff.mpd" type="application/dash+xml" />
+</video>
+
+<script>
+// Initialize the Video.js player
+var player = videojs('vjs_live_player', {
+  autoplay: false,
+  controls: true,
+  preload: 'auto',
+  liveui: true,
+  html5: {
+    dash: {
+      debug: true // Enable DASH debugging
+    }
+  }
+});
+
+videojs.options.dash = {
+  debug: true
+};
+
+// Optional: Add event listeners for debugging
+player.on('loadedmetadata', function () {
+  console.log('Metadata loaded for DASH live stream.');
+});
+
+// Handle player errors
+player.on('error', function () {
+  console.error('Player error:', player.error());
+  // Optional: Reset the player or reload the stream
+  player.reset();
+});
+</script>
+<script>
+var script = document.createElement('script');
+script.setAttribute("crossorigin", "anonymous");
+script.src = `${window.env.EXTENSION_BASE_URL}/playerextension.js`;
+document.head.appendChild(script);
+var extension;
+var playerConf = {
+  instance: player,
+  vendor: 'vjs',
+  type: 'live'
+};
+var contentMetadata = {
+  customParams: {
+    cp1: '<your new cp1 value here>',
+    cp2: '<your new cp2 value here>'
+  }
+};
+script.onload = function() {
+  // for more information, see: https://confluence-docu.gfk.com/pages/viewpage.action?pageId=102334502
+  extension = new window.gfkS2sExtension.PlayerExtension(playerConf, gfkS2sConf, contentMetadata);
+
+  // call setParameter() as soon as your player is switching over to different content. Otherwise, new content will be
+  // reported with parameters of the video played before.
+  // extension.setParameter({customParams: { cp1: '<your new cp1 value here>', cp2: '<your new cp2 value here>', ... } , contentId: 'news'});
+};
+</script>
+</body>
+</html>

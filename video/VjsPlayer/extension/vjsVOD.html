@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset='utf-8' />
+  <title>VJS VoD Video Demo</title>
+  <link rel='shortcut icon' href='../../../images/favicon.png' />
+  <link rel='stylesheet' href='../../../css/s2s-demo.css' />
+  <script src='../../../js/url-polyfill.js'></script>
+  <script type='module' src='../../../js/optin-box.js'></script>
+  <script type='module' src='../../../js/tcf-box.js'></script>
+  <link href="//vjs.zencdn.net/8.0.4/video-js.css" rel="stylesheet" />
+  <script src="//vjs.zencdn.net/8.0.4/video.min.js"></script>
+</head>
+<body>
+<script src='../../../js/optin-params.js'></script>
+<script>
+// In case questions about the optin parameter, please read the documentation: https://confluence-docu.gfk.com/display/SENSIC/Javascript+SDK+Integration
+// Read more about privacy:https://confluence-docu.gfk.com/pages/viewpage.action?pageId=13043961
+var gfkS2sConf = {
+  optin: optin,
+  media: 's2s-vjs-demo',
+  url: window.env.WEB_SDK_URL,
+  type: 'WEB',
+  logLevel: 'debug',
+  crashReporting: true
+};
+</script>
+<optin-box></optin-box>
+<tcf-box></tcf-box>
+<video
+  id="vjs_vod_player"
+  class="video-js vjs-default-skin"
+  controls
+  preload="auto"
+  width="640"
+  height="360"
+  data-setup='{}'
+>
+  <source src='../../../res/big_buck_bunny.mp4' type='video/mp4' />
+</video>
+
+<script>
+var player = videojs('vjs_vod_player', {
+  autoplay: false,
+  controls: true,
+  preload: 'auto',
+});
+
+// Handle player errors
+player.on('error', function () {
+  var error = player.error();
+  console.error('Player error:', error);
+  alert('An error occurred: ' + error.message);
+});
+</script>
+<script>
+var script = document.createElement('script');
+script.setAttribute("crossorigin", "anonymous");
+script.src = `${window.env.EXTENSION_BASE_URL}/playerextension.js`;
+document.head.appendChild(script);
+var extension;
+var playerConf = {
+  instance: player,
+  vendor: 'vjs'
+};
+var contentMetadata = {
+  customParams: {
+    cp1: '<your new cp1 value here>',
+    cp2: '<your new cp2 value here>'
+  }
+};
+script.onload = function() {
+  // for more information, see: https://confluence-docu.gfk.com/pages/viewpage.action?pageId=102334502
+  extension = new window.gfkS2sExtension.PlayerExtension(playerConf, gfkS2sConf, contentMetadata);
+
+  // call setParameter() as soon as your player is switching over to different content. Otherwise, new content will be
+  // reported with parameters of the video played before.
+  // extension.setParameter({customParams: { cp1: '<your new cp1 value here>', cp2: '<your new cp2 value here>', ... } , contentId: 'news'});
+};
+</script>
+</body>
+</html>
